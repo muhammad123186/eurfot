@@ -28,7 +28,11 @@ SECRET_KEY = 'c$^w$ejrk=_rr9+lhj+6b(%l(8a3sg++=qv)kt&xp=sbk$h3l^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    "eurofor.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
