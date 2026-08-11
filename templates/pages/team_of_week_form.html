@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<body style="background: linear-gradient(90deg,black,black);"></body>
+
+<div style="max-width:650px;margin:40px auto;padding:20px;font-family:Arial;color:white;">
+
+    <h2 style="text-align:center;">اختر تشكيلتك المثالية للجولة {{ matchday }}</h2>
+
+    <div style="text-align:center;margin-bottom:15px;">
+
+        <label style="color:white;margin-left:8px;">الرسم الخططي:</label>
+
+        <select id="formation-select" style="padding:8px 15px;border-radius:8px;border:none;font-size:14px;">
+            <option value="4-4-2" data-def="4" data-mid="4" data-fwd="2">4-4-2</option>
+            <option value="4-2-3-1" data-def="4" data-mid="5" data-fwd="1">4-2-3-1</option>
+            <option value="4-5-1" data-def="4" data-mid="5" data-fwd="1">4-5-1</option>
+            <option value="3-5-2" data-def="3" data-mid="5" data-fwd="2">3-5-2</option>
+            <option value="5-3-2" data-def="5" data-mid="3" data-fwd="2">5-3-2</option>
+            <option value="5-4-1" data-def="5" data-mid="4" data-fwd="1">5-4-1</option>
+            <option value="3-4-2-1" data-def="3" data-mid="6" data-fwd="1">3-4-2-1</option>
+        </select>
+
+    </div>
+
+    {{ eligible_players|json_script:"players-data" }}
+    {{ existing_player_ids|json_script:"existing-ids-data" }}
+
+    <form method="POST" id="team-form">
+
+        {% csrf_token %}
+
+        <div class="fantasy-pitch">
+
+            <!-- ================= هجوم ================= -->
+            <div class="formation-row" data-group="هجوم" data-count="2"></div>
+
+            <!-- ================= وسط ================= -->
+            <div class="formation-row" data-group="وسط" data-count="4"></div>
+
+            <!-- ================= دفاع ================= -->
+            <div class="formation-row" data-group="دفاع" data-count="4"></div>
+
+            <!-- ================= حراسة ================= -->
+            <div class="formation-row" data-group="حراسة" data-count="1"></div>
+
+        </div>
+
+        <button type="submit" style="width:100%;padding:12px;background:rgb(0, 255, 200);color:black;border:none;border-radius:8px;font-size:16px;cursor:pointer;margin-top:20px;">
+            save
+        </button>
+
+    </form>
+
+    <!-- ================= نافذة اختيار اللاعب ================= -->
+
+    <div id="player-picker-overlay" class="picker-overlay">
+
+        <div class="picker-box">
+
+            <h3 id="picker-title" style="text-align:center;"></h3>
+
+            <div id="picker-list"></div>
+
+            <button type="button" id="picker-close" style="width:100%;padding:10px;margin-top:15px;background:#333;color:white;border:none;border-radius:8px;cursor:pointer;">
+                إغلاق
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= CSS ================= -->
+
+<style>
+
+
+.fantasy-pitch{
+    position:relative;
+    background:linear-gradient(45deg,rgba(30, 255, 0, 0.541));
+    border-radius:15px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-evenly;
+    gap:15px;
+    min-height:500px;
+}
+
+.formation-row{
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+}
+
+.player-slot{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.6);
+    border:2px solid white;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:11px;
+    cursor:pointer;
+    padding:4px;
+    line-height:1.2;
+}
+
+.player-slot.filled{
+    background:#111;
+    border-color:#ff0000;
+    font-size:10px;
+}
+
+.picker-overlay{
+    display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.8);
+    z-index:999;
+    align-items:center;
+    justify-content:center;
+}
+
+.picker-overlay.active{
+    display:flex;
+}
+
+.picker-box{
+    background:#111;
+    border-radius:15px;
+    padding:20px;
+    width:90%;
+    max-width:400px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+
+.picker-option{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.picker-option:hover{
+    background:#222;
+}
+
+.picker-option.disabled{
+    opacity:0.3;
+    pointer-events:none;
+}
+
+</style>
+
+<!-- ================= JS ================= -->
+
+<script>
+
+const allPlayers = JSON.parse(document.getElementById('players-data').textContent);
+const existingIds = new Set(JSON.parse(document.getElementById('existing-ids-data').textContent));
+
+const selections = {};
+
+const overlay = document.getElementById('player-picker-overlay');
+const pickerTitle = document.getElementById('picker-title');
+const pickerList = document.getElementById('picker-list');
+
+let activeSlot = null;
+
+function buildSlots() {
+
+    document.querySelectorAll('.formation-row').forEach(function (row) {
+
+        const group = row.dataset.group;
+        const count = parseInt(row.dataset.count);
+
+        for (let i = 0; i < count; i++) {
+
+            const slotId = group + '-' + i;
+
+            const slot = document.createElement('div');
+            slot.className = 'player-slot';
+            slot.dataset.slotId = slotId;
+            slot.dataset.group = group;
+            slot.textContent = '+';
+
+            slot.addEventListener('click', function () {
+                openPicker(slotId, group);
+            });
+
+            row.appendChild(slot);
+
+        }
+
+    });
+
+}
+
+function openPicker(slotId, group) {
+
+    activeSlot = slotId;
+
+    pickerTitle.textContent = 'اختر لاعب (' + group + ')';
+    pickerList.innerHTML = '';
+
+    const groupPlayers = allPlayers.filter(function (p) {
+        return p.position_group === group;
+    });
+
+    const selectedIdsElsewhere = Object.keys(selections)
+        .filter(function (key) { return key !== slotId; })
+        .map(function (key) { return selections[key].id; });
+
+    groupPlayers.forEach(function (player) {
+
+        const option = document.createElement('div');
+        option.className = 'picker-option';
+
+        if (selectedIdsElsewhere.includes(player.id)) {
+            option.className += ' disabled';
+        }
+
+        option.innerHTML = `
+            <img src="${player.photo}" width="30" style="border-radius:50%;object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+            <span>${player.name}</span>
+            <img src="${player.team_logo}" width="18" style="margin-right:auto;">
+        `;
+
+        option.addEventListener('click', function () {
+            selectPlayer(slotId, player);
+        });
+
+        pickerList.appendChild(option);
+
+    });
+
+    overlay.classList.add('active');
+
+}
+
+function selectPlayer(slotId, player) {
+
+    selections[slotId] = player;
+
+    const slotEl = document.querySelector('[data-slot-id="' + slotId + '"]');
+
+    slotEl.innerHTML = `
+        <img src="${player.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+    `;
+    slotEl.title = player.name;
+    slotEl.classList.add('filled');
+
+    overlay.classList.remove('active');
+}
+
+document.getElementById('picker-close').addEventListener('click', function () {
+    overlay.classList.remove('active');
+});
+
+document.getElementById('team-form').addEventListener('submit', function (e) {
+
+    e.preventDefault();
+
+    const selectedCount = Object.keys(selections).length;
+
+    if (selectedCount !== 11) {
+        alert('لازم تختار ١١ لاعب بالضبط، اخترت ' + selectedCount + ' بس');
+        return;
+    }
+
+    const form = document.getElementById('team-form');
+
+    Object.values(selections).forEach(function (player) {
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'players';
+        input.value = player.id;
+
+        form.appendChild(input);
+
+    });
+
+    form.submit();
+
+});
+
+function clearSlots() {
+
+    document.querySelectorAll('.formation-row').forEach(function (row) {
+        row.innerHTML = '';
+    });
+
+    for (const key in selections) {
+        delete selections[key];
+    }
+
+}
+
+function applyFormation() {
+
+    const select = document.getElementById('formation-select');
+    const selectedOption = select.options[select.selectedIndex];
+
+    const defCount = parseInt(selectedOption.dataset.def);
+    const midCount = parseInt(selectedOption.dataset.mid);
+    const fwdCount = parseInt(selectedOption.dataset.fwd);
+
+    document.querySelector('.formation-row[data-group="دفاع"]').dataset.count = defCount;
+    document.querySelector('.formation-row[data-group="وسط"]').dataset.count = midCount;
+    document.querySelector('.formation-row[data-group="هجوم"]').dataset.count = fwdCount;
+
+    clearSlots();
+    buildSlots();
+
+}
+
+document.getElementById('formation-select').addEventListener('change', function () {
+
+    const hasSelections = Object.keys(selections).length > 0;
+
+    if (hasSelections) {
+
+        const confirmChange = confirm('تغيير التشكيلة بيمسح اختياراتك الحالية، تبي تكمل؟');
+
+        if (!confirmChange) {
+            return;
+        }
+
+    }
+
+    applyFormation();
+
+});
+
+buildSlots();
+
+if (existingIds.size > 0) {
+
+    const existingPlayers = allPlayers.filter(function (p) {
+        return existingIds.has(p.id);
+    });
+
+    existingPlayers.forEach(function (player) {
+
+        const emptySlot = document.querySelector(
+            '.player-slot[data-group="' + player.position_group + '"]:not(.filled)'
+        );
+
+        if (emptySlot) {
+            selections[emptySlot.dataset.slotId] = player;
+            emptySlot.innerHTML = `
+                <img src="${player.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+            `;
+            emptySlot.title = player.name;
+            emptySlot.classList.add('filled');
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}
+

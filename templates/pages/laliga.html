@@ -1,0 +1,938 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="site-header">
+
+    <div class="logo-box">
+
+        <h1>EURO<span>FOR</span></h1>
+
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+<a href="{% url 'profile' %}" 
+class="profile-btn"
+style="
+width:80px;
+height:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:black;
+white-space:nowrap;
+color:white;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+font-size:14px;
+margin-right:8px;
+transition:.25s;
+box-shadow:0 15px 30px rgba(0,0,0,.7),
+inset 2px 2px 10px black;
+border:2px solid rgba(0, 140, 255, 0.8);
+">
+
+👤 {{ user.username }}
+
+</a>
+
+
+{% else %}
+
+        
+            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
+                Sign Up
+            </a>
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+    
+    
+
+</div>
+
+
+
+
+
+<div class="page-layout">
+
+
+
+    <!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+
+    {% for country in countries %}
+
+    <div class="country-item">
+
+        <button class="country-btn">
+
+        <div class="country-left">
+
+    <img 
+    class="country-flag-img"
+    src="{{ country.flag }}"
+    alt="{{ country.name }}">
+
+    <span class="country-name">
+        {{ country.name }}
+    </span>
+
+</div>
+
+
+    
+
+      
+
+
+    <span class="country-arrow">
+        ▸
+    </span>
+
+</button>
+
+        </button>
+
+        <div class="country-leagues">
+
+            {% for league in country.leagues %}
+
+            <a href="{% url 'competition' league.code %}" class="league-link">
+
+    <img 
+        src="{{ league.logo }}"
+        class="league-logo"
+        alt="{{ league.name }}"
+    >
+
+    <span>{{ league.name }}</span>
+
+</a>
+
+                
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="main-content">
+
+
+        <!-- COMPETITION LOGO -->
+
+        <div style="text-align:center;margin:20px;">
+
+            <img 
+            src="{{ competition.logo|default:'' }}"
+            width="94">
+
+        </div>
+
+
+
+        <!-- TABS -->
+
+<div class="tabs-row">
+
+<div class="tabs">
+
+    <a href="{% url 'matches' %}" style="background:#090909;color:white;padding:10px 30px;border-radius:7px;text-decoration:none;">Matches</a>
+
+    <a href="{% url 'competition_standings' code %}" style="background:rgb(255,0,0);color:white;padding:10px 30px;border-radius:7px;text-decoration:none;">Standings</a>
+
+    <a href="{% url 'league_statistics' code %}" style="background:rgb(4,0,255);color:white;padding:10px 30px;border-radius:7px;text-decoration:none;">Statistics</a>
+
+    <a href="{% url 'news_list_by_league' code %}" style="background:rgb(5,150,0);color:white;padding:10px 30px;border-radius:7px;text-decoration:none;">
+            News
+        </a>
+
+
+</div>
+
+
+<div class="predictions-shortcut-wrapper">
+
+    <a href="{% url 'predictions_page' code|default:'PL' matchday|default:1 %}" style="text-decoration:none; display:flex; flex-direction:column; align-items:center;">
+
+        <div style="position:relative; width:200px; height:120px; background: linear-gradient(-45deg, black, black, #ff0000); border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; padding:8px; box-sizing:border-box;">
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+
+                <div style="text-align:center;">
+                    <img src="https://media.api-sports.io/football/teams/33.png" width="50">
+                    <div style="color:white; font-size:10px; font-weight:bold; margin-top:2px;">MUN</div>
+                </div>
+
+                <div style="background:#111; border:1px solid #dc2626; border-radius:6px; padding:4px 8px; font-weight:900; font-size:12px; color:white;">
+                    VS
+                </div>
+
+                <div style="text-align:center;">
+                    <img src="https://media.api-sports.io/football/teams/50.png" width="50">
+                    <div style="color:white; font-size:10px; font-weight:bold; margin-top:2px;">MCI</div>
+                </div>
+
+            </div>
+
+            <div style="text-align:center; margin-top:10px;">
+                <div style="color:#00ffff; font-size:11px; font-weight:bold;">توقع نتائج المباريات وتنافس على البطولات</div>
+            </div>
+
+        </div>
+
+    </a>
+
+</div>
+
+
+<div class="team-of-week-shortcut-wrapper">
+
+    <a href="{% url 'team_of_week_form' code|default:'PL' matchday|default:1 %}" style="text-decoration:none; display:flex; flex-direction:column; align-items:center;">
+
+        <div style="position:relative; width:200px; height:120px; background:linear-gradient(-45deg, black,black, rgb(51, 255, 0), #00ff00); border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; padding:8px; box-sizing:border-box">
+
+        <div style="width:70px; height:60px;  border-radius:8px; display:flex; align-items:center; justify-content:center; padding:5px;">
+            <img src="{{ competition.logo }}" style="width:100%; height:100%; object-fit:contain;">
+        </div>
+
+        <div style="text-align:center; margin-top:4px;">
+            <div style="color:#00c3ff; font-size:13px; font-weight:bold;">تشكيلتك المثالية</div>
+        </div>
+
+          
+
+         
+        </div>
+
+    </a>
+
+</div>
+
+
+
+
+
+
+</div>
+
+<!-- MATCHWEEK -->
+
+        <div class="matchweek">
+
+
+            <a href="{% url 'competition_matchday' code previous_matchday %}">
+                ◀ Matchweek {{ previous_matchday }}
+            </a>
+
+
+            <h2>
+                Matchweek {{ matchday }}
+            </h2>
+
+
+            <a href="{% url 'competition_matchday' code next_matchday %}"> 
+                Matchweek {{ next_matchday }} ▶
+            </a>
+
+
+        </div>
+
+
+        <!-- ================= MATCHES ================= -->
+
+
+        {% for game in matches %}
+
+        <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
+
+            <div class="team home">
+
+                <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+                    <img src="{{ game.homeTeam.crest }}">
+                    <span>{{ game.homeTeam.name }}</span>
+                </a>
+
+            </div>
+
+            <div class="score-board">
+
+                <div class="score-status">
+                    FULL TIME
+                </div>
+
+                <div class="score-value">
+                    <span>{{ game.score.fullTime.home }}</span>
+                    <b>-</b>
+                    <span>{{ game.score.fullTime.away }}</span>
+                </div>
+
+            </div>
+
+            <div class="team away">
+
+                <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+                    <span>{{ game.awayTeam.name }}</span>
+                    <img src="{{ game.awayTeam.crest }}">
+                </a>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <h3 style="color:white;">
+            لا توجد مباريات
+        </h3>
+
+        {% endfor %}
+
+
+
+    </div>
+
+
+</div>
+
+
+<style>
+
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(-45deg ,rgb(2, 0, 0),rgb(255, 123, 0),rgb(255, 94, 0),YELLOW,YELLOW,YELLOW,BLACK,BLACK);
+    background-size: 300% 300%;
+    animation: gradientWave 10s ease infinite;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+
+@keyframes gradientWave {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+.tabs-row{
+    position:relative;
+    width: 1400px;
+    height:70px;
+    margin:20px auto;
+}
+
+
+.tabs{
+    position:absolute;
+    left:47%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:20px;
+}
+
+
+.predictions-shortcut-wrapper{
+    position: absolute;
+    
+    right: 0;
+    top: 0%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+    padding-right: 15px;
+    border-right: 2px solid rgba(255, 0, 0, 0);
+}
+
+
+.team-of-week-shortcut-wrapper{
+    position: absolute;
+    left: 0;
+    top: 0%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+    padding-left: 15px;
+}
+
+
+
+
+
+
+.page-layout{
+
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+
+}
+
+
+/* =========================
+        SIDEBAR
+========================= */
+.sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:0px;
+    margin-top:28px;
+    margin-left:15px;
+}
+
+.country-item{
+    background: #181818;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:8px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.country-item:hover{
+    border-color:#ff0000;
+}
+
+.country-btn{
+    width:100%;
+    padding:16px 18px;
+    border:none;
+    background:none;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:400;
+}
+
+.country-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.country-name{
+    letter-spacing:.4px;
+}
+
+.country-arrow{
+    font-size:20px;
+    transition:.35s;
+}
+
+/* =========================
+        LEAGUES
+========================= */
+
+.country-leagues{
+
+    max-height:0;
+
+    overflow:hidden;
+
+    transition:max-height .45s ease;
+
+    background:#0b0b0b;
+
+}
+
+.country-item.active .country-leagues{
+
+    max-height:250px;
+
+}
+
+.country-item.active .country-arrow{
+
+    transform:rotate(90deg);
+
+}
+
+
+
+.country-flag-img{
+    width:32px;
+    height:23px;
+    object-fit:cover;
+    border-radius:2px;
+}
+
+
+.league-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px 25px;
+
+    color:#dcdcdc;
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    transition:.25s;
+
+    border-left:3px solid transparent;
+
+}
+
+.league-link:hover{
+
+    background:#151515;
+
+    color:#ff0000;
+
+    border-left-color:#2600ff;
+
+}
+
+.league-icon{
+
+    width:20px;
+
+    text-align:center;
+
+}
+
+
+
+
+.league-logo{
+
+    width:28px;
+    height:28px;
+
+    object-fit:contain;
+
+}
+
+
+
+
+.main-content{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+
+
+
+
+.tabs{
+
+    display:flex;
+
+    gap:20px;
+
+    margin:20px;
+
+}
+
+
+
+.tabs a{
+
+    background:#26195d;
+
+    color:white;
+
+    padding:10px 30px;
+
+    border-radius:7px;
+
+    text-decoration:none;
+
+}
+
+
+
+
+
+.matchweek{
+
+    width:800px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    color:black;
+
+    margin:20px;
+
+}
+
+
+
+.matchweek a{
+
+    color:white;
+
+    text-decoration:none;
+
+}
+
+
+
+
+.match-card{
+
+
+    width:700px;
+
+    height:70px;
+
+    background: linear-gradient(90deg,black);
+
+    border-radius:12px;
+
+    margin:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 25px;
+
+    color:white;
+
+
+}
+
+
+
+.match-card:hover{
+
+    transform:scale(1.02);
+
+    background:black;
+
+}
+
+
+
+
+
+.match-link{
+
+    text-decoration:none;
+
+}
+
+
+
+.team{
+
+
+    width:35%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+
+.team img{
+
+
+    width:45px;
+
+    height:45px;
+
+    object-fit:contain;
+
+
+}
+
+
+
+.home{
+
+    justify-content:flex-start;
+
+}
+
+
+
+
+.away{
+
+    justify-content:flex-end;
+}
+
+
+
+
+
+.score-board{
+
+    width:78px;
+    height:65px;
+
+    background:
+    linear-gradient(145deg,#1a1a1a,#0a0a0a);
+
+    border-radius:16px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    position:relative;
+    overflow:hidden;
+
+    box-shadow:
+    0 12px 28px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:.3s;
+
+}
+
+
+
+
+
+.score-board:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+    0 18px 35px rgba(0,0,0,.7),
+    0 0 20px rgba(255,51,51,.15);
+
+    border-color:rgba(255,51,51,.3);
+
+}
+
+
+.score-status{
+
+    font-size:9px;
+    color:#ff0000;
+    font-weight:900;
+    letter-spacing:1px;
+
+    margin-bottom:6px;
+
+    padding:2px 8px;
+    border-radius:10px;
+    background:rgba(255,51,51,.1);
+
+}
+
+
+.score-value{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-size:25px;
+    font-weight:600;
+
+    color:white;
+
+    text-shadow:0 2px 8px rgba(0,0,0,.5);
+
+}
+
+
+.score-value b{
+
+    color:#666;
+    font-size:12px;
+    font-weight:400;
+
+}
+
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+    display:flex;
+}
+
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+
+
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-ball{
+    font-size:40px;
+    filter:drop-shadow(0 0 12px rgb(17, 0, 255));
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.site-header p{
+    margin-top:8px;
+    color:#cfc;
+    font-size:15px;
+    letter-spacing:1px;
+}
+
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+    transition:.25s;
+}
+
+.search-box button:hover{
+    background:red;
+
+}
+
+
+
+</style>
+
+
+
+
+
+<script>
+
+document.querySelectorAll(".country-btn").forEach(function(btn){
+
+    btn.addEventListener("click",function(){
+
+        const item=this.parentElement;
+
+        const opened=document.querySelector(".country-item.active");
+
+        if(opened && opened!==item){
+            opened.classList.remove("active");
+        }
+
+        item.classList.toggle("active");
+
+    });
+
+});
+
+</script>
+
+
+{% endblock %}

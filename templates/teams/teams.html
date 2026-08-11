@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Premier League</h1>
+
+{% for t in teams %}
+
+    <a href="/teams/team/{{ t.id }}/">
+    <h3>{{ t.name }}</h3>
+    </a>
+
+{% empty %}
+
+    <p>No teams found</p>
+
+{% endfor %}
+
+{% endblock content %}
+
+
+

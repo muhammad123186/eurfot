@@ -1,0 +1,895 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+    display:flex;
+    margin-left:-0.6%;
+}
+
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+
+
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-ball{
+    font-size:40px;
+    filter:drop-shadow(0 0 12px rgb(17, 0, 255));
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.site-header p{
+    margin-top:8px;
+    color:#cfc;
+    font-size:15px;
+    letter-spacing:1px;
+}
+
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:rgba(255, 0, 0, 0.055);
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+    transition:.25s;
+}
+
+.search-box button:hover{
+    background:red;
+
+}
+
+
+/* =========================
+   TEAMS COMPARISON TOP
+========================= */
+
+
+
+
+.cmp-top{
+    display:grid;
+    grid-template-columns:1fr 280px 1fr;
+    align-items:start;
+    gap:-23px;
+    position:relative;
+    margin-top: 7%;
+}
+
+
+/* =========================
+   TEAM SIDE
+========================= */
+
+.compare-page-container {
+    max-width: 1200px;
+    margin: 35px auto;
+    padding: 30px;
+    background: rgba(10, 10, 18, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+    color:#cfc;
+}
+
+
+.cmp-side{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:0;
+}
+
+.cmp-photo-box{
+    width:190px;
+    height:220px;
+    border-radius:22px;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #050505
+        );
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.45),
+        inset 0 0 30px rgba(255,255,255,.025);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.cmp-photo-box img{
+    width:65%;
+    height:65%;
+    object-fit:contain;
+}
+
+.cmp-name{
+    margin:16px 0 7px;
+    font-size:22px;
+    font-weight:800;
+    text-align:center;
+}
+
+
+/* =========================
+   MIDDLE SEARCH
+========================= */
+
+.cmp-middle{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    min-width:0;
+}
+
+.cmp-vs-circle{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff2020,
+            #8d0000
+        );
+
+    color:white;
+    font-size:19px;
+    font-weight:900;
+
+    box-shadow:
+        0 10px 35px rgba(255,0,0,.25);
+
+    margin-bottom:22px;
+}
+
+.cmp-search-form{
+    width:100%;
+    display:flex;
+    align-items:center;
+
+    background:#090909;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:13px;
+    overflow:hidden;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.3);
+    
+    margin-top: 30%;
+}
+
+.cmp-search-form input{
+    flex:1;
+    min-width:0;
+
+    background:transparent;
+    border:none;
+    outline:none;
+
+    color:white;
+    padding:13px 14px;
+    font-size:14px;
+}
+
+.cmp-search-form input::placeholder{
+    color:#777;
+}
+
+.cmp-search-form button{
+    border:none;
+    background:#151515;
+    color:white;
+
+    width:48px;
+    height:48px;
+
+    cursor:pointer;
+    font-size:16px;
+
+    transition:.2s;
+}
+
+.cmp-search-form button:hover{
+    background:#ff2020;
+}
+
+
+/* =========================
+   SEARCH RESULTS
+========================= */
+
+.cmp-results-list{
+    width:100%;
+    margin-top:12px;
+
+    background:#090909;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+
+    padding:7px;
+
+    max-height:300px;
+    overflow-y:auto;
+
+    box-sizing:border-box;
+}
+
+.cmp-result-item{
+    display:flex;
+    align-items:center;
+    gap:11px;
+
+    padding:9px;
+    border-radius:10px;
+
+    color:white;
+    text-decoration:none;
+
+    transition:.2s;
+}
+
+.cmp-result-item:hover{
+    background:#171717;
+}
+
+.cmp-result-item img{
+    width:43px;
+    height:43px;
+    border-radius:50%;
+    object-fit:contain;
+    background:#111;
+}
+
+.cmp-result-info{
+    min-width:0;
+}
+
+.cmp-result-info h4{
+    margin:0 0 3px;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.cmp-result-info span{
+    color:#777;
+    font-size:11px;
+}
+
+.cmp-empty{
+    color:#777;
+    font-size:13px;
+    text-align:center;
+    margin-top:20px;
+}
+
+
+/* =========================
+   EMPTY TEAM
+========================= */
+
+.cmp-empty-photo{
+    align-items:center;
+}
+
+.cmp-empty-photo span{
+    font-size:70px;
+    font-weight:200;
+    color:#333;
+}
+
+.cmp-placeholder{
+    color:#555;
+}
+
+
+/* =========================
+   COMPARISON SECTION
+========================= */
+
+.comparison-section{
+    margin-top:60px;
+    width:100%;
+    margin-top: -1%;
+}
+
+.comparison-title{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.comparison-title h2{
+    margin:0;
+    font-size:22px;
+    font-weight:900;
+}
+
+.comparison-title p{
+    margin:7px 0 0;
+    color:#666;
+    font-size:13px;
+}
+
+
+/* =========================
+   COMPARISON TABLE
+========================= */
+
+.cmp-table{
+    width:100%;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.025),
+            rgba(255,255,255,.01)
+        );
+
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:22px;
+    overflow:hidden;
+}
+
+.cmp-row{
+    display:grid;
+    grid-template-columns:1fr 260px 1fr;
+    align-items:center;
+
+    min-height:72px;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.cmp-row:last-child{
+    border-bottom:none;
+}
+
+
+/* TEAM VALUES */
+
+.cmp-value{
+    font-size:21px;
+    font-weight:900;
+    text-align:center;
+}
+
+.cmp-left{
+    text-align:center;
+}
+
+.cmp-right{
+    text-align:center;
+}
+
+
+/* CENTER CRITERIA */
+
+.cmp-label{
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    color:#aaa;
+    font-size:14px;
+    font-weight:700;
+
+    border-left:1px solid rgba(255,255,255,.05);
+    border-right:1px solid rgba(255,255,255,.05);
+}
+
+
+/* =========================
+   TEAM VALUE HEADER
+========================= */
+
+.cmp-player-value-title{
+    width:100%;
+    margin-top:22px;
+
+    display:grid;
+    grid-template-columns:1fr 260px 1fr;
+    align-items:center;
+}
+
+.cmp-player-value-title .value-name{
+    text-align:center;
+    font-size:13px;
+    color:#777;
+}
+
+.cmp-player-value-title .value-name strong{
+    display:block;
+    margin-top:4px;
+    color:white;
+    font-size:14px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+    .cmp-top{
+        grid-template-columns:1fr;
+        gap:25px;
+    }
+
+    .cmp-middle{
+        order:2;
+    }
+
+    .cmp-side:first-child{
+        order:1;
+    }
+
+    .cmp-side:last-child{
+        order:3;
+    }
+
+    .cmp-search-form{
+        max-width:400px;
+    }
+
+    .cmp-results-list{
+        max-width:400px;
+    }
+
+    .cmp-row{
+        grid-template-columns:1fr 160px 1fr;
+    }
+
+    .cmp-player-value-title{
+        grid-template-columns:1fr 160px 1fr;
+    }
+
+    .cmp-label{
+        font-size:12px;
+    }
+
+    .cmp-value{
+        font-size:18px;
+    }
+}
+
+
+@media(max-width:600px){
+
+    .compare-page{
+        padding:0 12px 40px;
+    }
+
+    .compare-header{
+        flex-direction:column;
+        gap:20px;
+    }
+
+    .header-right{
+        width:100%;
+        justify-content:center;
+    }
+
+    .cmp-photo-box{
+        width:150px;
+        height:180px;
+    }
+
+    .cmp-name{
+        font-size:18px;
+    }
+
+    .cmp-row{
+        grid-template-columns:1fr 120px 1fr;
+        min-height:62px;
+    }
+
+    .cmp-player-value-title{
+        grid-template-columns:1fr 120px 1fr;
+    }
+
+    .cmp-value{
+        font-size:16px;
+    }
+
+    .cmp-label{
+        font-size:11px;
+    }
+}
+
+</style>
+
+
+<div class="compare-page">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="site-header">
+
+    <div class="logo-box">
+
+        <h1>EURO<span>FOR</span></h1>
+
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+<a href="{% url 'profile' %}" 
+class="profile-btn"
+style="
+width:80px;
+height:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:black;
+white-space:nowrap;
+color:white;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+font-size:14px;
+margin-right:8px;
+transition:.25s;
+box-shadow:0 15px 30px rgba(0,0,0,.7),
+inset 2px 2px 10px black;
+border:2px solid rgba(0, 140, 255, 0.8);
+">
+
+👤 {{ user.username }}
+
+</a>
+
+
+{% else %}
+
+        
+            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
+                Sign Up
+            </a>
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+    
+    
+
+</div>
+
+
+
+
+
+<div class="page-layout">
+
+
+    
+<div class="compare-page-container">
+
+
+
+
+
+    <!-- =========================
+         TEAMS + SEARCH
+    ========================== -->
+
+    <div class="cmp-top">
+
+
+        <!-- TEAM 1 -->
+
+        <div class="cmp-side">
+
+            <div class="cmp-photo-box">
+
+                <img
+                    src="{{ team1.logo }}"
+                    alt="{{ team1.name }}"
+                >
+
+            </div>
+
+
+            <h3 class="cmp-name">
+                {{ team1.name }}
+            </h3>
+
+        </div>
+
+
+
+        <!-- CENTER -->
+
+        <div class="cmp-middle">
+
+          
+
+
+            {% if team1.id %}
+
+                <form
+                    method="GET"
+                    action="{% url 'compare_team' team1.id %}"
+                    class="cmp-search-form"
+                >
+
+                    <input
+                        type="text"
+                        name="q"
+                        placeholder="search team... "
+                        value="{{ query|default:'' }}"
+                    >
+
+                    <button type="submit">
+                        🔍
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+
+            {% if search_results %}
+
+                <div class="cmp-results-list">
+
+                    {% for result in search_results %}
+
+    <a
+        href="?team2_id={{ result.id }}"
+        class="cmp-result-item"
+    >
+
+        <img
+            src="{{ result.logo }}"
+            alt="{{ result.name }}"
+        >
+
+        <div class="cmp-result-info">
+            <h4>
+                {{ result.name }}
+            </h4>
+
+            <span>
+                {{ result.league_name }}
+            </span>
+        </div>
+
+    </a>
+
+{% endfor %}
+
+                </div>
+
+            {% elif query %}
+
+                <p class="cmp-empty">
+                    لا توجد نتائج لـ "{{ query }}"
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- TEAM 2 -->
+
+        <div class="cmp-side">
+
+            {% if team2 %}
+
+                <div class="cmp-photo-box">
+
+                    <img
+                        src="{{ team2.logo }}"
+                        alt="{{ team2.name }}"
+                    >
+
+                </div>
+
+
+                <h3 class="cmp-name">
+                    {{ team2.name }}
+                </h3>
+
+            {% else %}
+
+                <div class="cmp-photo-box cmp-empty-photo">
+
+                    <span>?</span>
+
+                </div>
+
+
+                <h3 class="cmp-name cmp-placeholder">
+                    Search Team
+                </h3>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         COMPARISON
+    ========================== -->
+
+    {% if team2 %}
+
+        <div class="comparison-section">
+
+
+            <div class="comparison-title">
+
+                <h2>
+                    Team Statistics Comparison
+                </h2>
+
+
+                <p>
+                    Season statistics comparison
+                </p>
+
+            </div>
+
+
+
+            <!--
+                TEAM NAMES ABOVE THEIR VALUES
+            -->
+
+            <div class="cmp-player-value-title">
+
+                <div class="value-name">
+
+                  
+
+                </div>
+
+
+                <div></div>
+
+
+                <div class="value-name">
+
+                    
+
+                </div>
+
+            </div>
+
+
+
+            <!-- COMPARISON ROWS -->
+
+            <div class="cmp-table">
+
+                {% for row in comparison_rows %}
+
+    <div class="cmp-row">
+
+        <div class="cmp-value cmp-left">
+
+            {% if row.label == "Biggest Win" %}+{% endif %}{{ row.val1 }}{{ row.suffix }}
+
+        </div>
+
+        <div class="cmp-label">
+
+            {{ row.label }}
+
+        </div>
+
+        <div class="cmp-value cmp-right">
+
+            {% if row.label == "Biggest Win" %}+{% endif %}{{ row.val2 }}{{ row.suffix }}
+
+        </div>
+
+    </div>
+
+{% endfor %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+
+</div>
+
+
+
+{% endblock %}

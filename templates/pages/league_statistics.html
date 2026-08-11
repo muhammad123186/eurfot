@@ -1,0 +1,1482 @@
+<body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black,rgba(17, 0, 255, 0.692));">
+
+
+
+<div class="statistics-page">
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <div class="hero-left">
+
+            <img class="league-logo"
+                 src="{{ competition.logo }}">
+
+            <div>
+
+                <h1>{{ competition.name }}</h1>
+
+                <p>
+                    Season {{ season }}
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+
+            <div class="live-box">
+
+                <span class="live-dot"></span>
+
+                LIVE STATISTICS
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= QUICK CARDS ================= -->
+
+    <section class="quick-grid">
+
+
+        <!-- TOP SCORER -->
+
+        <div class="quick-card gold">
+
+            <div class="quick-title">
+
+                TOP SCORER
+
+            </div>
+
+            {% with p=top_scorers.0 %}
+
+            <img class="quick-photo"
+                 src="{{ p.player_photo }}">
+
+            <h3>{{ p.player_name }}</h3>
+
+            <div class="quick-team">
+
+                <img src="{{ p.team_logo }}">
+
+                {{ p.team_name }}
+
+            </div>
+
+            <div class="quick-number">
+
+                 {{ p.goals }}
+
+            </div>
+
+            {% endwith %}
+
+        </div>
+
+
+
+        <!-- ASSISTS -->
+
+        <div class="quick-card blue">
+
+            <div class="quick-title">
+
+                TOP ASSISTS
+
+            </div>
+
+            {% with p=top_assists.0 %}
+
+            <img class="quick-photo"
+                 src="{{ p.player_photo }}">
+
+            <h3>{{ p.player_name }}</h3>
+
+            <div class="quick-team">
+
+                <img src="{{ p.team_logo }}">
+
+                {{ p.team_name }}
+
+            </div>
+
+            <div class="quick-number">
+
+                {{ p.assists }}
+
+            </div>
+
+            {% endwith %}
+
+        </div>
+
+
+
+        <!-- ATTACK -->
+
+        <div class="quick-card red">
+
+            <div class="quick-title">
+
+                BEST ATTACK
+
+            </div>
+
+            {% with c=top_scoring_teams.0 %}
+
+            <img class="club-big-logo"
+                 src="{{ c.team.logo }}">
+
+            <h3>
+
+                {{ c.team.name }}
+
+            </h3>
+
+            <div class="quick-number">
+
+                {{ c.all.goals.for }}
+
+            </div>
+
+            {% endwith %}
+
+        </div>
+
+
+
+        <!-- DEFENSE -->
+
+        <div class="quick-card green">
+
+            <div class="quick-title">
+
+                BEST DEFENSE
+
+            </div>
+
+            {% with c=best_defense_teams.0 %}
+
+            <img class="club-big-logo"
+                 src="{{ c.team.logo }}">
+
+            <h3>
+
+                {{ c.team.name }}
+
+            </h3>
+
+            <div class="quick-number">
+
+                {{ c.all.goals.against }}
+
+            </div>
+
+            {% endwith %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= TABS ================= -->
+
+    <section class="tabs">
+
+        <button class="tab-btn active"
+                data-tab="top-scorers">
+
+            Top Scorers
+
+        </button>
+
+        <button class="tab-btn"
+                data-tab="top-assists">
+
+            Assists
+
+        </button>
+
+        <button class="tab-btn"
+                data-tab="top-yellow">
+
+            Yellow
+
+        </button>
+
+        <button class="tab-btn"
+                data-tab="top-red">
+
+            Red
+
+        </button>
+
+        <button class="tab-btn"
+                data-tab="top-scoring-teams">
+
+            Clubs Goals
+
+        </button>
+
+        <button class="tab-btn"
+                data-tab="best-defense-teams">
+
+            Best Defense
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ================= FIRST TABLE ================= -->
+
+    <div id="top-scorers"
+         class="tab-content active">
+
+        <table class="premium-table">
+
+            <thead>
+
+                <tr>
+
+                    <th class="rank-title">#</th>
+                    <th class="player-title">PLAYER</th>
+                    <th class="team-title">TEAM</th>
+                    <th class="goals-title">GOALS</th>
+                    <th class="apps-title">APPS</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for player in top_scorers %}
+
+                <tr>
+
+                    <td class="place">
+
+                        {% if forloop.counter == 1 %}
+                            🥇
+                        {% elif forloop.counter == 2 %}
+                            🥈
+                        {% elif forloop.counter == 3 %}
+                            🥉
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <div class="player-card">
+
+                            <img src="{{ player.player_photo }}">
+
+                            <div>
+
+                                <h4>
+
+                                    {{ player.player_name }}
+
+                                </h4>
+
+                                <small>scorer</small>
+
+                                
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <div class="club-card">
+
+                            <img src="{{ player.team_logo }}">
+
+                            {{ player.team_name }}
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge gold">
+
+                            {{ player.goals }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        {{ player.appearances }}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
+<!-- ================= ASSISTS ================= -->
+
+<div id="top-assists" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th class="rank-title">#</th>
+                <th class="player-title">PLAYER</th>
+                <th class="team-title">TEAM</th>
+                <th class="goals-title">GOALS</th>
+                <th class="apps-title">APPS</th>
+
+                
+
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for player in top_assists %}
+
+        <tr>
+
+            <td class="place">
+
+                {% if forloop.counter == 1 %}
+                🥇
+                {% elif forloop.counter == 2 %}
+                🥈
+                {% elif forloop.counter == 3 %}
+                🥉
+                {% else %}
+                {{ forloop.counter }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <div class="player-card">
+
+                    <img src="{{ player.player_photo }}">
+
+                    <div>
+
+                        <h4>{{ player.player_name }}</h4>
+
+                        <small>Playmaker</small>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <div class="club-card">
+
+                    <img src="{{ player.team_logo }}">
+
+                    {{ player.team_name }}
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <span class="badge blue">
+
+                    {{ player.assists }}
+
+                </span>
+
+            </td>
+
+            <td>{{ player.appearances }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ================= YELLOW ================= -->
+
+<div id="top-yellow" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>PLAYER</th>
+
+                <th>TEAM</th>
+
+                <th>YELLOW</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for player in top_yellow_cards %}
+
+        <tr>
+
+            <td class="place">{{ forloop.counter }}</td>
+
+            <td>
+
+                <div class="player-card">
+
+                    <img src="{{ player.player_photo }}">
+
+                    <div>
+
+                        <h4>{{ player.player_name }}</h4>
+
+                        <small>Football Player</small>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <div class="club-card">
+
+                    <img src="{{ player.team_logo }}">
+
+                    {{ player.team_name }}
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <span class="badge yellow">
+
+                    {{ player.yellow_cards }}
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ================= RED ================= -->
+
+<div id="top-red" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>PLAYER</th>
+
+                <th>TEAM</th>
+
+                <th>RED</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for player in top_red_cards %}
+
+        <tr>
+
+            <td class="place">{{ forloop.counter }}</td>
+
+            <td>
+
+                <div class="player-card">
+
+                    <img src="{{ player.player_photo }}">
+
+                    <div>
+
+                        <h4>{{ player.player_name }}</h4>
+
+                        <small>Football Player</small>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <div class="club-card">
+
+                    <img src="{{ player.team_logo }}">
+
+                    {{ player.team_name }}
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <span class="badge red">
+
+                    {{ player.red_cards }}
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ================= CLUB GOALS ================= -->
+
+<div id="top-scoring-teams" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th class="rank-title">#</th>
+                <th class="team-title">CLUB</th>
+                <th class="goals-title">GOALS</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for club in top_scoring_teams %}
+
+            <tr>
+
+                <td class="place">
+
+                    {% if forloop.counter == 1 %}
+                        🥇
+                    {% elif forloop.counter == 2 %}
+                        🥈
+                    {% elif forloop.counter == 3 %}
+                        🥉
+                    {% else %}
+                        {{ forloop.counter }}
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <div class="club-card">
+
+                        <img src="{{ club.team.logo }}">
+
+                        {{ club.team.name }}
+
+                    </div>
+
+                </td>
+
+                <td>
+
+                    <span class="badge red">
+
+                        {{ club.all.goals.for }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- ================= DEFENSE ================= -->
+
+<div id="best-defense-teams" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th class="rank-title">#</th>
+                <th class="team-title">CLUB</th>
+                <th class="goals-title">CONCEDED</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for club in best_defense_teams %}
+
+            <tr>
+
+                <td class="place">
+
+                    {% if forloop.counter == 1 %}
+                        🥇
+                    {% elif forloop.counter == 2 %}
+                        🥈
+                    {% elif forloop.counter == 3 %}
+                        🥉
+                    {% else %}
+                        {{ forloop.counter }}
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <div class="club-card">
+
+                        <img src="{{ club.team.logo }}">
+
+                        {{ club.team.name }}
+
+                    </div>
+
+                </td>
+
+                <td>
+
+                    <span class="badge green">
+
+                        {{ club.all.goals.against }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+
+
+<style>
+
+
+/* =====================================================
+                    PAGE
+===================================================== */
+
+.statistics-page{
+
+    width:min(1550px,94%);
+    margin:40px auto;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:15px;
+
+}
+
+
+
+
+
+#top-assists,
+#top-yellow,
+#top-red,
+#top-scoring-teams,
+#best-defense-teams{
+
+    width:min(1550px,94%);
+
+    margin:40px auto;
+
+}
+
+
+
+
+
+/* =====================================================
+                    HERO
+===================================================== */
+
+.hero{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:30px 40px;
+
+    border-radius:26px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #111,
+        #1b1b1b
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+    0 20px 45px rgba(0,0,0,.45);
+
+    margin-bottom:35px;
+
+}
+
+
+
+.hero-left{
+
+    display:flex;
+    align-items:center;
+    gap:22px;
+
+}
+
+
+
+.league-logo{
+
+    width:90px;
+    height:90px;
+    object-fit:contain;
+
+}
+
+
+
+.hero h1{
+
+    margin:0;
+    font-size:40px;
+    font-weight:900;
+
+}
+
+
+
+.hero p{
+
+    margin-top:8px;
+    color:#999;
+
+}
+
+
+
+.live-box{
+
+    padding:12px 20px;
+
+    border-radius:40px;
+
+    background:#181818;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    font-size:13px;
+
+    letter-spacing:2px;
+
+}
+
+
+
+.live-dot{
+
+    display:inline-block;
+
+    width:10px;
+    height:10px;
+
+    background:#00ff4c;
+
+    border-radius:50%;
+
+    margin-right:10px;
+
+}
+
+
+
+/* =====================================================
+                    QUICK CARDS
+===================================================== */
+
+.quick-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:25px;
+
+    margin-bottom:40px;
+
+}
+
+
+
+.quick-card{
+
+    border-radius:24px;
+
+    padding:28px;
+
+    text-align:center;
+
+    background:#111;
+
+    border:1px solid rgba(255,255,255,.07);
+
+    transition:.35s;
+
+}
+
+
+
+.quick-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 18px 40px rgba(0,0,0,.45);
+
+}
+
+
+
+
+
+
+.gold{ 
+    
+    background: linear-gradient(-50deg, black, black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black, #ff0000); 
+
+}
+.blue{ 
+    background: linear-gradient(-50deg, black, black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black, #0004ff); 
+
+}
+.red{ 
+    background: linear-gradient(-50deg, black, black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black, #00ffff); 
+}
+.green{ 
+    background: linear-gradient(-50deg, black, black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black,black, #09ff00); 
+}
+
+
+
+.quick-title{
+
+    color:#9b9b9b;
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    margin-bottom:18px;
+
+}
+
+
+
+.quick-photo{
+
+    width:80px;
+
+    height:85px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+
+
+.club-big-logo{
+
+    width:85px;
+
+    height:85px;
+
+    object-fit:contain;
+
+}
+
+
+
+.quick-card h3{
+
+    margin:18px 0 10px;
+
+}
+
+
+
+.quick-team{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#bbb;
+
+}
+
+
+
+.quick-team img{
+
+    width:22px;
+
+}
+
+
+
+.quick-number{
+
+    margin-top:22px;
+
+    font-size:30px;
+
+    font-weight:900;
+
+}
+
+
+
+/* =====================================================
+                    TABS
+===================================================== */
+
+.tabs{
+
+    display:flex;
+
+    gap:14px;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+.tab-btn{
+
+    padding:14px 24px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#161616;
+
+    color:#9c9c9c;
+
+    cursor:pointer;
+
+    font-weight:800;
+
+    transition:.25s;
+
+}
+
+
+
+.tab-btn:hover{
+
+    background:#202020;
+
+    color:white;
+
+}
+
+
+
+.tab-btn.active{
+
+    background:#006dff;
+
+    color:white;
+
+}
+
+
+
+/* =====================================================
+                    TABLE
+===================================================== */
+
+.premium-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:black;
+
+    color:white;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+
+}
+
+
+
+.premium-table th{
+
+    background:black;
+
+    color:#9d9d9d;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    padding:18px;
+
+    text-align:left;
+
+}
+
+.rank-title,
+.goals-title,
+.apps-title{
+
+    text-align:center;
+
+}
+
+
+
+
+
+
+.premium-table td{
+
+    padding:18px;
+
+    border-bottom:1px solid black;
+
+}
+
+
+
+
+.premium-table tbody tr{
+
+    transition:.3s;
+
+}
+
+
+
+.premium-table tbody tr:hover{
+
+    background:#181818;
+
+}
+
+/* =====================================================
+                PLAYER CARD
+===================================================== */
+
+.player-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+
+.player-card img{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    margin-right:5px;
+
+}
+
+
+
+.player-card h4{
+
+    margin:0;
+
+}
+
+
+
+.player-card small{
+
+    color:#9d9d9d;
+
+}
+
+
+
+/* =====================================================
+                CLUB CARD
+===================================================== */
+
+.club-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+.club-card img{
+
+    width:26px;
+
+}
+
+
+
+/* =====================================================
+                BADGES
+===================================================== */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:46px;
+
+    padding:8px 12px;
+
+    border-radius:12px;
+
+    font-weight:900;
+
+}
+
+
+
+.badge.gold{
+
+    background: linear-gradient(-45deg, black, black,black,black,black, #ff0000);
+
+}
+
+
+
+.badge.blue{
+
+    background: linear-gradient(-45deg, black, black,black,black,black, #00e1ff);
+
+}
+
+
+
+.badge.red{
+
+    background: linear-gradient(-45deg, black, black,black,black,black, #ff5252);
+
+}
+
+
+
+.badge.yellow{
+
+    background: linear-gradient(-45deg, black, black,black,black,black, #eeff00);
+
+    color:black;
+
+}
+
+
+
+.badge.green{
+
+    background: linear-gradient(-45deg, black, black,black,black,black, #00e600);
+
+}
+
+
+
+
+/* =====================================================
+                CLUB GRID
+===================================================== */
+
+.club-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:22px;
+
+}
+
+
+
+.club-box{
+
+    background:black;
+
+    color:white;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.3s;
+
+}
+
+
+
+.club-box:hover{
+
+    transform:translateY(-6px);
+
+}
+
+
+
+.club-head{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+
+.club-head img{
+
+    width:60px;
+
+}
+
+
+
+.club-stat{
+
+    margin-top:20px;
+
+    font-size:32px;
+
+    font-weight:900;
+
+}
+
+
+
+/* =====================================================
+                TAB CONTENT
+===================================================== */
+
+.tab-content{
+
+    display:none;
+
+}
+
+.tab-content.active{
+
+    display:block;
+
+}
+
+
+
+/* =====================================================
+                RESPONSIVE
+===================================================== */
+
+@media(max-width:1200px){
+
+.quick-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:800px){
+
+.hero{
+
+flex-direction:column;
+gap:20px;
+
+}
+
+.quick-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.club-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+
+</style>
+
+
+
+
+
+
+<script>
+
+document.querySelectorAll('.tab-btn[data-tab]').forEach(function (btn) {
+
+    btn.addEventListener('click', function () {
+
+        document.querySelectorAll('.tab-btn[data-tab]').forEach(function (b) {
+            b.classList.remove('active');
+        });
+
+        document.querySelectorAll('.tab-content').forEach(function (section) {
+            section.classList.remove('active');
+        });
+
+        btn.classList.add('active');
+
+        document.getElementById(btn.dataset.tab).classList.add('active');
+
+    });
+
+});
+
+</script>

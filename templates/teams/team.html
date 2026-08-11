@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+    <h1>{{ team.name }}</h1>
+    <p>{{ team.logo.url }}</p>
+    <img src="{{ team.logo.url }}" width="60">
+    
+    <p>{{ team.content }}</p>
+    <p>Founded: {{ team.founded }}</p>
+    <p>Category: {{ team.category }}</p>
+    
+{% endblock content %}
+
+

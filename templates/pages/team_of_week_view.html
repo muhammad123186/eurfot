@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width:600px;margin:40px auto;padding:20px;font-family:Arial;color:white;">
+
+    <h2 style="text-align:center;">
+        تشكيلة {{ fan_team.user.username }} - الجولة {{ matchday }}
+    </h2>
+
+    {% regroup players by position_group as grouped_players %}
+
+    {% for group in grouped_players %}
+
+        <h3 style="margin-top:20px;color:#00ff88;">{{ group.grouper }}</h3>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+            {% for player in group.list %}
+
+                <div style="display:flex;align-items:center;gap:10px;background:#111;padding:10px;border-radius:8px;">
+
+                    <img src="{{ player.team_logo }}" width="20">
+
+                    <span>{{ player.player_name }}</span>
+
+                    <span style="color:#888;font-size:12px;margin-right:auto;">{{ player.team_name }}</span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endfor %}
+
+    <div style="text-align:center;margin-top:20px;">
+        <a href="{% url 'team_of_week_form' code matchday %}" style="color:#00ff88;">
+            عدّل تشكيلتك
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

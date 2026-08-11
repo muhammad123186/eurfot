@@ -1,0 +1,622 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="site-header">
+
+    <div class="logo-box">
+
+        <h1>EURO<span>FOR</span></h1>
+
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'profile' %}" class="profile-btn">
+                👤 {{ user.username }}
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'signup' %}" class="signup-btn">
+                Sign Up
+            </a>
+
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="standings-page">
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <div class="hero-left">
+
+            <img class="league-logo" src="{{ competition.logo }}">
+
+            <div>
+                <h1>{{ competition.name }}</h1>
+                <p>Season {{ season }}</p>
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+
+            <div class="live-box">
+                <span class="live-dot"></span>
+                LIVE STANDINGS
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= TABLE ================= -->
+
+    <table class="premium-table standings-full">
+
+        <thead>
+            <tr>
+                <th class="rank-title">#</th>
+                <th class="player-title">TEAM</th>
+                <th class="apps-title">P</th>
+                <th class="apps-title">W</th>
+                <th class="apps-title">D</th>
+                <th class="apps-title">L</th>
+                <th class="apps-title">GF</th>
+                <th class="apps-title">GA</th>
+                <th class="apps-title">GD</th>
+                <th class="goals-title">PTS</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in live_table %}
+
+            <tr class="
+                {% if forloop.counter <= 4 %}zone-ucl{% endif %}
+                {% if forloop.counter == 5 %}zone-uel{% endif %}
+                {% if forloop.revcounter <= 3 %}zone-relegation{% endif %}
+            ">
+            <td class="place">{{ forloop.counter }}</td>
+                <td>
+                    <div class="club-card">
+                        <img src="{{ row.team.logo }}">
+                        <a href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
+                    </div>
+                </td>
+
+                <td>{{ row.all.played }}</td>
+                <td>{{ row.all.win }}</td>
+                <td>{{ row.all.draw }}</td>
+                <td>{{ row.all.lose }}</td>
+                <td>{{ row.all.goals.for }}</td>
+                <td>{{ row.all.goals.against }}</td>
+                <td>{{ row.goalsDiff }}</td>
+
+                <td>
+                    <span class="badge gold">{{ row.points }}</span>
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- ================= LEGEND ================= -->
+
+    <div class="legend">
+
+        <div class="legend-item">
+            <span class="legend-dot ucl"></span>
+            Champions League
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-dot uel"></span>
+            Europa League
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-dot relegation"></span>
+            Relegation
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-ball{
+    font-size:40px;
+    filter:drop-shadow(0 0 12px rgb(17, 0, 255));
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.profile-btn,
+.signup-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:black;
+    white-space:nowrap;
+    color:white;
+    padding:10px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:14px;
+    margin-right:8px;
+    transition:.25s;
+    box-shadow:0 15px 30px rgba(0,0,0,.7), inset 2px 2px 10px black;
+}
+
+.profile-btn{
+    border:2px solid rgba(0, 140, 255, 0.8);
+}
+
+.signup-btn{
+    border:2px solid rgba(255, 0, 0, 0.774);
+}
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+    transition:.25s;
+}
+
+.search-box button:hover{
+    background:red;
+}
+
+
+/* =====================================================
+                    PAGE
+===================================================== */
+
+body{
+    margin:0;
+    background: linear-gradient(-45deg, black, black, black, black, black);
+}
+
+.standings-page{
+
+    width:min(1550px,94%);
+    margin:40px auto;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+
+}
+
+
+/* =====================================================
+                    HERO
+===================================================== */
+
+.hero{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:30px 40px;
+
+    border-radius:26px;
+
+    background: linear-gradient(135deg, #111, #1b1b1b);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow: 0 20px 45px rgba(0,0,0,.45);
+
+    margin-bottom:35px;
+
+}
+
+.hero-left{
+    display:flex;
+    align-items:center;
+    gap:22px;
+}
+
+.league-logo{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+}
+
+.hero h1{
+    margin:0;
+    font-size:32px;
+    font-weight:500;
+}
+
+.hero p{
+    margin-top:8px;
+    color:#999;
+}
+
+.live-box{
+    padding:12px 20px;
+    border-radius:40px;
+    background:#181818;
+    border:1px solid rgba(255,255,255,.08);
+    font-size:13px;
+    letter-spacing:2px;
+}
+
+.live-dot{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    background:#00ff4c;
+    border-radius:50%;
+    margin-right:10px;
+}
+
+
+/* =====================================================
+                    TABLE
+===================================================== */
+
+.premium-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:black;
+
+    color:white;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+}
+
+.premium-table th{
+
+    background:black;
+
+    color:#9d9d9d;
+
+    font-size:14px;
+
+    letter-spacing:1px;
+
+    padding:18px;
+
+    text-align:left;
+
+}
+
+
+
+
+.goals-title{
+
+    transform:translatex(70px);
+
+}
+
+
+.rank-title{
+
+    transform:translatex(39px);
+
+}
+
+
+
+.player-title{
+
+    transform:translatex(33px);
+
+}
+
+
+
+
+.apps-title{
+
+    transform:translatex(28px);
+    
+}
+
+
+
+
+.premium-table td{
+
+    padding:18px;
+
+    border-bottom:1px solid #161616;
+
+    text-align:center;
+
+}
+
+.premium-table tbody tr{
+
+    transition:.3s;
+
+}
+
+.premium-table tbody tr:hover{
+
+    background:#181818;
+
+}
+
+.place{
+
+    font-size:18px;
+    font-weight:500;
+
+}
+
+
+/* =====================================================
+                CLUB CARD
+===================================================== */
+
+.club-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    justify-content:flex-start;
+
+}
+
+.club-card img{
+
+    width:34px;
+
+    height:34px;
+
+    object-fit:contain;
+
+    filter: drop-shadow(0 0 8px rgba(255,255,255,.15));
+
+}
+
+.club-card a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+.club-card a:hover{
+
+    color:#ff0000;
+
+}
+
+
+/* =====================================================
+                BADGES
+===================================================== */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:46px;
+
+    padding:8px 12px;
+
+    border-radius:12px;
+
+    font-weight:300;
+
+    font-size:18px;
+
+}
+
+.badge.gold{
+
+    color:#ff0000;
+
+}
+
+
+/* =====================================================
+                ZONE HIGHLIGHTING
+===================================================== */
+
+.zone-ucl{
+
+    border-left:4px solid rgb(4, 0, 255);
+
+}
+
+.zone-uel{
+
+    border-left:4px solid #ff4800;
+
+}
+
+.zone-relegation{
+
+    border-left:4px solid #ff0000;
+
+}
+
+
+/* =====================================================
+                LEGEND
+===================================================== */
+
+.legend{
+
+    display:flex;
+
+    gap:30px;
+
+    margin-top:25px;
+
+    padding:20px 30px;
+
+    background:#111;
+
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:#bbb;
+
+    font-size:13px;
+
+}
+
+.legend-dot{
+
+    width:12px;
+
+    height:12px;
+
+    border-radius:3px;
+
+}
+
+.legend-dot.ucl{ background:#0014c8; }
+.legend-dot.uel{ background:#ff6600; }
+.legend-dot.relegation{ background:#ff0000;}
+
+
+/* =====================================================
+                RESPONSIVE
+===================================================== */
+
+@media(max-width:800px){
+
+    .hero{
+        flex-direction:column;
+        gap:20px;
+    }
+
+    .premium-table th,
+    .premium-table td{
+        padding:12px 8px;
+        font-size:12px;
+    }
+
+    .club-card img{
+        width:26px;
+        height:26px;
+    }
+
+    .legend{
+        flex-direction:column;
+        gap:12px;
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,2619 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<body style="background: linear-gradient(-45deg, black, black,black,black,black,black);">
+
+
+<div style="max-width:900px;margin:auto;padding:20px;font-family:Arial;">
+
+    <!-- ================= TEAM CARD ================= -->
+
+    <div style="
+    background: linear-gradient(-20deg,#111,rgba(0, 26, 255, 0.384)); 
+    color:white;
+    border-radius:15px 15px 0 0;
+    padding:30px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+">
+
+    {% if team.id %}
+
+    <a href="{% url 'compare_team' team.id %}" class="compare-team-btn" title="Compare Team">
+
+        Compare
+
+    </a>
+
+    {% endif %}
+
+
+    <p><img src="{{ team.logo }}" width="100" style="margin-bottom:20px;"></p>
+    {{ team.name }}
+
+</div>
+
+
+    <div class="team-tabs">
+
+        <button class="tab-btn active" data-tab="overview">overview</button>
+        <button class="tab-btn" data-tab="season-fixtures">Fixtures</button>
+        <button class="tab-btn" data-tab="standings">Title</button>
+        <button class="tab-btn" data-tab="squad">Squad</button>
+        <button class="tab-btn" data-tab="team-stats">Team Statistics</button>
+        <button class="tab-btn" data-tab="player-stats">Team Leaders</button>
+        <button class="tab-btn" data-tab="trophies">Trophies</button>
+
+
+   
+    
+
+   
+ 
+       
+
+    </div>
+
+    <br>
+
+    <div id="overview" class="tab-content">
+
+    <div class="club-overview">
+
+
+    <div class="overview-card">
+        <div class="overview-icon"></div>
+        <div class="overview-title">Founded</div>
+        <div class="overview-value">
+            {{ team.founded|default:"-" }}
+        </div>
+    </div>
+
+
+    <div class="overview-card">
+        <div class="overview-icon"></div>
+        <div class="overview-title">City</div>
+        <div class="overview-value">
+            {{ venue.city|default:"Unknown" }}
+        </div>
+    </div>
+
+
+    <div class="overview-card">
+        <div class="overview-icon"></div>
+        <div class="overview-title">Stadium</div>
+        <div class="overview-value">
+            {{ venue.name|default:"Unknown" }}
+        </div>
+    </div>
+
+    <div class="overview-card">
+        <div class="overview-icon"></div>
+        <div class="overview-title">Capacity</div>
+        <div class="overview-value">
+            {{ venue.capacity|default:"-" }}
+        </div>
+    </div>
+
+
+
+    {% if next_match %}
+
+<div class="next-match-card">
+
+    <div class="next-match-header">
+        Next Match
+    </div>
+
+    <div class="next-match-league">
+
+        <img src="{{ next_match.league.logo }}">
+        <span>{{ next_match.league.name }}</span>
+
+    </div>
+
+    <div class="next-match-teams">
+
+        <div class="team-side">
+            <img src="{{ next_match.teams.home.logo }}">
+            <h3>{{ next_match.teams.home.name }}</h3>
+        </div>
+
+        <div class="vs-box">
+
+            <span>VS</span>
+
+            <small>
+                {{ next_match.fixture.date|slice:"0:10" }}
+            </small>
+
+            <div class="match-info">
+    <div>🕒 {{ next_match.fixture.date|slice:"11:16" }}</div>
+    <div>🏟 {{ venue.name }}</div>
+</div>
+
+        </div>
+
+        <div class="team-side">
+            <img src="{{ next_match.teams.away.logo }}">
+            <h3>{{ next_match.teams.away.name }}</h3>
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<!-- ================= TEAM LEADERS PREVIEW ================= -->
+
+{% if team_leaders %}
+
+<div class="leaders-preview">
+
+    <div class="leaders-preview-title">
+        Team Leaders
+    </div>
+
+
+    <div class="leaders-preview-grid">
+
+
+        <!-- Top Scorer -->
+
+        <div class="preview-card">
+
+            <div class="preview-label">
+                ⚽ Top Scorer
+            </div>
+
+            <img src="{{ team_leaders.top_scorer.photo }}">
+
+            <h3>
+                {{ team_leaders.top_scorer.name }}
+            </h3>
+
+            <span>
+                {{ team_leaders.top_scorer.goals }} Goals
+            </span>
+
+        </div>
+
+
+
+        <!-- Top Assists -->
+
+        <div class="preview-card">
+
+            <div class="preview-label">
+                🎯 Top Assists
+            </div>
+
+            <img src="{{ team_leaders.top_assists.photo }}">
+
+            <h3>
+                {{ team_leaders.top_assists.name }}
+            </h3>
+
+            <span>
+                {{ team_leaders.top_assists.assists }} Assists
+            </span>
+
+        </div>
+
+
+
+
+        <!-- Highest Rating -->
+
+        <div class="preview-card">
+
+            <div class="preview-label">
+                ⭐ Highest Rating
+            </div>
+
+            <img src="{{ team_leaders.highest_rating.photo }}">
+
+            <h3>
+                {{ team_leaders.highest_rating.name }}
+            </h3>
+
+            <span>
+                {{ team_leaders.highest_rating.rating }}
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <a href="#player-stats" class="leaders-link">
+        View Full Team Leaders →
+    </a>
+
+
+</div>
+
+{% endif %}
+
+
+<!-- ================= RECENT RESULTS ================= -->
+
+{% if last_matches %}
+
+<div class="recent-results">
+
+    <div class="recent-title">
+        Recent Results
+    </div>
+
+
+    <div class="results-list">
+
+
+    {% for game in last_matches %}
+
+
+        <div class="result-card">
+
+
+            <div class="result-status">
+
+                {% if game.teams.home.id == team.id %}
+
+                    {% if game.goals.home > game.goals.away %}
+                        <span class="win">W</span>
+
+                    {% elif game.goals.home == game.goals.away %}
+                        <span class="draw">D</span>
+
+                    {% else %}
+                        <span class="loss">L</span>
+
+                    {% endif %}
+
+
+                {% else %}
+
+
+                    {% if game.goals.away > game.goals.home %}
+                        <span class="win">W</span>
+
+                    {% elif game.goals.away == game.goals.home %}
+                        <span class="draw">D</span>
+
+                    {% else %}
+                        <span class="loss">L</span>
+
+                    {% endif %}
+
+
+                {% endif %}
+
+            </div>
+
+
+
+            <div class="result-team home">
+
+                <img src="{{ game.teams.home.logo }}">
+
+                <span>
+                    {{ game.teams.home.name }}
+                </span>
+
+            </div>
+
+
+
+            <div class="result-score">
+
+                <strong>
+                    {{ game.goals.home }}
+                    -
+                    {{ game.goals.away }}
+                </strong>
+
+                <small>
+                    {{ game.league.name }}
+                </small>
+
+            </div>
+
+
+
+            <div class="result-team away">
+
+                <img src="{{ game.teams.away.logo }}">
+
+                <span>
+                    {{ game.teams.away.name }}
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+    {% endfor %}
+
+
+    </div>
+
+
+</div>
+
+{% endif %}
+
+
+
+
+</div>
+</div>
+
+
+
+
+    <!-- ================= SEASON FIXTURES ================= -->
+   <div id="season-fixtures" class="tab-content" style="display:none;">
+
+    <h2 class="fixtures-title">
+        Season Fixtures
+    </h2>
+
+    <div class="fixtures-list">
+
+    {% for game in season_fixtures %}
+
+        <div class="fixture-card">
+
+            <!-- League -->
+            <div class="fixture-league">
+                <img src="{{ game.league.logo }}">
+            </div>
+
+            <!-- Home -->
+            <div class="fixture-home">
+                <img src="{{ game.teams.home.logo }}">
+                <span>{{ game.teams.home.name }}</span>
+            </div>
+
+            <!-- Score -->
+            <div class="fixture-score">
+                {{ game.goals.home }} - {{ game.goals.away }}
+            </div>
+
+            <!-- Away -->
+            <div class="fixture-away">
+                <span>{{ game.teams.away.name }}</span>
+                <img src="{{ game.teams.away.logo }}">
+            </div>
+
+            <!-- Date -->
+            <div class="fixture-date">
+                {{ game.fixture.date|slice:"0:10" }}
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty-fixtures">
+            No Fixtures Available
+        </div>
+
+    {% endfor %}
+
+    </div>
+
+</div>
+    
+    <!-- ================= STANDINGS ================= -->
+
+    <div id="standings" class="tab-content" style="display:none;">
+
+
+    <table class="standings-table">
+
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>Team</th>
+
+                <th>P</th>
+
+                <th>W</th>
+
+                <th>D</th>
+
+                <th>L</th>
+
+                <th>GF</th>
+
+                <th>GA</th>
+
+                <th>GD</th>
+
+                <th>Pts</th>
+
+            </tr>
+
+        </thead>
+
+
+
+        <tbody>
+
+
+        {% for row in standings %}
+
+
+            <tr>
+
+
+                <td>
+                    {{ row.rank }}
+                </td>
+
+
+
+                <td>
+
+
+                    <div class="standing-team">
+
+
+                        <img 
+                        src="{{ row.team.logo }}"
+                        >
+
+
+                        <span>
+                            {{ row.team.name }}
+                        </span>
+
+
+                    </div>
+
+
+                </td>
+
+
+
+                <td>
+                    {{ row.all.played }}
+                </td>
+
+
+                <td>
+                    {{ row.all.win }}
+                </td>
+
+
+                <td>
+                    {{ row.all.draw }}
+                </td>
+
+
+                <td>
+                    {{ row.all.lose }}
+                </td>
+
+
+                <td>
+                    {{ row.all.goals.for }}
+                </td>
+
+
+                <td>
+                    {{ row.all.goals.against }}
+                </td>
+
+
+                <td>
+                    {{ row.goalsDiff }}
+                </td>
+
+
+                <td>
+                    {{ row.points }}
+                </td>
+
+
+
+            </tr>
+
+
+        {% endfor %}
+
+
+        </tbody>
+
+
+    </table>
+
+
+</div>
+
+
+
+
+
+
+
+<div id="trophies" class="tab-content"style="display:none;">
+
+
+    <div class="trophies-box">
+
+
+        <h2 class="section-title">
+        </h2>
+
+
+
+        {% if trophies %}
+
+
+        <div class="trophies-grid">
+
+
+            {% for trophy in trophies %}
+
+
+            <div class="trophy-card">
+
+
+                {% if trophy.logo %}
+
+                <img
+                    src="{{ trophy.logo }}"
+                    alt="{{ trophy.name }}"
+                    class="trophy-logo"
+                >
+
+                {% else %}
+
+                <div class="trophy-icon">
+                    🏆
+                </div>
+
+                {% endif %}
+
+
+
+                <div class="trophy-info">
+
+
+                    <h3>
+                        {{ trophy.name }}
+                    </h3>
+
+
+
+                    <span>
+                        {{ trophy.count }} Titles
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+
+        {% else %}
+
+
+        <div class="no-trophies">
+
+            No trophies found.
+
+        </div>
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ================= SQUAD ================= -->
+<div id="squad" class="tab-content"style="display:none;">
+
+<div class="squad-section">
+
+
+    <!-- GOALKEEPERS -->
+
+    <h2 class="position-title">
+        Goalkeepers
+    </h2>
+
+
+    <div class="squad-grid">
+
+
+        {% for player in goalkeepers %}
+
+
+        <a href="{% url 'player_detail' player.id %}" class="player-card">
+
+
+            <div class="player-photo">
+
+                <img src="{{ player.photo }}" alt="{{ player.name }}">
+
+            </div>
+
+
+            <div class="player-name">
+
+                {{ player.name }}
+
+            </div>
+
+
+            <div class="player-position">
+
+                {{ player.position }}
+
+            </div>
+
+
+            <div class="player-footer">
+
+                <span class="player-number">
+                    {{ player.number }}
+                </span>
+
+            </div>
+
+
+        </a>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+
+
+
+    <!-- DEFENDERS -->
+
+    <h2 class="position-title">
+        Defenders
+    </h2>
+
+
+    <div class="squad-grid">
+
+
+        {% for player in defenders %}
+
+
+        <a href="{% url 'player_detail' player.id %}" class="player-card">
+
+
+            <div class="player-photo">
+
+                <img src="{{ player.photo }}" alt="{{ player.name }}">
+
+            </div>
+
+
+            <div class="player-name">
+
+                {{ player.name }}
+
+            </div>
+
+
+            <div class="player-position">
+
+                {{ player.position }}
+
+            </div>
+
+
+            <div class="player-footer">
+
+                <span class="player-number">
+                    {{ player.number }}
+                </span>
+
+            </div>
+
+
+        </a>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- MIDFIELDERS -->
+
+    <h2 class="position-title">
+        Midfielders
+    </h2>
+
+
+    <div class="squad-grid">
+
+
+        {% for player in midfielders %}
+
+
+        <a href="{% url 'player_detail' player.id %}" class="player-card">
+
+
+            <div class="player-photo">
+
+                <img src="{{ player.photo }}" alt="{{ player.name }}">
+
+            </div>
+
+
+            <div class="player-name">
+
+                {{ player.name }}
+
+            </div>
+
+
+            <div class="player-position">
+
+                {{ player.position }}
+
+            </div>
+
+
+            <div class="player-footer">
+
+                <span class="player-number">
+                    {{ player.number }}
+                </span>
+
+            </div>
+
+
+        </a>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- ATTACKERS -->
+
+    <h2 class="position-title">
+        Attackers
+    </h2>
+
+
+    <div class="squad-grid">
+
+
+        {% for player in attackers %}
+
+
+        <a href="{% url 'player_detail' player.id %}" class="player-card">
+
+
+            <div class="player-photo">
+
+                <img src="{{ player.photo }}" alt="{{ player.name }}">
+
+            </div>
+
+
+            <div class="player-name">
+
+                {{ player.name }}
+
+            </div>
+
+
+            <div class="player-position">
+
+                {{ player.position }}
+
+            </div>
+
+
+            <div class="player-footer">
+
+                <span class="player-number">
+                    {{ player.number }}
+                </span>
+
+            </div>
+
+
+        </a>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</div>
+</div>
+
+
+
+
+
+<!-- ================= TEAM STATISTICS ================= -->
+<div id="team-stats" class="tab-content"style="display:none;">
+
+    <div class="team-stats-grid">
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Matches</div>
+            <h2 class = "team-stat-value">{{ team_statistics.played }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Wins</div>
+            <h2 class = "team-stat-value">{{ team_statistics.wins }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Draws</div>
+            <h2 class = "team-stat-value">{{ team_statistics.draws }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Losses</div>
+            <h2 class = "team-stat-value">{{ team_statistics.losses }}</h2>
+        </div>
+
+        <div class="team-stat-card">
+            <div class="leader-title">Home Wins</div>
+            <h2 class = "team-stat-value">{{ team_statistics.home_wins }}</h2>
+        </div>
+
+        <div class="team-stat-card">
+            <div class="leader-title">Away Wins</div>
+            <h2 class = "team-stat-value">{{ team_statistics.away_wins }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Win Rate</div>
+            <h2 class = "team-stat-value">{{ team_statistics.win_rate }}%</h2>
+        </div>
+
+        <div class="team-stat-card">
+            <div class="leader-title">Goals Scored</div>
+            <h2 class="team-stat-value">
+    {{ team_statistics.goals_for }}
+</h2>
+        </div>
+
+        <div class="team-stat-card">
+            <div class="leader-title"> Goals Conceded</div>
+            <h2 class = "team-stat-value">
+                {{ team_statistics.goals_against }}</h2>
+        </div>
+
+        
+        <div class="team-stat-card">
+            <div class="leader-title">Clean Sheet</div>
+            <h2 class = "team-stat-value">{{ team_statistics.clean_sheets }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Avg Goals</div>
+            <h2 class = "team-stat-value">{{ team_statistics.average_goals }}</h2>
+        </div>
+
+
+        <div class="team-stat-card">
+            <div class="leader-title">Biggest Win</div>
+            <h2 class = "team-stat-value">+{{ team_statistics.biggest_win }}</h2>
+        </div>
+
+        <div class="team-stat-card">
+            <div class="leader-title">Big Defeat</div>
+            <h2 class = "team-stat-value">{{ team_statistics.biggest_loss }}</h2>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+<!-- ================= TEAM LEADERS ================= -->
+<div id="player-stats" class="tab-content"style="display:none;">
+
+<div class="leaders-grid">
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Top Scorer
+        </div>
+
+        <img src="{{ team_leaders.top_scorer.photo }}">
+
+        <h3>{{ team_leaders.top_scorer.name }}</h3>
+
+        <span>
+            {{ team_leaders.top_scorer.goals }} Goals
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Top Assists
+        </div>
+
+        <img src="{{ team_leaders.top_assists.photo }}">
+
+        <h3>{{ team_leaders.top_assists.name }}</h3>
+
+        <span>
+            {{ team_leaders.top_assists.assists }} Assists
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            best Rating
+        </div>
+
+        <img src="{{ team_leaders.highest_rating.photo }}">
+
+        <h3>{{ team_leaders.highest_rating.name }}</h3>
+
+        <span>
+            {{ team_leaders.highest_rating.rating }}
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Minutes
+        </div>
+
+        <img src="{{ team_leaders.most_minutes.photo }}">
+
+        <h3>{{ team_leaders.most_minutes.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_minutes.minutes }} Min
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Most Shots
+        </div>
+
+        <img src="{{ team_leaders.most_shots.photo }}">
+
+        <h3>{{ team_leaders.most_shots.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_shots.shots }} Shots
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Shots On Target
+        </div>
+
+        <img src="{{ team_leaders.most_shots_on_target.photo }}">
+
+        <h3>{{ team_leaders.most_shots_on_target.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_shots_on_target.shots_on }} On Target
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Key Passes
+        </div>
+
+        <img src="{{ team_leaders.most_key_passes.photo }}">
+
+        <h3>{{ team_leaders.most_key_passes.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_key_passes.key_passes }}
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Passes
+        </div>
+
+        <img src="{{ team_leaders.most_passes.photo }}">
+
+        <h3>{{ team_leaders.most_passes.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_passes.passes }}
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Yellow Cards
+        </div>
+
+        <img src="{{ team_leaders.most_yellow_cards.photo }}">
+
+        <h3>{{ team_leaders.most_yellow_cards.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_yellow_cards.yellow }}
+        </span>
+
+    </div>
+
+
+    <div class="leader-card">
+
+        <div class="leader-title">
+            Red Cards
+        </div>
+
+        <img src="{{ team_leaders.most_red_cards.photo }}">
+
+        <h3>{{ team_leaders.most_red_cards.name }}</h3>
+
+        <span>
+            {{ team_leaders.most_red_cards.red }}
+        </span>
+
+    </div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<!-- ================= CSS ================= -->
+
+<style>
+
+.team-tabs{
+    display:flex;
+    background:#1a1a1a;
+    border-bottom:3px solid #333;
+}
+
+.tab-btn{
+    flex:1;
+    padding:14px;
+    background:black;
+    border:none;
+    color:#aaa;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+    transition:0.25s;
+}
+
+.tab-btn:hover{
+    background:rgb(255, 0, 0);
+    color:white;
+}
+
+.tab-btn.active{
+    background:rgb(98, 0, 255);
+    color:white;
+}
+
+
+
+
+
+/* =====================================================
+   OVERVIEW LAYOUT
+===================================================== */
+
+.club-overview{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-top:20px;
+
+}
+
+
+
+.compare-team-btn{
+
+    position:absolute;
+
+    top:20px;
+
+    left:20px;
+
+    background:#ff0000;
+
+    color:white;
+
+    padding:9px 18px;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    text-decoration:none;
+
+    letter-spacing:.5px;
+
+    transition:.25s;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.3);
+
+    z-index:5;
+
+    margin-left: 85%;
+
+}
+
+.compare-team-btn:hover{
+
+    background:#ff0000;
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+/* =====================================================
+   OVERVIEW INFO CARDS
+===================================================== */
+
+.overview-card{
+
+    background:linear-gradient(145deg,#161616,#090909);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:20px;
+
+    padding:20px 15px;
+
+    min-height:140px;
+
+    text-align:center;
+
+    transition:.35s;
+
+}
+
+.overview-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#ff0000;
+
+    box-shadow:0 12px 30px rgba(25, 0, 255, 0.18);
+
+}
+
+.overview-icon{
+
+    font-size:32px;
+
+    margin-bottom:12px;
+
+}
+
+.overview-title{
+
+    color:#8f8f8f;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+}
+
+.overview-value{
+
+    color:#fff;
+
+    font-size:18px;
+
+    font-weight:900;
+
+}
+
+
+/* =====================================================
+   RECENT RESULTS
+===================================================== */
+
+.recent-results{
+
+    grid-column:1/-1;
+
+    margin-top:10px;
+
+    padding:30px;
+
+    background:linear-gradient(145deg,#151515,#080808);
+
+    border-radius:22px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    min-height:470px;
+
+    width:94%;
+
+    margin-left: 0%;
+
+}
+
+.recent-title{
+
+    text-align:center;
+
+    color:#fff;
+
+    font-size:30px;
+
+    font-weight:800;
+
+    margin-bottom:30px;
+
+    margin-left:8%;
+
+}
+
+.results-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+.result-card{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:18px;
+
+    padding:14px 22px;
+
+    background:linear-gradient(145deg,#1b1b1b,#101010);
+
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.3s;
+
+}
+
+.result-card:hover{
+
+    transform:translateX(6px);
+
+}
+
+.result-status span{
+
+    width:36px;
+
+    height:36px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:50%;
+
+    color:white;
+
+    font-weight:800;
+
+}
+
+.win{
+
+    background:#00c853;
+
+}
+
+.draw{
+
+    background:#ffb300;
+
+}
+
+.loss{
+
+    background:#e53935;
+
+}
+
+.result-team{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content: flex-start;
+
+    gap:10px;
+
+    width:220px;
+
+    color:#fff;
+
+    font-weight:700;
+
+
+    
+
+}
+
+.result-team img{
+
+    width:36px;
+
+    height:36px;
+
+    object-fit:contain;
+
+}
+
+.result-team.away{
+
+    justify-content:flex-end;
+
+}
+
+.result-score{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    min-width:100px;
+
+}
+
+.result-score strong{
+
+    color:#fff;
+
+    font-size:22px;
+
+    font-weight:900;
+
+}
+
+.result-score small{
+
+    color:#888;
+
+    font-size:12px;
+
+    margin-top:4px;
+
+}
+
+
+/* =====================================================
+   TEAM LEADERS
+===================================================== */
+
+.leaders-preview{
+
+    grid-column:1/-1;
+
+    margin-top:10px;
+
+    padding:30px;
+
+    background:linear-gradient(145deg,#151515,#080808);
+
+    border-radius:22px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    min-height:470px;
+
+}
+
+.leaders-preview-title{
+
+    text-align:center;
+
+    color:#fff;
+
+    font-size:30px;
+
+    font-weight:900;
+
+    margin-bottom:30px;
+
+}
+
+.leaders-preview-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:22px;
+
+}
+
+.preview-card{
+
+    background:linear-gradient(145deg,#1b1b1b,#101010);
+
+    border-radius:20px;
+
+    padding:25px 18px;
+
+    text-align:center;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.35s;
+
+}
+
+.preview-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#00d9ff;
+
+    box-shadow:0 12px 30px rgba(0,217,255,.18);
+
+}
+
+.preview-label{
+
+    color:#9f9f9f;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    margin-bottom:15px;
+
+}
+
+.preview-card img{
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid #222;
+
+    margin-bottom:16px;
+
+}
+
+.preview-card h3{
+
+    color:white;
+
+    font-size:19px;
+
+    margin:6px 0 12px;
+
+    font-weight:800;
+
+}
+
+.preview-card span{
+
+    display:inline-block;
+
+    padding:8px 18px;
+
+    border-radius:25px;
+
+    background:linear-gradient(135deg,white);
+
+    color:#111;
+
+    font-size:13px;
+
+    font-weight:900;
+
+}
+
+.leaders-link{
+
+    display:block;
+
+    width:max-content;
+
+    margin:30px auto 0;
+
+    padding:12px 28px;
+
+    border-radius:25px;
+
+    background:linear-gradient(135deg,black);
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    transition:.3s;
+
+}
+
+.leaders-link:hover{
+
+    transform:scale(1.05);
+
+    box-shadow:0 0 20px rgba(0, 217, 255, 0);
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1000px){
+
+    .club-overview{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+    .leaders-preview-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .club-overview{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .result-card{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+    }
+
+    .result-team{
+
+        width:auto;
+
+    }
+
+}
+
+
+
+
+
+/* ===============================
+        SEASON FIXTURES
+================================ */
+.fixtures-title{
+    text-align:center;
+    color:white;
+    font-size:30px;
+    margin-bottom:30px;
+}
+
+.fixtures-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.fixture-card{
+    display:grid;
+    grid-template-columns:60px 260px 110px 260px 120px;
+    align-items:center;
+    background:#141414;
+    border:1px solid #2b2b2b;
+    border-radius:16px;
+    padding:12px 20px;
+    color:white;
+}
+
+.fixture-league{
+    display:flex;
+    justify-content:center;
+}
+
+.fixture-league img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+}
+
+/* HOME = الشعار ثم الاسم */
+.fixture-home{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    font-weight:700;
+    margin-left: 30%;
+}
+
+.fixture-home img{
+    width:32px;
+    height:32px;
+    object-fit:contain;
+}
+
+/* SCORE */
+.fixture-score{
+    text-align:center;
+    font-size:26px;
+    font-weight:600;
+    margin-left: 10%;
+}
+
+/* AWAY = الاسم ثم الشعار */
+.fixture-away{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    font-weight:700;
+    margin-right: 20%;
+}
+
+.fixture-away img{
+    width:32px;
+    height:32px;
+    object-fit:contain;
+}
+
+.fixture-date{
+    text-align:right;
+    color:#aaa;
+    font-size:14px;
+}
+
+.empty-fixtures{
+    background:#111;
+    color:white;
+    padding:40px;
+    border-radius:16px;
+    text-align:center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===============================
+        STANDINGS TABLE
+================================ */
+
+
+.standings-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:
+
+    linear-gradient(
+        145deg,
+        #151515,
+        #080808
+    );
+
+    color:white;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+
+
+.standings-table th{
+
+    background:#222;
+
+    padding:15px;
+
+    font-size:14px;
+
+    color:#aaa;
+
+    text-align:center;
+
+}
+
+
+
+
+.standings-table td{
+
+    padding:14px 10px;
+
+    text-align:center;
+
+    border-bottom:
+
+    1px solid rgba(255,255,255,.08);
+
+}
+
+
+
+
+
+.standings-table tr{
+
+    transition:.3s;
+
+}
+
+
+
+.standings-table tbody tr:hover{
+
+    background:#1b1b1b;
+
+}
+
+
+
+
+
+
+/* TEAM COLUMN */
+
+
+.standing-team{
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-start;
+
+    gap:12px;
+
+
+    width:200px;
+
+
+}
+
+
+
+.standing-team img{
+
+
+    width:32px;
+
+    height:32px;
+
+
+    object-fit:contain;
+
+
+}
+
+
+
+
+.standing-team span{
+
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:700;
+
+
+    white-space:nowrap;
+
+
+}
+
+   
+
+
+
+
+
+
+/* ===============================
+        TROPHIES SECTION
+================================ */
+
+.trophies-box{
+    padding: 0px 0;
+}
+
+.trophies-box .section-title{
+    text-align:center;
+    color:#ffee00;
+    font-size:28px;
+    margin-bottom:24px;
+    font-weight:800;
+    text-shadow: 0 0 15px rgb(4, 0, 255);
+}
+
+
+
+
+.trophies-grid{
+
+
+    display:grid;
+
+    grid-template-columns:repeat(3, 210px);
+
+    column-gap:90px;
+
+    row-gap:30px;
+
+    margin-top:5px;
+
+    justify-content: center;
+
+    margin-left: -70px;
+
+
+}
+
+/* Trophy Card */
+.trophy-card{
+    display:flex;
+    align-items: center;
+    width:230px;
+    height:90px ;
+    gap:16px;
+    padding:16px 20px;
+    border-radius:20px;
+    background: linear-gradient(145deg,#1a1a1a,#0a0a0a);
+    border:1px solid rgba(255,215,0,0.15);
+    transition:0.3s ease;
+}
+
+.trophy-card:hover{
+    transform:translateY(-4px);
+    border-color: rgba(255,215,0,0.4);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.1);
+}
+
+/* الشعار (صورة) */
+.trophy-logo{
+    width:50px;
+    height:50px;
+    object-fit:contain;
+    border-radius:50%;
+    background: rgba(0, 183, 255, 0.822);
+    padding:6px;
+    flex-shrink:0;
+
+}
+
+.trophy-icon{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background: linear-gradient(135deg,#fbff00,#ffb300);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    flex-shrink:0;
+    box-shadow: 0 0 15px rgba(255,215,0,0.4);
+}
+
+/* معلومات البطولة */
+.trophy-info{
+    flex:1;
+    min-width:0;
+}
+
+.trophy-info h3{
+    margin:0 0 4px;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.trophy-info span{
+    display:inline-block;
+    background:black;
+    color:white;
+    font-size:13px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:20px;
+}
+
+/* حالة عدم وجود بطولات */
+.no-trophies{
+    text-align:center;
+    color:#888;
+    padding:40px 0;
+    font-size:15px;
+}
+
+
+
+/* ================= SQUAD ================= */
+.squad-section{
+    margin-top:40px;
+}
+
+
+.position-title{
+
+    color:white;
+    font-size:26px;
+    margin:35px 0 20px;
+
+}
+
+
+
+/* 4 CARDS PER ROW */
+
+.squad-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:18px;
+
+}
+
+
+
+/* SMALL PLAYER CARD */
+
+.player-card{
+
+    background:
+    linear-gradient(145deg,#151515,#050505);
+
+    border-radius:18px;
+
+    padding:15px;
+
+    text-align:center;
+
+    text-decoration:none;
+
+    color:white;
+
+    border:1px solid #333;
+
+    transition:.3s;
+
+}
+
+
+
+.player-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+
+
+/* PLAYER IMAGE */
+
+.player-photo img{
+
+    width:85px;
+
+    height:85px;
+
+    object-fit:contain;
+
+}
+
+
+
+/* NAME */
+
+.player-name{
+
+    margin-top:12px;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+
+
+/* POSITION */
+
+.player-position{
+
+    color:#999;
+
+    font-size:13px;
+
+    margin-top:6px;
+
+}
+
+
+
+/* NUMBER */
+
+.player-footer{
+
+    margin-top:12px;
+
+}
+
+
+.player-number{
+
+    display:inline-block;
+
+    background:#000;
+
+    padding:5px 12px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+}
+
+
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+    .squad-grid{
+
+        grid-template-columns:repeat(3,1fr);
+
+    }
+
+}
+
+
+
+@media(max-width:600px){
+
+    .squad-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+
+/* ==========================================
+              TEAM STATISTICS
+========================================== */
+
+.team-stats-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(5, 120px);
+
+    column-gap:68px;
+    row-gap:30px;
+
+    margin-top:15px;
+
+    justify-content: center;
+
+    margin-left: -48px;
+
+}
+
+
+.team-stat-card{
+
+    background:#2222226b;
+
+    width:120px;
+
+    height: 100px;
+
+    color:white;
+
+    border-radius:18px;
+
+    padding:23px;
+
+    text-align:center;
+
+    transition:.3s;
+
+}
+
+
+.team-stat-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#00e5ff;
+
+    box-shadow:
+        0 18px 35px rgba(0,0,0,.7),
+        0 0 20px rgba(0,229,255,.5);
+
+}
+
+
+.team-stat-icon{
+
+    font-size:34px;
+
+    margin-bottom:14px;
+
+}
+
+
+.team-stat-title{
+
+    color:#cfcfcf;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    margin-bottom:16px;
+
+}
+
+
+.team-stat-value{
+
+    color:white;
+
+    font-size:30px;
+
+    font-weight:700;
+
+}
+
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+    .team-stats-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .team-stats-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@keyframes fade{
+
+from{
+opacity:0;
+transform:translateY(10px);
+}
+
+to{
+opacity:1;
+transform:none;
+}
+
+}
+
+
+/* ===============================
+              MOBILE
+================================ */
+
+@media(max-width:600px){
+
+    .trophies-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .trophy-card{
+        padding:12px 16px;
+    }
+
+}
+
+
+@media (max-width:1100px){
+    .squad-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+
+@media(max-width:900px){
+    .squad-grid{
+        grid-template-columns:repeat(3, 100px);
+        gap:20px;
+    }
+}
+
+@media(max-width:500px){
+    .squad-grid{
+        grid-template-columns:repeat(2, 100px);
+        gap:15px;
+    }
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   TEAM LEADERS (FULL TAB)
+===================================================== */
+
+.leaders-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:22px;
+
+    margin-top:20px;
+
+}
+
+.leader-card{
+
+    background:linear-gradient(145deg,#1b1b1b,#101010);
+
+    border-radius:20px;
+
+    padding:25px 18px;
+
+    text-align:center;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.35s;
+
+}
+
+.leader-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#00d9ff;
+
+    box-shadow:0 12px 30px rgba(0,217,255,.18);
+
+}
+
+.leader-card .leader-title{
+
+    color:#9f9f9f;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    margin-bottom:15px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+
+}
+
+.leader-card img{
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid #222;
+
+    margin-bottom:16px;
+
+}
+
+.leader-card h3{
+
+    color:white;
+
+    font-size:18px;
+
+    margin:6px 0 12px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+.leader-card span{
+
+    display:inline-block;
+
+    padding:8px 18px;
+
+    border-radius:25px;
+
+    background:linear-gradient(135deg,rgb(229, 255, 0));
+
+    color:#111;
+
+    font-size:13px;
+
+    font-weight:900;
+
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+    .leaders-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .leaders-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+
+
+
+</style>
+
+
+
+
+
+
+<!-- ================= JS: التبديل بين التبويبات ================= -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const buttons = document.querySelectorAll(".tab-btn");
+    const tabs = document.querySelectorAll(".tab-content");
+
+    // إخفاء جميع الأقسام
+    tabs.forEach(tab => {
+        tab.style.display = "none";
+    });
+
+    // إظهار أول قسم فقط
+    document.getElementById("overview").style.display = "block";
+
+    buttons.forEach(btn => {
+
+        btn.addEventListener("click", function () {
+
+            tabs.forEach(tab => {
+                tab.style.display = "none";
+            });
+
+            buttons.forEach(b => {
+                b.classList.remove("active");
+            });
+
+            const target = document.getElementById(this.dataset.tab);
+
+            if (target) {
+                target.style.display = "block";
+            }
+
+            this.classList.add("active");
+
+        });
+
+    });
+
+});
+</script>
+
+
+{% endblock %}

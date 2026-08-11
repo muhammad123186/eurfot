@@ -1,0 +1,3205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="site-header">
+
+    <div class="logo-box">
+
+        <h1>EURO<span>FOR</span></h1>
+
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+<a href="{% url 'profile' %}" 
+class="profile-btn"
+style="
+width:80px;
+height:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:black;
+white-space:nowrap;
+color:white;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+font-size:14px;
+margin-right:8px;
+transition:.25s;
+box-shadow:0 15px 30px rgba(0,0,0,.7),
+inset 2px 2px 10px black;
+border:2px solid rgba(0, 140, 255, 0.8);
+">
+
+👤 {{ user.username }}
+
+</a>
+
+
+{% else %}
+
+        
+            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
+                Sign Up
+            </a>
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+    
+    
+
+</div>
+
+
+<body style="background: linear-gradient(-45deg,black,black,black,black,black,black,rgba(0, 4, 255, 0.404));"></body>
+
+
+<div class="match-container">
+
+
+
+<!-- ================= MATCH CARD ================= -->
+
+
+<div class="match-card">
+
+
+
+<div class="match-header">
+
+
+<img 
+src="{{ game.competition.logo }}"
+class="competition-logo"
+>
+
+
+</div>
+
+
+
+
+
+<div class="teams">
+
+
+
+<div class="team">
+
+
+<img 
+src="{{ game.home_logo }}"
+alt="{{ game.home_name }}"
+>
+
+
+<h3>
+{{ game.home_name }}
+</h3>
+
+
+</div>
+
+
+
+
+
+
+<div class="score">
+
+
+
+{% if game.score.fullTime.home is not None %}
+
+
+
+<h1>
+
+{{ game.score.fullTime.home }}
+-
+{{ game.score.fullTime.away }}
+
+</h1>
+
+
+
+{% else %}
+
+
+
+<h1>
+
+VS
+
+</h1>
+
+
+
+{% endif %}
+
+
+
+
+
+<div class="status">
+
+{{ game.status }}
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="team">
+
+
+<img 
+src="{{ game.away_logo }}"
+alt="{{ game.away_name }}"
+>
+
+
+
+<h3>
+
+{{ game.away_name }}
+
+</h3>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ================= INFO ================= -->
+
+
+<div class="match-info">
+
+
+
+<div class="info-card">
+
+
+<span>
+📅
+</span>
+
+
+<strong>
+
+{{ game.utcDate|date:"d/m/Y" }}
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="info-card">
+
+
+<span>
+<img 
+src="{{ game.competition.logo }}"
+class="competition-logo" style="width:42px;"
+>
+</span>
+
+
+<strong>
+
+{{ game.competition.name }}
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="info-card">
+
+
+<span>
+🏟️
+</span>
+
+
+<strong>
+
+{{ game.venue }}
+
+</strong>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ================= TABS ================= -->
+
+
+
+<div class="match-tabs">
+
+
+
+<button
+class="tab-btn active"
+onclick="showTab('overview',this)"
+>
+
+Overview
+
+</button>
+
+
+
+
+
+<button
+class="tab-btn"
+onclick="showTab('statistics',this)"
+>
+
+Statistics
+
+</button>
+
+
+
+
+
+<button
+class="tab-btn"
+onclick="showTab('lineups',this)"
+>
+
+Lineups
+
+</button>
+
+
+
+
+
+<button
+class="tab-btn"
+onclick="showTab('events',this)"
+>
+
+Events
+
+</button>
+
+
+
+
+<button
+class="tab-btn"
+onclick="showTab('comparison',this)"
+>
+
+Comparison
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div 
+id="overview"
+class="tab-content active"
+>
+
+
+<div class="form-container">
+
+
+
+<!-- HOME LAST 5 -->
+<div class="team-form">
+
+
+<div class="team-title">
+
+<img src="{{ game.home_logo }}">
+
+<h3>
+{{ game.home_name }}
+</h3>
+
+</div>
+<div class="mini-matches">
+
+
+{% for match in home_last_matches %}
+
+
+<div class="mini-match-wrapper">
+
+
+{% if match.teams.home.id == game.home_id %}
+
+    {% if match.goals.home > match.goals.away %}
+        <span class="result-badge win">W</span>
+    {% elif match.goals.home == match.goals.away %}
+        <span class="result-badge draw">D</span>
+    {% else %}
+        <span class="result-badge loss">L</span>
+    {% endif %}
+
+{% else %}
+
+    {% if match.goals.away > match.goals.home %}
+        <span class="result-badge win">W</span>
+    {% elif match.goals.away == match.goals.home %}
+        <span class="result-badge draw">D</span>
+    {% else %}
+        <span class="result-badge loss">L</span>
+    {% endif %}
+
+{% endif %}
+
+
+<div class="mini-match">
+
+
+{% if match.teams.home.id == game.home_id %}
+
+
+<img 
+src="{{ match.teams.away.logo }}"
+class="mini-team-logo"
+>
+
+
+{% else %}
+
+
+<img 
+src="{{ match.teams.home.logo }}"
+class="mini-team-logo"
+>
+
+
+{% endif %}
+
+
+
+<div class="mini-score">
+
+
+{% if match.teams.home.id == game.home_id %}
+
+{{ match.goals.home }} - {{ match.goals.away }}
+
+{% else %}
+
+{{ match.goals.away }} - {{ match.goals.home }}
+
+{% endif %}
+
+
+</div>
+
+
+</div>
+<!-- نهاية mini-match -->
+
+
+</div>
+<!-- نهاية mini-match-wrapper -->
+
+
+
+{% empty %}
+
+<p>
+No matches available
+</p>
+
+{% endfor %}
+
+
+</div>
+</div>
+
+
+
+
+<!-- AWAY LAST 5 -->
+<div class="team-form">
+
+
+
+<div class="team-title">
+
+
+<img src="{{ game.away_logo }}">
+
+
+<h3>
+{{ game.away_name }}
+</h3>
+
+
+</div>
+<div class="mini-matches">
+
+
+{% for match in away_last_matches %}
+
+
+<div class="mini-match-wrapper">
+
+
+{% if match.teams.home.id == game.home_id %}
+
+    {% if match.goals.home > match.goals.away %}
+        <span class="result-badge win">W</span>
+    {% elif match.goals.home == match.goals.away %}
+        <span class="result-badge draw">D</span>
+    {% else %}
+        <span class="result-badge loss">L</span>
+    {% endif %}
+
+{% else %}
+
+    {% if match.goals.away > match.goals.home %}
+        <span class="result-badge win">W</span>
+    {% elif match.goals.away == match.goals.home %}
+        <span class="result-badge draw">D</span>
+    {% else %}
+        <span class="result-badge loss">L</span>
+    {% endif %}
+
+{% endif %}
+
+
+<div class="mini-match">
+
+
+{% if match.teams.away.id == game.away_id %}
+
+
+<img 
+src="{{ match.teams.home.logo }}"
+class="mini-team-logo"
+>
+
+
+{% else %}
+
+
+<img 
+src="{{ match.teams.away.logo }}"
+class="mini-team-logo"
+>
+
+
+{% endif %}
+
+
+
+<div class="mini-score">
+
+
+{% if match.teams.home.id == game.home_id %}
+
+{{ match.goals.home }} - {{ match.goals.away }}
+
+{% else %}
+
+{{ match.goals.away }} - {{ match.goals.home }}
+
+{% endif %}
+
+
+</div>
+
+
+</div>
+<!-- نهاية mini-match -->
+
+
+</div>
+<!-- نهاية mini-match-wrapper -->
+
+
+
+{% empty %}
+
+<p>
+No matches available
+</p>
+
+{% endfor %}
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= LINEUPS ================= -->
+<div id="lineups" class="tab-content">
+
+  <!-- معلومات الفريقين -->
+  <div class="lineup-header-container">
+    {% for key, team in lineups.items %}
+      <div class="lineup-team-card">
+        <img src="{{ team.logo }}" alt="{{ team.team }}">
+        <div class="lineup-info">
+          <h2>{{ team.team }}</h2>
+          <p>Formation: {{ team.formation }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- الملعب -->
+  <div class="pitch">
+
+    {% for key, team in lineups.items %}
+      <div class="team-side {% if key == 'home' %}home-side{% else %}away-side{% endif %}">
+
+        {% for line in team.lines %}
+          <div class="formation-line {% if line.is_gk %}gk-line{% endif %}">
+
+            {% for player in line.players %}
+              <div class="player-position">
+                <div class="player-circle">
+
+    {% if player.photo %}
+        <img src="{{ player.photo }}" class="player-photo" onerror="this.style.display='none'; this.parentElement.textContent='{{ player.number }}';">
+    {% else %}
+        {{ player.number }}
+    {% endif %}
+
+</div>
+
+<span>{{ player.name }}</span>
+              </div>
+            {% endfor %}
+
+          </div>
+        {% endfor %}
+
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+
+  <!-- ================= الدكة (الاحتياط) ================= -->
+
+<div class="bench-container">
+
+    <div class="bench-side bench-home">
+
+        <h4 class="bench-title">{{ lineups.home.team }}</h4>
+
+        {% for player in lineups.home.substitutes %}
+
+            <div class="bench-player">
+
+                <div class="bench-number">{{ player.number }}</div>
+
+                <span>{{ player.name }}</span>
+
+            </div>
+
+        {% empty %}
+
+            <p class="bench-empty">لا توجد بيانات احتياط</p>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="bench-side bench-away">
+
+        <h4 class="bench-title">{{ lineups.away.team }}</h4>
+
+        {% for player in lineups.away.substitutes %}
+
+            <div class="bench-player">
+
+                <span>{{ player.name }}</span>
+
+                <div class="bench-number">{{ player.number }}</div>
+
+            </div>
+
+        {% empty %}
+
+            <p class="bench-empty">لا توجد بيانات احتياط</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!--statics-->
+<div id="statistics" class="tab-content">
+
+  {% if statistics %}
+
+    <!-- رأس القسم: شعار واسم كل فريق -->
+    <div class="stats-header-container">
+
+      <div class="stats-team-card">
+        <img src="{{ statistics.home.logo }}" alt="{{ statistics.home.team }}">
+        <span>{{ statistics.home.team }}</span>
+      </div>
+
+      <div class="stats-team-card">
+        <span>{{ statistics.away.team }}</span>
+        <img src="{{ statistics.away.logo }}" alt="{{ statistics.away.team }}">
+      </div>
+
+    </div>
+
+    <!-- قائمة الإحصائيات (مربعات بدون أشرطة) -->
+    <div class="stats-list">
+
+      {% for row in statistics.comparison %}
+
+        <div class="stats-row">
+
+          <div class="stats-box {% if row.away_pct > row.home_pct %}stats-box-behind{% else %}stats-box-lead{% endif %}">
+            {{ row.home_display }}
+          </div>
+
+          <span class="stats-type">{{ row.type }}</span>
+
+          <div class="stats-box {% if row.away_pct > row.home_pct %}stats-box-lead{% else %}stats-box-behind{% endif %}">
+            {{ row.away_display }}
+          </div>
+
+        </div>
+
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+
+    <p class="stats-empty">لا تتوفر إحصائيات لهذه المباراة حالياً</p>
+
+  {% endif %}
+
+</div>
+
+
+    
+    
+
+
+<!-- ================= EVENTS ================= -->
+<div id="events" class="tab-content">
+
+<div class="events-timeline">
+
+{% for e in events %}
+
+<div class="timeline-row">
+
+    <!-- HOME SIDE -->
+    <div class="event-side home-side">
+
+        {% if e.side == "home" %}
+
+        <div class="event-card home-card">
+
+            <div class="event-player-row">
+
+                <div class="player-info">
+
+                    <img
+                        src="{{ e.player_photo }}"
+                        class="event-photo"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
+
+                    <div class="player-details">
+
+                        {% if e.type == "subst" %}
+
+                            <div class="player-name">
+                                ⬆ {{ e.assist }}
+                            </div>
+
+                            <div class="sub-player">
+                                ⬇ {{ e.player }}
+                            </div>
+
+                        {% else %}
+
+                            <div class="player-name">
+                                {{ e.player }}
+                            </div>
+
+                            {% if e.assist %}
+                            <div class="assist-player">
+                                🎯 Assist: {{ e.assist }}
+                            </div>
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <span class="event-badge">
+
+                    {% if e.type == "Goal" %}
+                        ⚽ Goal
+
+                    {% elif e.detail == "Yellow Card" %}
+                        🟨 Yellow Card
+
+                    {% elif e.detail == "Red Card" %}
+                        🟥 Red Card
+
+                    {% elif e.type == "subst" %}
+                        🔄 Substitution
+
+                    {% elif e.detail == "Penalty Missed" %}
+                        ❌ Penalty Missed
+
+                    {% elif e.type == "Var" %}
+                        📺 VAR
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- MINUTE -->
+
+    <div class="event-minute">
+
+        {{ e.minute }}'
+
+        {% if e.extra %}
+            +{{ e.extra }}
+        {% endif %}
+
+    </div>
+
+
+    <!-- AWAY SIDE -->
+
+    <div class="event-side away-side">
+
+        {% if e.side == "away" %}
+
+        <div class="event-card away-card">
+
+            <div class="event-player-row">
+
+                <div class="player-info">
+
+                    <img
+                        src="{{ e.player_photo }}"
+                        class="event-photo"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
+
+                    <div class="player-details">
+
+                        {% if e.type == "subst" %}
+
+                            <div class="player-name">
+                                ⬆ {{ e.assist }}
+                            </div>
+
+                            <div class="sub-player">
+                                ⬇ {{ e.player }}
+                            </div>
+
+                        {% else %}
+
+                            <div class="player-name">
+                                {{ e.player }}
+                            </div>
+
+                            {% if e.assist %}
+                            <div class="assist-player">
+                                🎯 Assist: {{ e.assist }}
+                            </div>
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <span class="event-badge">
+
+                    {% if e.type == "Goal" %}
+                        ⚽ Goal
+
+                    {% elif e.detail == "Yellow Card" %}
+                        🟨 Yellow Card
+
+                    {% elif e.detail == "Red Card" %}
+                        🟥 Red Card
+
+                    {% elif e.type == "subst" %}
+                        🔄 Substitution
+
+                    {% elif e.detail == "Penalty Missed" %}
+                        ❌ Penalty Missed
+
+                    {% elif e.type == "Var" %}
+                        📺 VAR
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<div class="events-empty">
+    No Events Available
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<div id="comparison" class="tab-content">
+
+
+    <div class="comparison-box">
+
+        <div class="comparison-header">
+
+            <div class="comparison-team">
+
+                <img src="{{ game.home_logo }}">
+
+            </div>
+
+            <div class="comparison-vs">
+
+                <h1>VS</h1>
+
+            </div>
+
+            <div class="comparison-team">
+
+                <img src="{{ game.away_logo }}">
+
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.played }}
+            </div>
+
+            <div class="comparison-title">
+                Matches Played
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.played }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.wins }}
+            </div>
+
+            <div class="comparison-title">
+                Wins
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.wins }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.draws }}
+            </div>
+
+            <div class="comparison-title">
+                Draws
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.draws }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.losses }}
+            </div>
+
+            <div class="comparison-title">
+                Losses
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.losses }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.goals_for }}
+            </div>
+
+            <div class="comparison-title">
+                Goals Scored
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.goals_for }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.goals_against }}
+            </div>
+
+            <div class="comparison-title">
+                Goals Conceded
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.goals_against }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.clean_sheets }}
+            </div>
+
+            <div class="comparison-title">
+                Clean Sheets
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.clean_sheets }}
+            </div>
+
+        </div>
+
+
+
+        <div class="comparison-row">
+
+            <div class="comparison-value home">
+                {{ comparison.home.big_chances }}
+            </div>
+
+            <div class="comparison-title">
+                Big Chances Created
+            </div>
+
+            <div class="comparison-value">
+                {{ comparison.away.big_chances }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+<!-- ================= TAB SCRIPT ================= -->
+
+
+
+<script>
+
+
+function showTab(tabId, button){
+
+
+
+    document
+    .querySelectorAll(".tab-content")
+    .forEach(tab => {
+
+
+        tab.classList.remove("active");
+
+
+    });
+
+
+
+
+
+
+    document
+    .querySelectorAll(".tab-btn")
+    .forEach(btn => {
+
+
+        btn.classList.remove("active");
+
+
+    });
+
+
+
+
+
+
+
+    document
+    .getElementById(tabId)
+    .classList.add("active");
+
+
+
+
+
+
+    button.classList.add("active");
+
+
+
+}
+
+
+
+</script>
+
+
+
+
+
+</div>
+
+
+<style>
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+    display:flex;
+    margin-top:-10px;
+    margin-left: -0.5%;
+}
+
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+
+
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-ball{
+    font-size:40px;
+    filter:drop-shadow(0 0 12px rgb(17, 0, 255));
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.site-header p{
+    margin-top:8px;
+    color:#cfc;
+    font-size:15px;
+    letter-spacing:1px;
+}
+
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+    margin-left:-10px;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+    transition:.25s;
+}
+
+.search-box button:hover{
+    background:red;
+
+}
+
+
+
+
+
+
+.match-container{
+
+    max-width:900px;
+
+    margin:30px auto;
+
+    font-family:Arial, sans-serif;
+
+}
+
+
+
+
+
+
+/* ================= COMPETITION ================= */
+
+
+.competition-logo{
+
+    width:55px;
+
+    height:55px;
+
+    object-fit:contain;
+
+}
+
+
+
+
+
+
+
+/* ================= MATCH CARD ================= */
+
+
+.match-card{
+
+
+    background: linear-gradient(-45deg,black,black,black,black,black,rgb(255,0,0));
+
+    color:white;
+
+
+    border-radius:25px 25px 0 0;
+
+
+    padding:35px;
+
+
+    overflow:hidden;
+
+
+    box-shadow:
+
+
+
+}
+
+
+
+
+
+.match-header{
+
+
+    text-align:center;
+
+
+    margin-bottom:25px;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/* ================= TEAMS ================= */
+
+
+.teams{
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    gap:70px;
+
+
+    margin:30px 0;
+
+
+}
+
+
+
+
+
+.team{
+
+
+    width:220px;
+
+
+    text-align:center;
+
+
+}
+
+
+
+
+
+.team img{
+
+
+    width:110px;
+
+
+    height:110px;
+
+
+    object-fit:contain;
+
+
+    filter:
+
+    drop-shadow(
+
+    0 10px 15px rgba(0,0,0,.5)
+
+    );
+
+
+}
+
+
+
+
+
+
+.team h3{
+
+
+    margin-top:15px;
+
+
+    font-size:24px;
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ================= SCORE ================= */
+
+
+.score{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+
+.score h1{
+
+
+    min-width:130px;
+
+
+    height:80px;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    margin:0;
+
+ 
+
+    background:
+
+    linear-gradient(
+
+    145deg,
+
+    black,
+    black
+
+    );
+
+
+
+    border-radius:20px;
+
+
+
+    font-size:42px;
+
+
+
+    font-weight:900;
+
+
+
+    color:white;
+
+
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,.5);
+
+
+
+}
+
+
+
+
+
+
+.status{
+
+
+    margin-top:15px;
+
+
+    padding:8px 22px;
+
+
+    border-radius:30px;
+
+
+    background:#111;
+
+
+    color:white;
+
+
+    font-size:13px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/* ================= MATCH INFO ================= */
+
+
+.match-info{
+
+
+    display:grid;
+
+
+    grid-template-columns:repeat(3,1fr);
+
+
+    gap:15px;
+
+
+    margin-top:45px;
+
+
+}
+
+
+
+
+
+.info-card{
+
+
+    background:
+
+    linear-gradient(
+
+    145deg,
+
+    #1c1c1c,
+
+    #080808
+
+    );
+
+
+    padding:18px;
+
+
+    border-radius:18px;
+
+
+    text-align:center;
+
+
+    color:white;
+
+
+    box-shadow:
+
+    0 8px 20px rgba(0,0,0,.5);
+
+
+}
+
+
+
+
+
+.info-card span{
+
+
+    font-size:28px;
+
+
+    display:block;
+
+
+    margin-bottom:8px;
+
+
+}
+
+
+
+
+
+.info-card strong{
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/* ================= TABS ================= */
+
+
+.match-tabs{
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    gap:15px;
+
+
+    padding:15px;
+
+
+    background:#080808;
+
+
+    border-radius:0 0 25px 25px;
+
+
+}
+
+
+
+
+
+.tab-btn{
+
+
+    flex:1;
+
+
+    max-width:180px;
+
+
+    padding:14px 20px;
+
+
+    border:none;
+
+
+    border-radius:15px;
+
+
+    background:#181818;
+
+
+    color:#aaa;
+
+
+    font-size:15px;
+
+
+    font-weight:800;
+
+
+    cursor:pointer;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+
+.tab-btn:hover{
+
+
+    color:white;
+
+
+    transform:translateY(-3px);
+
+
+}
+
+
+
+
+
+.tab-btn.active{
+
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #ff0000,
+
+    #990000
+
+    );
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+/* ================= TAB CONTENT ================= */
+
+
+.tab-content{
+
+
+    display:none;
+
+
+}
+
+
+
+
+
+.tab-content.active{
+
+
+    display:block;
+
+
+}
+
+
+
+/* ================= OVERVIEW ================= */
+.form-container{
+
+    width:92%;
+
+    display:flex;
+
+    flex-direction:row;
+
+    gap:20px;
+
+    margin-top:30px;
+
+    margin-left: 25px;
+
+}
+
+
+
+.team-form{
+    
+    flex:1;
+
+    background:
+
+    linear-gradient(
+    145deg,
+    #151515,
+    #080808
+    );
+
+
+    padding:18px;
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,.5);
+
+
+    color:white;
+
+}
+
+
+
+
+
+
+
+
+
+
+.team-form:first-child{
+
+    border-top:4px solid #ff0000;
+
+}
+
+
+
+.team-form:last-child{
+
+    border-top:4px solid #ff0000;
+
+}
+
+
+
+
+
+
+
+
+/* TEAM HEADER */
+
+
+.team-title{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    gap:12px;
+
+
+    height:60px;
+
+
+    margin-bottom:12px;
+
+
+    border-bottom:
+
+    1px solid rgba(255,255,255,.1);
+
+
+}
+
+
+
+.team-title img{
+
+
+    width:42px;
+
+
+    height:42px;
+
+
+    object-fit:contain;
+
+
+}
+
+
+
+.team-title h3{
+
+
+    margin:0;
+
+
+    color:white;
+
+
+    font-size:19px;
+
+
+}
+
+
+
+
+.mini-matches{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+    margin-top:20px;
+
+}
+
+
+
+.mini-match{
+
+    width:65px;
+
+    height:75px;
+
+    background:#1a1a1a;
+
+    border-radius:12px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+
+.mini-team-logo{
+
+    width:32px;
+
+    height:32px;
+
+    object-fit:contain;
+
+}
+
+
+
+.mini-score{
+
+    color:white;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    margin-top:8px;
+
+}
+
+
+
+.mini-match-wrapper{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+
+
+.result-badge{
+
+    width:50%;
+
+    height:30%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:5px;
+
+    font-size:10px;
+
+    font-weight:900;
+
+    color:white;
+
+}
+
+
+
+.result-badge.win{
+
+    background:#00c853;
+
+}
+
+
+
+.result-badge.draw{
+
+    background:#ffb300;
+
+}
+
+
+
+.result-badge.loss{
+
+    background:#990000;
+
+}
+
+
+
+
+
+
+.opponent{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:8px;
+
+
+    color:#ddd;
+
+
+    font-size:13px;
+
+
+    font-weight:600;
+
+
+}
+
+
+
+.opponent img{
+
+
+    width:25px;
+
+
+    height:25px;
+
+
+    object-fit:contain;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+.empty-tab{
+
+
+    margin-top:30px;
+
+
+    background:#111;
+
+
+    color:white;
+
+
+    padding:35px;
+
+
+    text-align:center;
+
+
+    border-radius:20px;
+
+
+}
+
+
+
+
+
+.empty-tab p{
+
+    color:#999;
+
+}
+
+
+
+
+
+/* MOBILE */
+
+
+@media(max-width:800px){
+
+
+    .form-container{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+}
+
+
+
+@media(max-width:800px){
+
+    .form-container{
+
+        flex-direction:column;
+
+    }
+
+}
+
+
+
+
+
+
+/* ===============================
+        LINEUPS BOX
+================================ */
+
+.lineup-box{
+
+    margin-top:30px;
+
+    background:
+    linear-gradient(145deg,#111,#050505);
+
+    padding:25px;
+
+    border-radius:25px;
+
+    color:white;
+
+}
+
+
+
+/* ===============================
+        TEAM HEADER
+================================ */
+
+
+.lineup-header-container{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.lineup-team-card{
+
+    display:flex;
+
+    align-items:center;
+
+    color:white;
+
+    gap:20px;
+
+    background: black;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    border:1px solid #222;
+
+}
+
+
+
+.lineup-team-card img{
+
+    width:57px;
+
+    height:57px;
+
+    object-fit:contain;
+
+}
+
+
+
+.lineup-info h2{
+
+    margin:0;
+
+    font-size:23px;
+
+}
+
+
+
+.lineup-info p{
+
+    margin:8px 0 0;
+
+    color:#aaa;
+
+    font-size:15px;
+
+}
+
+
+
+.formation{
+
+    color:#00ff88;
+
+    font-weight:bold;
+
+}
+
+
+
+.pitch {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 500px;
+    margin: 30px auto;
+    background: linear-gradient(90deg,rgba(0, 0, 0, 0.616));
+    border-radius: 20px;
+    overflow: hidden;
+    border: 3px solid #ffffff30;
+    display: flex;
+}
+
+.pitch::before{
+    content:"";
+    position:absolute;
+    top:0; left:50%;
+    width:2px; height:100%;
+    background:white;
+    z-index:1;
+}
+
+.pitch::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width:90px; height:90px;
+    border:3px solid white;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    z-index:1;
+}
+
+.team-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.home-side { flex-direction: row; }
+.away-side { flex-direction: row-reverse; }
+
+.formation-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+}
+
+.gk-line {
+    flex: 0.6;
+    justify-content: center;
+}
+
+.player-position { text-align: center; width: 80px; }
+
+.player-circle {
+    width: 38px; height: 38px;
+    background:#111; color:white;
+    border-radius:50%;
+    display:flex; justify-content:center; align-items:center;
+    margin:auto; font-weight:bold;
+    border:2px solid white;
+}
+
+.player-position span {
+    display:block; margin-top:5px;
+    color:white; font-size:12px;
+    white-space:nowrap;
+}
+
+
+
+
+.player-circle{
+    overflow:hidden;
+    padding:0;
+}
+
+.player-photo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+
+
+.bench-container{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:20px;
+}
+
+.bench-side{
+    flex:1;
+    background:linear-gradient(145deg,#111,#050505);
+    border-radius:18px;
+    padding:18px;
+    border:1px solid #222;
+}
+
+.bench-title{
+    color:white;
+    font-size:14px;
+    margin:0 0 12px;
+    text-align:center;
+    border-bottom:1px solid #222;
+    padding-bottom:10px;
+}
+
+.bench-player{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 5px;
+    color:white;
+    font-size:13px;
+    border-bottom:1px solid #1a1a1a;
+}
+
+.bench-away .bench-player{
+    justify-content:flex-end;
+}
+
+.bench-number{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:black;
+    color:white;
+    border:1px solid white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:bold;
+    flex-shrink:0;
+}
+
+.bench-empty{
+    color:#777;
+    text-align:center;
+    font-size:13px;
+}
+
+
+
+
+
+@media(max-width:800px){
+    .pitch{ height:500px; flex-direction:column; }
+    .home-side{ flex-direction:column; }
+    .away-side{ flex-direction:column-reverse; }
+    .formation-line{ flex-direction:row; width:100%; }
+    .player-position{ width:60px; }
+    .player-circle{ width:30px; height:30px; font-size:11px; }
+    .player-position span{ font-size:9px; }
+}
+
+
+
+
+
+#statistics{
+    margin-top:30px;
+    background:linear-gradient(145deg,#111,#050505);
+    padding:30px;
+    border-radius:25px;
+    color:white;
+    border:1px solid #1c1c1c;
+}
+
+.stats-header-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+    padding-bottom:20px;
+    border-bottom:1px solid #222;
+}
+
+.stats-team-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:18px;
+    font-weight:800;
+}
+
+.stats-team-card img{
+    width:36px;
+    height:36px;
+    object-fit:contain;
+}
+
+.stats-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.stats-row{
+    display:grid;
+    grid-template-columns:70px 1fr 70px;
+    align-items:center;
+    gap:15px;
+}
+
+.stats-box{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:42px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:900;
+    background:#1a1a1a;
+    border:1px solid #2a2a2a;
+    color:#888;
+    transition:.25s;
+}
+ء
+
+.stats-box-behind{
+    background:#161616;
+    color:#999;
+}
+
+.stats-type{
+    text-align:center;
+    color:#aaa;
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.stats-empty{
+    text-align:center;
+    color:#777;
+    padding:50px 0;
+    font-size:15px;
+}
+
+@media(max-width:800px){
+
+    .stats-row{
+        grid-template-columns:55px 1fr 55px;
+        gap:8px;
+    }
+
+    .stats-box{
+        height:36px;
+        font-size:14px;
+    }
+
+    .stats-type{
+        font-size:11px;
+    }
+
+}
+
+
+
+
+
+
+
+.events-timeline{
+
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+}
+
+
+.timeline-row{
+
+    display:grid;
+    grid-template-columns:1fr 70px 1fr;
+    align-items:center;
+    gap:15px;
+
+}
+
+
+.event-card{
+
+    background:#111;
+
+    min-height:80px;
+
+    padding:15px;
+
+    border-radius:18px;
+
+    border:1px solid #292929;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+
+.home-card{
+
+    border-left:5px solid #00ff88;
+
+}
+
+
+.away-card{
+
+    border-right:5px solid #008cff;
+
+}
+
+
+.event-player{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+.away-player{
+
+    justify-content:flex-end;
+
+}
+
+
+.event-photo{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid #333;
+
+}
+
+
+.player-data{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.player-data.right{
+
+    text-align:right;
+
+}
+
+
+.player-name{
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+}
+
+
+.assist-name{
+
+    color:#999;
+
+    font-size:13px;
+
+    margin-top:5px;
+
+}
+
+
+.event-label{
+
+    margin-top:15px;
+
+    background:#222;
+
+    color:white;
+
+    padding:7px 14px;
+
+    border-radius:10px;
+
+    width:max-content;
+
+}
+
+
+.away-label{
+
+    margin-left:auto;
+
+}
+
+
+.event-minute{
+
+    width:55px;
+
+    height:35px;
+
+    background:#222;
+
+    color:white;
+
+    border-radius:10px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:bold;
+
+}
+
+
+.event-player-row{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+
+}
+
+
+
+.player-info{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+}
+
+
+
+.player-details{
+
+    display:flex;
+    color:white;
+    margin-top: 15px;
+    flex-direction: column;
+    padding: 1px;
+    
+
+}
+
+
+
+.event-photo{
+
+    width:55px;
+    height:55px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+
+
+.player-name{
+
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+
+}
+
+
+
+.event-badge{
+
+    margin-left:auto;
+
+    background:black;
+
+    padding:8px 14px;
+
+    border-radius:12px;
+
+    color:white;
+
+    font-size:14px;
+
+    white-space:nowrap;
+
+}
+
+
+@media(max-width:700px){
+
+    .timeline-row{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .event-minute{
+
+        margin:auto;
+
+    }
+
+}
+
+
+
+/* ================= COMPARISON ================= */
+
+.comparison-box{
+
+    max-width:1000px;
+
+    margin:25px auto;
+
+    padding:30px;
+
+    border-radius:24px;
+
+    background:linear-gradient(145deg,#161616,#0b0b0b);
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+
+/* ================= HEADER ================= */
+
+.comparison-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:40px;
+
+}
+
+
+
+.comparison-team{
+
+    width:220px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+
+
+.comparison-team img{
+
+    width:80px;
+
+    height:80px;
+
+    object-fit:contain;
+
+    transition:.35s;
+
+}
+
+
+
+.comparison-team img:hover{
+
+    transform:scale(1.08);
+
+}
+
+
+
+.comparison-team h2{
+
+    margin-top:14px;
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:800;
+
+    text-align:center;
+
+}
+
+
+
+.comparison-vs{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+
+
+.comparison-vs h1{
+
+    margin:0;
+
+    font-size:42px;
+
+    color:#ff0000;
+
+    letter-spacing:3px;
+
+    margin-top:18px;
+
+}
+
+
+
+.comparison-vs span{
+
+    color:#8a8a8a;
+
+    margin-top:19px;
+
+}
+
+
+
+/* ================= ROW ================= */
+
+.comparison-row{
+
+    display:grid;
+
+    grid-template-columns:90px 1fr 90px;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:18px;
+
+    padding:18px 25px;
+
+    border-radius:18px;
+
+    background:#121212;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    transition:.25s;
+
+}
+
+
+
+.comparison-row:hover{
+
+    transform:translateY(-3px);
+
+    border-color:#ff0000;
+
+}
+
+
+
+/* ================= VALUES ================= */
+
+.comparison-value{
+
+    font-size:25px;
+
+    font-weight:600;
+
+    color:white;
+    margin-left:-10%;
+
+}
+
+
+
+.comparison-value.home{
+
+    font-size:25px;
+
+    font-weight:600;
+
+    color:white;
+
+    margin-left:75%;
+
+
+}
+
+
+
+/* ================= CENTER ================= */
+
+.comparison-title{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    color:#dddddd;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+
+}
+
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+    .comparison-header{
+
+        flex-direction:column;
+
+        gap:25px;
+
+    }
+
+    .comparison-team{
+
+        width:100%;
+
+    }
+
+    .comparison-row{
+
+        grid-template-columns:65px 1fr 65px;
+
+        padding:15px;
+
+    }
+
+    .comparison-value{
+
+        font-size:22px;
+
+    }
+
+    .comparison-title{
+
+        font-size:14px;
+
+    }
+
+}
+
+
+
+
+/* =====================================================
+                    MOBILE
+===================================================== */
+
+@media(max-width:900px){
+
+.events-timeline::before{
+
+    left:22px;
+
+}
+
+.timeline-item{
+
+    grid-template-columns:45px 1fr;
+
+    gap:15px;
+
+}
+
+.timeline-content{
+
+    width:100%;
+
+}
+
+.timeline-item.home .timeline-content,
+
+.timeline-item.away .timeline-content{
+
+    justify-self:stretch;
+
+}
+
+.timeline-center{
+
+    grid-row:1;
+
+}
+
+.timeline-content.empty{
+
+    display:none;
+
+}
+
+}
+
+</style>
+
+
+{% endblock %}

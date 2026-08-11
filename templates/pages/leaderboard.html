@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<body style="background: linear-gradient(90deg,rgb(0, 255, 255),rgb(98, 0, 255));">
+
+
+<div style="max-width:600px;margin:40px auto;padding:20px;font-family:Arial;color:white;">
+
+    <h2 style="text-align:center;">ترتيب المتوقعين</h2>
+
+    {% if users %}
+
+        <table style="width:100%;border-collapse:collapse;background:black;border-radius:15px;overflow:hidden;">
+
+            <thead>
+                <tr style="background:rgb(140, 0, 255);">
+                    <th style="padding:12px;">#</th>
+                    <th style="padding:12px;">المستخدم</th>
+                    <th style="padding:12px;">عدد التوقعات المحسوبة</th>
+                    <th style="padding:12px;">مجموع النقاط</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for u in users %}
+
+                <tr style="border-bottom:1px solid white;{% if u == request.user %}background:rgba(0,255,34,0.1);{% endif %}">
+
+                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;">{{ forloop.counter }}</td>
+                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;font-weight:bold;color:white;">{{ u.username }}</td>
+                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;">{{ u.total_predictions }}</td>
+                    <td style="padding:10px;text-align:center;font-weight:bold;color:white;">{{ u.total_points }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p style="text-align:center;color:#888;">
+            لا توجد نقاط محسوبة بعد
+        </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

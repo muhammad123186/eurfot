@@ -1,0 +1,2392 @@
+<div class="player-page">
+
+
+
+```html
+<div class="player-card-wrapper">
+
+
+    <!-- PLAYER CARD -->
+
+    <div class="player-card">
+
+        <!-- COMPARE -->
+
+        {% if player.id %}
+
+        <a
+            href="{% url 'compare_player' player.id %}"
+            class="compare-btn"
+            title="Compare Player"
+        >
+            Compare
+        </a>
+
+        {% endif %}
+
+
+        <!-- PLAYER IMAGE -->
+
+        <div class="player-image">
+
+            <img
+                src="{{ player.photo }}"
+                alt="{{ player.name }}"
+            >
+
+        </div>
+
+
+        <!-- PLAYER INFO -->
+
+        <div class="player-info">
+
+            <h1>
+                {{ player.name }}
+            </h1>
+
+
+            <div class="player-team">
+
+                {% if player.team.logo %}
+
+                <img
+                    src="{{ player.team.logo }}"
+                    alt="{{ player.team.name }}"
+                >
+
+                {% endif %}
+
+                <span>
+                    {{ player.team.name }}
+                </span>
+
+            </div>
+
+
+            <div class="player-meta">
+
+                <span>
+                    {{ player.nationality }}
+                </span>
+
+                <span>
+                    {{ player.age }} Years
+                </span>
+
+                <span>
+                    {{ player.position }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TABS DIRECTLY UNDER CARD -->
+
+    <div class="player-tabs">
+
+        <button
+            class="player-tab-btn active"
+            data-tab="attack-stats"
+        >
+            Attacking
+        </button>
+
+
+        <button
+            class="player-tab-btn"
+            data-tab="defense-stats"
+        >
+            Defensive
+        </button>
+
+
+        <button
+            class="player-tab-btn"
+            data-tab="goalkeeping-stats"
+        >
+            Goalkeeping
+        </button>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ================= ATTACK ================= -->
+<div id="attack-stats"
+     class="stats-content">
+
+
+<h2 class="section-title">
+    Player Season Statistics
+</h2>
+
+
+
+<div class="stats-cards">
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Appearances
+        </span>
+
+        <strong>
+            {{ player_stats.appearances|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Goals
+        </span>
+
+        <strong>
+            {{ player_stats.goals|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Assists
+        </span>
+
+        <strong>
+            {{ player_stats.assists|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Rating
+        </span>
+
+        <strong>
+            {{ player_stats.rating|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Shots
+        </span>
+
+        <strong>
+            {{ player_stats.shots|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Shots On Target
+        </span>
+
+        <strong>
+            {{ player_stats.shots_on|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Key Passes
+        </span>
+
+        <strong>
+            {{ player_stats.key_passes|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Dribbles
+        </span>
+
+        <strong>
+            {{ player_stats.dribbles|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Pass Accuracy
+        </span>
+
+        <strong>
+            {{ player_stats.pass_accuracy|default:"0" }}%
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Total Passes
+        </span>
+
+        <strong>
+            {{ player_stats.passes|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Yellow Cards
+        </span>
+
+        <strong>
+            {{ player_stats.yellow|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Red Cards
+        </span>
+
+        <strong>
+            {{ player_stats.red|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+</div>
+
+
+
+<div class="competition-section">
+
+    <h2>
+        Competition Statistics
+    </h2>
+
+
+    <div class="competition-grid">
+
+
+        {% for comp in competition_stats %}
+
+
+        <div class="competition-card">
+
+
+            <div class="competition-header">
+
+
+                {% if comp.league_logo %}
+
+                <img src="{{ comp.league_logo }}">
+
+                {% endif %}
+
+
+                <h3>
+                    {{ comp.league_name }}
+                </h3>
+
+
+            </div>
+
+
+
+            <div class="competition-stats">
+
+
+                <div>
+                    <span>
+                        Apps
+                    </span>
+
+                    <strong>
+                        {{ comp.appearances }}
+                    </strong>
+                </div>
+
+
+
+                <div>
+                    <span>
+                        Goals
+                    </span>
+
+                    <strong>
+                        {{ comp.goals }}
+                    </strong>
+                </div>
+
+
+
+                <div>
+                    <span>
+                        Assists
+                    </span>
+
+                    <strong>
+                        {{ comp.assists }}
+                    </strong>
+                </div>
+
+
+
+                <div>
+                    <span>
+                        Rating
+                    </span>
+
+                    <strong>
+                        {{ comp.rating|floatformat:1 }}
+                    </strong>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% empty %}
+
+        <p>
+            No competition statistics available
+        </p>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- ================= ATTACK PERFORMANCE ================= -->
+
+
+<div class="performance-box">
+
+
+<h2>
+Performance Breakdown
+</h2>
+
+
+
+<div class="performance-list">
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Goals
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill goals"
+style="width:{{ player_stats.goals|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.goals|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Assists
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill assists"
+style="width:{{ player_stats.assists|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.assists|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Shots
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill shots"
+style="width:{{ player_stats.shots|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.shots|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Key Passes
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill passes"
+style="width:{{ player_stats.key_passes|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.key_passes|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Dribbles
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill dribbles"
+style="width:{{ player_stats.dribbles|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.dribbles|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Pass Accuracy
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill accuracy"
+style="width:{{ player_stats.pass_accuracy|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ player_stats.pass_accuracy|default:"0" }}%
+</div>
+
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+</div>
+<!-- نهاية attack-stats -->
+
+
+
+
+
+
+
+
+
+<!-- ================= DEFENSIVE ================= -->
+<div id="defense-stats"
+     class="stats-content"
+     style="display:none;">
+
+
+
+
+     <h2 class="section-title">
+    Defensive Statistics
+</h2>
+
+
+<div class="stats-cards">
+
+
+    <div class="stat-card">
+
+        <span>
+            Tackles
+        </span>
+
+        <strong>
+            {{ defense_stats.tackles|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Blocks
+        </span>
+
+        <strong>
+            {{ defense_stats.blocks|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Interceptions
+        </span>
+
+        <strong>
+            {{ defense_stats.interceptions|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Duels Won
+        </span>
+
+        <strong>
+            {{ defense_stats.duels_won|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Total Duels
+        </span>
+
+        <strong>
+            {{ defense_stats.duels_total|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Fouls Committed
+        </span>
+
+        <strong>
+            {{ defense_stats.fouls_committed|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Fouls Drawn
+        </span>
+
+        <strong>
+            {{ defense_stats.fouls_drawn|default:"0" }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <span>
+            Goals Conceded
+        </span>
+
+        <strong>
+            {{ defense_stats.goals_conceded|default:"0" }}
+        </strong>
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+<h2 class="section-title">
+    Defensive By Competition
+</h2>
+
+
+
+<div class="competition-section">
+
+
+<div class="competition-grid">
+
+
+{% for comp in defense_competition_stats %}
+
+
+<div class="competition-card">
+
+
+
+    <div class="competition-header">
+
+
+        {% if comp.league_logo %}
+
+        <img src="{{ comp.league_logo }}"
+             alt="{{ comp.league_name }}">
+
+        {% endif %}
+
+
+        <h3>
+            {{ comp.league_name }}
+        </h3>
+
+
+    </div>
+
+
+
+
+    <div class="competition-stats">
+
+
+        <div>
+
+            <span>
+                Tackles
+            </span>
+
+            <strong>
+                {{ comp.tackles|default:"0" }}
+            </strong>
+
+        </div>
+
+
+
+        <div>
+
+            <span>
+                Blocks
+            </span>
+
+            <strong>
+                {{ comp.blocks|default:"0" }}
+            </strong>
+
+        </div>
+
+
+
+
+        <div>
+
+            <span>
+                Interceptions
+            </span>
+
+            <strong>
+                {{ comp.interceptions|default:"0" }}
+            </strong>
+
+        </div>
+
+
+
+
+        <div>
+
+            <span>
+                Duels Won
+            </span>
+
+            <strong>
+                {{ comp.duels_won|default:"0" }}
+            </strong>
+
+        </div>
+
+
+
+    </div>
+
+
+</div>
+
+
+{% empty %}
+
+
+<div class="competition-card">
+
+    <h3>
+        No Defensive Data
+    </h3>
+
+</div>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+<!-- ================= DEFENSIVE PERFORMANCE ================= -->
+
+
+<div class="performance-box">
+
+
+<h2>
+Defensive Performance
+</h2>
+
+
+
+<div class="performance-list">
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Tackles
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill tackles"
+style="width:{{ defense_stats.tackles|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ defense_stats.tackles|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Blocks
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill blocks"
+style="width:{{ defense_stats.blocks|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ defense_stats.blocks|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Interceptions
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill interceptions"
+style="width:{{ defense_stats.interceptions|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ defense_stats.interceptions|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="performance-row">
+
+<div class="performance-name">
+Duels Won
+</div>
+
+
+<div class="performance-bar">
+
+<div class="performance-fill duels"
+style="width:{{ defense_stats.duels_won|default:0 }}%;">
+</div>
+
+</div>
+
+
+<div class="performance-value">
+{{ defense_stats.duels_won|default:"0" }}
+</div>
+
+
+</div>
+
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+<!-- نهاية defense-stats -->
+
+
+
+
+
+
+
+
+
+<!-- ================= GOALKEEPING ================= -->
+<div id="goalkeeping-stats"
+     class="stats-content" style="display:none;">
+
+
+
+<h2 class="section-title">
+    Goalkeeping Statistics
+</h2>
+
+
+
+<div class="stats-cards">
+
+
+
+<div class="stat-card">
+
+<span>
+Appearances
+</span>
+
+<strong>
+{{ goalkeeper_stats.appearances|default:"0" }}
+</strong>
+
+</div>
+
+
+
+
+<div class="stat-card">
+
+<span>
+Saves
+</span>
+
+<strong>
+{{ goalkeeper_stats.saves|default:"0" }}
+</strong>
+
+</div>
+
+
+
+
+<div class="stat-card">
+
+<span>
+Goals Conceded
+</span>
+
+<strong>
+{{ goalkeeper_stats.goals_conceded|default:"0" }}
+</strong>
+
+</div>
+
+
+
+
+<div class="stat-card">
+
+<span>
+Save Percentage
+</span>
+
+<strong>
+{{ goalkeeper_stats.save_percentage|default:"0" }}%
+</strong>
+
+</div>
+
+
+
+
+<div class="stat-card">
+
+<span>
+Clean Sheets
+</span>
+
+<strong>
+{{ goalkeeper_stats.clean_sheets|default:"0" }}
+</strong>
+
+</div>
+
+
+
+
+<div class="stat-card">
+
+<span>
+Penalty Saves
+</span>
+
+<strong>
+{{ goalkeeper_stats.penalty_saved|default:"0" }}
+</strong>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<h2 class="section-title">
+    Goalkeeping By Competition
+</h2>
+
+
+<div class="competition-section">
+
+
+<div class="competition-grid">
+
+
+
+{% for comp in goalkeeper_competition_stats %}
+
+
+<div class="competition-card">
+
+
+
+<div class="competition-header">
+
+
+<img src="{{ comp.league_logo }}"
+     alt="{{ comp.league_name }}">
+
+
+<h3>
+{{ comp.league_name }}
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="competition-stats">
+
+
+
+<div>
+
+<span>
+Appearances
+</span>
+
+<strong>
+{{ comp.appearances }}
+</strong>
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Saves
+</span>
+
+<strong>
+{{ comp.saves }}
+</strong>
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Goals Conceded
+</span>
+
+<strong>
+{{ comp.goals_conceded }}
+</strong>
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Save %
+</span>
+
+<strong>
+{{ comp.save_percentage }}%
+</strong>
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Clean Sheets
+</span>
+
+<strong>
+{{ comp.clean_sheets }}
+</strong>
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Penalty Saves
+</span>
+
+<strong>
+{{ comp.penalty_saved }}
+</strong>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="section-title">
+    Goalkeeping Performance
+</h2>
+
+
+
+<div class="performance-box">
+
+
+
+<div class="performance-list">
+
+
+
+<div class="performance-row">
+
+
+<div class="performance-name">
+
+    Saves
+
+</div>
+
+
+
+<div class="performance-bar">
+
+
+<div class="performance-fill saves"
+style="width:{{ goalkeeper_stats.saves|default:0 }}%;">
+</div>
+
+
+</div>
+
+
+
+<div class="performance-value">
+
+{{ goalkeeper_stats.saves|default:"0" }}
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="performance-row">
+
+
+<div class="performance-name">
+
+    Save Percentage
+
+</div>
+
+
+
+<div class="performance-bar">
+
+
+<div class="performance-fill save-percentage"
+style="width:{{ goalkeeper_stats.save_percentage|default:0 }}%;">
+</div>
+
+
+</div>
+
+
+
+<div class="performance-value">
+
+{{ goalkeeper_stats.save_percentage|default:"0" }}%
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="performance-row">
+
+
+<div class="performance-name">
+
+    Clean Sheets
+
+</div>
+
+
+
+<div class="performance-bar">
+
+
+<div class="performance-fill clean-sheets"
+style="width:{{ goalkeeper_stats.clean_sheets|default:0 }}%;">
+</div>
+
+
+</div>
+
+
+
+<div class="performance-value">
+
+{{ goalkeeper_stats.clean_sheets|default:"0" }}
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="performance-row">
+
+
+<div class="performance-name">
+
+    Penalty Saves
+
+</div>
+
+
+
+<div class="performance-bar">
+
+
+<div class="performance-fill penalty-saves"
+style="width:{{ goalkeeper_stats.penalty_saved|default:0 }}%;">
+</div>
+
+
+</div>
+
+
+
+<div class="performance-value">
+
+{{ goalkeeper_stats.penalty_saved|default:"0" }}
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+<!-- نهاية goalkeeping-stats -->
+</div>
+<!-- نهاية player-page -->
+
+
+<style>
+
+/* =========================
+   PLAYER PAGE
+========================= */
+
+
+.player-page{
+
+    max-width:1100px;
+
+    margin:40px auto;
+
+    font-family:Arial,sans-serif;
+
+    color:white;
+
+}
+
+
+
+
+
+/* =========================
+   PLAYER HEADER
+========================= */
+
+
+.player-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:40px;
+
+    background:
+    linear-gradient(135deg,#111,#111);
+
+    padding:35px;
+
+    border-radius:22px 22px 0 0;
+
+    box-shadow:0 20px 40px rgba(0,0,0,.6);
+
+}
+
+
+/* =========================================
+   COMPARE BUTTON
+========================================= */
+.compare-btn{
+    position:absolute;
+
+    top:18px;
+    right:18px;
+
+    width:82px;
+    height:36px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    box-sizing:border-box;
+
+    background:#e50914;
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    font-size:12px;
+    font-weight:900;
+
+    letter-spacing:.4px;
+
+    box-shadow:
+        0 8px 20px rgba(229,9,20,.25);
+
+    transition:
+        background .2s,
+        transform .2s,
+        box-shadow .2s;
+}
+
+
+.compare-btn:hover{
+    background:#ff1a25;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(229,9,20,.38);
+}
+
+
+.compare-btn:active{
+    transform:translateY(0);
+}
+
+
+
+
+
+
+.player-image img{
+
+    width:180px;
+
+    height:180px;
+
+    object-fit:contain;
+
+    filter:drop-shadow(0 15px 20px black);
+
+}
+
+
+
+
+.player-info h1{
+
+    font-size:45px;
+
+    margin:0 0 20px;
+
+}
+
+
+
+
+.player-team{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+
+
+
+.player-team img{
+
+    width:45px;
+
+    height:45px;
+
+    object-fit:contain;
+
+}
+
+
+
+
+.player-meta{
+
+    display:flex;
+
+    gap:20px;
+
+    margin-top:25px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+
+.player-meta span{
+
+    background:#000;
+
+    padding:10px 18px;
+
+    border-radius:20px;
+
+}
+
+
+
+
+
+/* =========================
+   TABS
+========================= */
+
+
+.player-tabs{
+
+    display:flex;
+
+    width:100%;
+
+}
+
+
+
+
+.player-tab-btn{
+
+    flex:1;
+
+    height:42px;
+
+    border:none;
+
+    background:#0d0d0d;
+
+    color:#aaa;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+
+
+
+.player-tab-btn:first-child{
+
+    border-radius:0 0 0 18px;
+
+}
+
+
+
+
+.player-tab-btn:last-child{
+
+    border-radius:0 0 18px 0;
+
+}
+
+
+
+
+.player-tab-btn:hover{
+
+    background:#222;
+
+    color:white;
+
+}
+
+
+
+
+.player-tab-btn.active{
+
+    background:#222;
+
+    color:white;
+
+}
+
+
+
+
+
+/* =========================
+   TITLES
+========================= */
+
+
+.section-title{
+
+    margin:40px 0 20px;
+
+}
+
+
+
+
+
+/* =========================
+   STAT CARDS
+========================= */
+
+
+.stats-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+}
+
+
+
+
+
+.stat-card{
+
+    background:
+    linear-gradient(145deg,#151515,#050505);
+
+    padding:25px;
+
+    border-radius:22px;
+
+    text-align:center;
+
+    border:1px solid #333;
+
+    transition:.3s;
+
+}
+
+
+
+
+.stat-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+
+.stat-card span{
+
+    display:block;
+
+    color:#aaa;
+
+    margin-bottom:15px;
+
+}
+
+
+
+
+.stat-card strong{
+
+    font-size:35px;
+
+    color:white;
+
+}
+
+ 
+
+
+
+
+
+
+/* =========================
+ PERFORMANCE BOX
+========================= */
+
+
+.performance-box{
+
+    margin-top:40px;
+
+    background:
+
+    linear-gradient(145deg,#141414,#070707);
+
+    border-radius:25px;
+
+    padding:35px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+
+
+
+.performance-box h2{
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+    color:white;
+
+    font-size:30px;
+
+}
+
+
+
+
+
+.performance-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+}
+
+
+
+
+
+.performance-row{
+
+    display:grid;
+
+    grid-template-columns:170px 1fr 60px;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+
+
+
+.performance-name{
+
+    color:white;
+
+    font-weight:700;
+
+    font-size:17px;
+
+}
+
+
+
+
+
+.performance-bar{
+
+    height:14px;
+
+    background:#222;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+}
+
+
+
+
+
+.performance-fill{
+
+    height:100%;
+
+    border-radius:30px;
+
+    transition:1s;
+
+}
+
+
+
+
+
+.performance-value{
+
+    text-align:right;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:900;
+
+}
+
+
+
+
+
+/* ATTACK COLORS */
+
+
+.goals{
+
+    background:#00c853;
+
+}
+
+
+.assists{
+
+    background:#ff0000;
+
+}
+
+
+.shots{
+
+    background:#00ff22;
+
+}
+
+
+.passes{
+
+    background:#ffcc00;
+
+}
+
+
+.dribbles{
+
+    background:#0091ea;
+
+}
+
+
+.accuracy{
+
+    background:#ffb300;
+
+}
+
+
+
+
+
+/* DEFENSE COLORS */
+
+
+.tackles{
+
+    background:#8e44ad;
+
+}
+
+
+.blocks{
+
+    background:#e67e22;
+
+}
+
+
+.interceptions{
+
+    background:#3498db;
+
+}
+
+
+.duels{
+
+    background:#2ecc71;
+
+}
+
+
+
+
+
+/* GOALKEEPER COLORS */
+
+
+.saves{
+
+    background:#3498db;
+
+}
+
+
+.clean{
+
+    background:#f1c40f;
+
+}
+
+
+
+
+
+
+
+
+
+.competition-section{
+
+    margin-top:40px;
+
+}
+
+
+.competition-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+}
+
+
+
+.competition-card{
+
+    background:
+    linear-gradient(145deg,#151515,#050505);
+
+    border-radius:22px;
+
+    padding:25px;
+
+    border:1px solid #333;
+
+}
+
+
+
+.competition-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.competition-header img{
+
+    width:45px;
+
+    height:45px;
+
+    object-fit:contain;
+
+}
+
+
+
+.competition-header h3{
+
+    color:white;
+
+    margin:0;
+
+}
+
+
+
+.competition-stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:15px;
+
+}
+
+
+
+.competition-stats div{
+
+    background:#080808;
+
+    padding:15px;
+
+    border-radius:15px;
+
+    text-align:center;
+
+}
+
+
+
+.competition-stats span{
+
+    display:block;
+
+    color:#aaa;
+
+    margin-bottom:8px;
+
+}
+
+
+
+.competition-stats strong{
+
+    color:white;
+
+    font-size:24px;
+
+}
+
+
+
+
+
+
+/* =========================
+ MOBILE
+========================= */
+
+
+@media(max-width:800px){
+
+
+.player-card{
+
+    flex-direction:column;
+
+    text-align:center;
+
+}
+
+
+
+.stats-cards{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+
+
+.performance-row{
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.performance-value{
+
+    text-align:left;
+
+}
+
+
+
+.player-tabs{
+
+    width:100%;
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+.tackles{
+
+background:linear-gradient(90deg,#00ff84,#00c853);
+
+}
+
+
+.interceptions{
+
+background:linear-gradient(90deg,#00ff40,#00ea00);
+
+}
+
+
+.blocks{
+
+background:linear-gradient(90deg,#09ff00,#22ff22);
+
+}
+
+
+.duels{
+
+background:linear-gradient(90deg,#37b027,#3ab73a);
+
+}
+
+
+.fouls{
+
+background:linear-gradient(90deg,#17ff2a,#00d500);
+
+}
+
+
+
+
+
+.saves{
+
+background:linear-gradient(90deg,#00e5ff,#0091ea);
+
+}
+
+
+.save-percentage{
+
+background:linear-gradient(90deg,#00ff84,#00c853);
+
+}
+
+
+.clean-sheets{
+
+background:linear-gradient(90deg,#ffd600,#ff9800);
+
+}
+
+
+.penalty-saves{
+
+background:linear-gradient(90deg,#9c27b0,#673ab7);
+
+}
+
+
+
+
+</style>
+
+
+
+
+
+<script>
+
+document.querySelectorAll(".player-tab-btn").forEach(btn => {
+
+
+    btn.addEventListener("click", function(){
+
+
+        // إزالة active من كل الأزرار
+        document.querySelectorAll(".player-tab-btn").forEach(button => {
+
+            button.classList.remove("active");
+
+        });
+
+
+
+        // إضافة active للزر الحالي
+        this.classList.add("active");
+
+
+
+        // إخفاء كل الأقسام
+        document.querySelectorAll(".stats-content").forEach(section => {
+
+            section.style.display = "none";
+
+        });
+
+
+
+        // إظهار القسم المطلوب
+        let target = this.getAttribute("data-tab");
+
+
+        let content = document.getElementById(target);
+
+
+
+        if(content){
+
+            content.style.display = "block";
+
+        }
+
+
+    });
+
+
+});
+
+</script>

@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* =====================================
+   LOGIN PAGE
+===================================== */
+
+.login-page{
+    min-height:calc(100vh - 100px);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:50px 20px;
+
+    position:relative;
+    overflow:hidden;
+    margin-top:-3%;
+}
+
+
+/* =====================================
+   BACKGROUND GLOW
+===================================== */
+
+.login-page::before{
+    content:"";
+
+    position:absolute;
+
+    width:600px;
+    height:600px;
+
+    background:rgba(220,0,0,0.08);
+
+    filter:blur(140px);
+
+    border-radius:50%;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+}
+
+
+/* =====================================
+   LOGIN BOX
+===================================== */
+
+.login-box{
+    position:relative;
+    z-index:2;
+
+    width:100%;
+    max-width:400px;
+
+    padding:45px 40px 35px;
+
+    background:#070707;
+
+    border:1px solid #202020;
+
+    border-radius:18px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.65);
+}
+
+
+/* =====================================
+   RED TOP ACCENT
+===================================== */
+
+.login-box::after{
+    content:"";
+
+    position:absolute;
+
+    width:45px;
+    height:3px;
+
+    background:#e50909;
+
+    top:0;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    border-radius:0 0 5px 5px;
+
+    box-shadow:
+        0 0 15px rgba(229,9,9,.55);
+}
+
+
+/* =====================================
+   BRAND
+===================================== */
+
+.login-brand{
+    text-align:center;
+
+    margin-bottom:35px;
+}
+
+
+.login-logo{
+    font-size:31px;
+
+    font-weight:900;
+
+    letter-spacing:5px;
+
+    color:#fff;
+
+    margin-bottom:23px;
+}
+
+
+.login-logo span{
+    color:#e50909;
+}
+
+
+/* =====================================
+   SIGN IN TITLE
+===================================== */
+
+.login-title{
+    margin:0;
+
+    color:#fff;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    letter-spacing:0;
+
+    line-height:1.2;
+
+    text-transform:uppercase;
+}
+
+
+.login-description{
+    margin-top:9px;
+
+    color:#666;
+
+    font-size:12px;
+}
+
+
+/* =====================================
+   FORM
+===================================== */
+
+.login-form{
+    margin-top:5px;
+}
+
+
+.login-form p{
+    margin:0 0 18px;
+}
+
+
+.login-form label{
+    display:block;
+
+    margin-bottom:8px;
+
+    color:#aaa;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:.3px;
+}
+
+
+/* =====================================
+   INPUTS
+===================================== */
+
+.login-form input{
+    width:100%;
+
+    height:50px;
+
+    box-sizing:border-box;
+
+    padding:0 15px;
+
+    background:#0d0d0d;
+
+    color:#fff;
+
+    border:1px solid #242424;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:14px;
+
+    transition:.2s ease;
+}
+
+
+.login-form input::placeholder{
+    color:#4f4f4f;
+}
+
+
+.login-form input:hover{
+    border-color:#333;
+}
+
+
+.login-form input:focus{
+    border-color:#d90909;
+
+    box-shadow:
+        0 0 0 3px rgba(217,9,9,.08);
+
+    background:#101010;
+}
+
+
+/* =====================================
+   ERRORS
+===================================== */
+
+.login-form .errorlist{
+    list-style:none;
+
+    padding:0;
+
+    margin:8px 0 0;
+
+    color:#ff4141;
+
+    font-size:11px;
+}
+
+
+/* =====================================
+   LOGIN BUTTON
+===================================== */
+
+.login-button{
+    width:100%;
+
+    height:51px;
+
+    margin-top:7px;
+
+    border:0;
+
+    border-radius:10px;
+
+    background:#e50909;
+
+    color:#fff;
+
+    font-size:14px;
+
+    font-weight:800;
+
+    letter-spacing:.8px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+    box-shadow:
+        0 8px 25px rgba(229,9,9,.18);
+}
+
+
+.login-button:hover{
+    background:#f01818;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(229,9,9,.28);
+}
+
+
+.login-button:active{
+    transform:translateY(0);
+}
+
+
+/* =====================================
+   DIVIDER
+===================================== */
+
+.login-divider{
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:27px 0 22px;
+
+    color:#444;
+
+    font-size:10px;
+
+    letter-spacing:1px;
+}
+
+
+.login-divider::before,
+.login-divider::after{
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:#1c1c1c;
+}
+
+
+/* =====================================
+   SIGN UP
+===================================== */
+
+.login-signup{
+    text-align:center;
+
+    color:#666;
+
+    font-size:13px;
+
+    margin:0;
+}
+
+
+.login-signup a{
+    color:#ef2020;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    margin-left:4px;
+
+    transition:.2s;
+}
+
+
+.login-signup a:hover{
+    color:#ff5555;
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media(max-width:520px){
+
+    .login-page{
+        padding:30px 15px;
+    }
+
+    .login-box{
+        padding:38px 25px 30px;
+
+        border-radius:16px;
+    }
+
+    .login-title{
+        font-size:18px;
+    }
+
+}
+
+</style>
+
+
+<div class="login-page">
+
+    <div class="login-box">
+
+
+        <!-- BRAND -->
+
+        <div class="login-brand">
+
+            <div class="login-logo">
+                EURO<span>FOR</span>
+            </div>
+
+
+            <h1 class="login-title">
+                welcome back
+            </h1>
+
+
+            <div class="login-description">
+                Sign in to continue to your account
+            </div>
+
+        </div>
+
+
+
+        <!-- FORM -->
+
+        <form method="POST" class="login-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                SIGN IN
+            </button>
+
+        </form>
+
+
+
+        <!-- DIVIDER -->
+
+        <div class="login-divider">
+            OR
+        </div>
+
+
+
+        <!-- SIGN UP -->
+
+        <p class="login-signup">
+
+            Don't have an account?
+
+            <a href="{% url 'signup' %}">
+                Create one
+            </a>
+
+        </p>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

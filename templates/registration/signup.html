@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* =========================
+   SIGN UP PAGE
+========================= */
+
+.signup-page{
+    min-height:calc(100vh - 100px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:50px 20px;
+    position:relative;
+    overflow:hidden;
+    margin-top: -1%;
+}
+
+.signup-page::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:rgba(220,0,0,0.10);
+    filter:blur(120px);
+    border-radius:50%;
+    top:-180px;
+    right:-120px;
+}
+
+.signup-page::after{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:rgba(255,255,255,0.025);
+    filter:blur(100px);
+    border-radius:50%;
+    bottom:-200px;
+    left:-150px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.signup-card{
+    position:relative;
+    z-index:2;
+
+    width:100%;
+    max-width:430px;
+
+    padding:42px 40px 36px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25,25,25,0.96),
+            rgba(5,5,5,0.98)
+        );
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:24px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+
+    backdrop-filter:blur(15px);
+}
+
+.signup-card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:12%;
+    width:76%;
+    height:2px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        #e50909,
+        #ff3b3b,
+        #e50909,
+        transparent
+    );
+
+    box-shadow:0 0 18px rgba(255,0,0,0.45);
+}
+
+
+/* =========================
+   BRAND
+========================= */
+
+.signup-brand{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.signup-logo{
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:4px;
+    color:white;
+    margin-bottom:15px;
+}
+
+.signup-logo span{
+    color:#e50909;
+}
+
+.signup-title{
+    margin:0;
+    color:#fff;
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+}
+
+.signup-subtitle{
+    margin-top:9px;
+    color:#777;
+    font-size:13px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.signup-form{
+    margin-top:28px;
+}
+
+.signup-form p{
+    margin:0 0 19px;
+}
+
+.signup-form label{
+    display:block;
+    color:#bdbdbd;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:8px;
+    letter-spacing:0.2px;
+}
+
+.signup-form input{
+    width:100%;
+    height:52px;
+    box-sizing:border-box;
+
+    padding:0 16px;
+
+    background:#0d0d0d;
+    color:white;
+
+    border:1px solid #242424;
+    border-radius:12px;
+
+    outline:none;
+
+    font-size:14px;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.signup-form input::placeholder{
+    color:#555;
+}
+
+.signup-form input:hover{
+    border-color:#333;
+}
+
+.signup-form input:focus{
+    background:#101010;
+
+    border-color:#d90909;
+
+    box-shadow:
+        0 0 0 3px rgba(217,9,9,0.10),
+        0 0 20px rgba(217,9,9,0.05);
+}
+
+
+/* =========================
+   HIDE DJANGO INSTRUCTIONS
+========================= */
+
+/* إخفاء شروط كلمة المرور والمعلومات الإضافية */
+
+.signup-form .helptext{
+    display:none !important;
+}
+
+.signup-form ul{
+    display:none !important;
+}
+
+
+/* =========================
+   ERRORS
+========================= */
+
+.signup-form .errorlist{
+    display:block !important;
+
+    margin:7px 0 0;
+    padding:0;
+
+    list-style:none;
+
+    color:#ff5252;
+
+    font-size:11px;
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+.signup-button{
+    width:100%;
+    height:53px;
+
+    margin-top:5px;
+
+    border:0;
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b80000,
+            #ed1111
+        );
+
+    color:white;
+
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:0.7px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 25px rgba(210,0,0,0.20);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+
+.signup-button:hover{
+    transform:translateY(-2px);
+
+    filter:brightness(1.08);
+
+    box-shadow:
+        0 12px 30px rgba(220,0,0,0.32);
+}
+
+.signup-button:active{
+    transform:translateY(0);
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.signup-login{
+    text-align:center;
+
+    margin:25px 0 0;
+
+    padding-top:23px;
+
+    border-top:1px solid #1b1b1b;
+
+    color:#666;
+
+    font-size:13px;
+}
+
+.signup-login a{
+    color:#ef2020;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    margin-left:4px;
+
+    transition:.2s;
+}
+
+.signup-login a:hover{
+    color:#ff4a4a;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:520px){
+
+    .signup-page{
+        padding:30px 15px;
+    }
+
+    .signup-card{
+        padding:35px 24px 30px;
+        border-radius:20px;
+    }
+
+    .signup-title{
+        font-size:27px;
+    }
+
+}
+
+</style>
+
+<div class="signup-page">
+
+```
+<div class="signup-card">
+
+    <div class="signup-brand">
+
+        <div class="signup-logo">
+            EURO<span>FOR</span>
+        </div>
+
+        
+
+        <div class="signup-subtitle">
+            Create your account and join to EUROFOR
+        </div>
+
+    </div>
+
+
+    <form method="POST" class="signup-form">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="signup-button">
+            CREATE ACCOUNT
+        </button>
+
+    </form>
+
+
+    <div class="signup-login">
+
+        Already have an account?
+
+        <a href="{% url 'login' %}">
+            Login
+        </a>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}

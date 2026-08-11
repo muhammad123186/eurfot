@@ -1,0 +1,37 @@
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0f0f1a;
+    color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255,0,80,0.2);
+}
+
+.standings-table th {
+    background: linear-gradient(90deg, #ff004c, #7a00ff);
+    padding: 14px;
+    text-transform: uppercase;
+}
+
+.standings-table td {
+    padding: 12px;
+    text-align: center;
+}
+
+.standings-table tr {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    transition: 0.3s;
+}
+
+.standings-table tr:hover {
+    background: rgba(255,0,80,0.15);
+    transform: scale(1.01);
+}
+
+.team-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+}
