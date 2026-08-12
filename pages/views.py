@@ -24,15 +24,9 @@ from datetime import datetime
 from django.conf import settings
 
 
-
- 
-
-
-
-
- 
-
-
+# ================= CACHE DURATION =================
+# مدة موحدة لكل الكاش بالمشروع: 24 ساعة بالثواني
+CACHE_TTL = 60 * 60 * 24
 
 
 # ================= API =================
@@ -48,7 +42,6 @@ SEASON = 2024
 
 
 
-# ================= LEAGUES =================
 # ================= LEAGUES =================
 
 LEAGUES = {
@@ -184,8 +177,6 @@ LEAGUES = {
 }
 
 
-
-
 # ================= CUP THEMES =================
 CUP_THEMES = {
     "FAC": {"theme": "#ff0000", "color": "#ff0000"},
@@ -201,51 +192,41 @@ CUP_THEMES = {
 }
 
 
-
 # ================= TROPHY LOGOS =================
 TROPHY_LOGOS = {
 
     "Premier League":
     "https://media.api-sports.io/football/leagues/39.png",
 
-
     "FA Cup":
     "https://media.api-sports.io/football/leagues/45.png",
-
 
     "League Cup":
     "https://media.api-sports.io/football/leagues/48.png",
 
-
     "UEFA Champions League":
     "https://media.api-sports.io/football/leagues/2.png",
-
 
     "UEFA Europa League":
     "https://media.api-sports.io/football/leagues/3.png",
 
-
     "UEFA Conference League":
     "https://media.api-sports.io/football/leagues/848.png",
-
 
     "UEFA Super Cup":
     "https://media.api-sports.io/football/leagues/531.png",
 
-
     "FIFA Club World Cup":
     "https://media.api-sports.io/football/leagues/15.png",
 
-
     "UEFA Cup Winners' Cup":
-    "https://media.api-sports.io/football/leagues/531.png",  # مؤقتاً حتى نحدد شعارها الأنسب
+    "https://media.api-sports.io/football/leagues/531.png",
 
     "Inter-Cities Fairs Cup":
-    "https://media.api-sports.io/football/leagues/3.png",  # مؤقتاً حتى نحدد شعارها الأنسب
+    "https://media.api-sports.io/football/leagues/3.png",
 
     "La Liga":
     "https://media.api-sports.io/football/leagues/140.png",
-
 
     "Copa del Rey":
     "https://media.api-sports.io/football/leagues/143.png",
@@ -271,7 +252,6 @@ TROPHY_LOGOS = {
     "UEFA Cup":
     "https://media.api-sports.io/football/leagues/3.png",
 
-
     "Bundesliga":
     "https://media.api-sports.io/football/leagues/78.png",
 
@@ -280,7 +260,6 @@ TROPHY_LOGOS = {
 
     "DFL-Supercup":
     "https://media.api-sports.io/football/leagues/526.png",
-
 
     "Ligue 1":
     "https://media.api-sports.io/football/leagues/61.png",
@@ -298,10 +277,6 @@ TROPHY_LOGOS = {
     "https://media.api-sports.io/football/leagues/531.png",
 
 }
-
-
-
-    
 
 
 TEAM_TROPHIES = {
@@ -453,564 +428,454 @@ TEAM_TROPHIES = {
         "FA Cup": 2,
     },
 
-
     40: {
-
         "Premier League": 20,
-
         "FA Cup": 8,
-
         "League Cup": 10,
-
         "UEFA Champions League": 6,
-
         "UEFA Europa League": 3,
-
         "UEFA Super Cup": 4,
-
         "FIFA Club World Cup": 1,
-
     },
-
 
     # ================= LALIGA =================
 
-# Real Madrid
-541: {
-    "La Liga": 36,
-    "Copa del Rey": 20,
-    "Supercopa de España": 13,
-    "UEFA Champions League": 15,
-    "UEFA Europa League": 2,
-    "UEFA Super Cup": 6,
-    "FIFA Club World Cup": 9,
-},
-
-# Barcelona
-529: {
-    "La Liga": 28,
-    "Copa del Rey": 32,
-    "Supercopa de España": 15,
-    "UEFA Champions League": 5,
-    "UEFA Super Cup": 5,
-    "FIFA Club World Cup": 3,
-},
-
-# Atlético Madrid
-530: {
-    "La Liga": 11,
-    "Copa del Rey": 10,
-    "Supercopa de España": 2,
-    "UEFA Europa League": 3,
-    "UEFA Super Cup": 3,
-    "UEFA Cup Winners' Cup": 1,
-    "Intercontinental Cup": 1,
-},
-
-# Athletic Club
-531: {
-    "La Liga": 8,
-    "Copa del Rey": 25,
-    "Supercopa de España": 3,
-},
-
-# Sevilla
-536: {
-    "La Liga": 1,
-    "Copa del Rey": 5,
-    "Supercopa de España": 1,
-    "UEFA Europa League": 7,
-    "UEFA Super Cup": 1,
-},
-
-# Valencia
-532: {
-    "La Liga": 6,
-    "Copa del Rey": 8,
-    "Supercopa de España": 2,
-    "UEFA Cup Winners' Cup": 1,
-    "UEFA Super Cup": 2,
-    "UEFA Europa League": 1,
-},
-
-# Villarreal
-533: {
-    "UEFA Europa League": 1,
-},
-
-# Real Betis
-543: {
-    "La Liga": 1,
-    "Copa del Rey": 3,
-},
-
-# Real Sociedad
-548: {
-    "La Liga": 2,
-    "Copa del Rey": 3,
-    "Supercopa de España": 1,
-},
-
-# Espanyol
-540: {
-    "Copa del Rey": 4,
-},
-
-# Deportivo Alavés
-542: {
-},
-
-# Celta Vigo
-538: {
-    "Intertoto Cup": 1,
-},
-
-# Getafe
-546: {
-},
-
-# Osasuna
-727: {
-},
-
-# Rayo Vallecano
-728: {
-},
-
-# Mallorca
-798: {
-    "Copa del Rey": 1,
-    "Supercopa de España": 1,
-},
-
-# Girona
-547: {
-},
-
-# Elche
-797: {
-},
-
-# Levante
-5460: {
-},
-
-# Oviedo
-724: {
-},
-
-
-
-
-# ================= SERIE A =================
-
-# Juventus
-496: {
-    "Serie A": 36,
-    "Coppa Italia": 15,
-    "Supercoppa Italiana": 9,
-    "UEFA Champions League": 2,
-    "UEFA Europa League": 3,
-    "UEFA Super Cup": 2,
-    "Intercontinental Cup": 2,
-},
-
-# Inter
-505: {
-    "Serie A": 20,
-    "Coppa Italia": 9,
-    "Supercoppa Italiana": 8,
-    "UEFA Champions League": 3,
-    "UEFA Europa League": 3,
-    "UEFA Super Cup": 2,
-    "FIFA Club World Cup": 1,
-    "Intercontinental Cup": 2,
-},
-
-# AC Milan
-489: {
-    "Serie A": 19,
-    "Coppa Italia": 5,
-    "Supercoppa Italiana": 8,
-    "UEFA Champions League": 7,
-    "UEFA Super Cup": 5,
-    "FIFA Club World Cup": 1,
-    "Intercontinental Cup": 3,
-}, 
-
-# Napoli
-492: {
-    "Serie A": 4,
-    "Coppa Italia": 6,
-    "Supercoppa Italiana": 2,
-    "UEFA Cup": 1,
-},
-
-# Roma
-497: {
-    "Serie A": 3,
-    "Coppa Italia": 9,
-    "Supercoppa Italiana": 2,
-    "UEFA Conference League": 1,
-    "Inter-Cities Fairs Cup": 1,
-},
-
-# Lazio
-487: {
-    "Serie A": 2,
-    "Coppa Italia": 7,
-    "Supercoppa Italiana": 5,
-    "UEFA Cup Winners' Cup": 1,
-    "UEFA Super Cup": 1,
-},
-
-# Fiorentina
-502: {
-    "Serie A": 2,
-    "Coppa Italia": 6,
-    "Supercoppa Italiana": 1,
-    "UEFA Cup Winners' Cup": 1,
-},
-
-# Bologna
-500: {
-    "Serie A": 7,
-    "Coppa Italia": 3,
-    "Intertoto Cup": 1,
-},
-
-# Torino
-503: {
-    "Serie A": 7,
-    "Coppa Italia": 5,
-},
-
-# Parma
-523: {
-    "Coppa Italia": 3,
-    "UEFA Cup": 2,
-    "UEFA Super Cup": 1,
-    "UEFA Cup Winners' Cup": 1,
-},
-
-# Atalanta
-499: {
-    "UEFA Europa League": 1,
-    "Coppa Italia": 1,
-},
-
-# Udinese
-494: {
-},
-
-# Genoa
-495: {
-    "Serie A": 9,
-    "Coppa Italia": 1,
-},
-
-# Cagliari
-490: {
-    "Serie A": 1,
-},
-
-# Verona
-504: {
-    "Serie A": 1,
-},
-
-# Lecce
-867: {
-},
-
-# Sassuolo
-488: {
-},
-
-# Pisa
-515: {
-},
-
-# Cremonese
-520: {
-},
-
-# Como
-895: {
-},
-
-
-
-
-# ================= BUNDESLIGA =================
-
-# Bayern Munich
-157: {
-    "Bundesliga": 34,
-    "DFB-Pokal": 20,
-    "DFL-Supercup": 11,
-    "UEFA Champions League": 6,
-    "UEFA Super Cup": 2,
-    "FIFA Club World Cup": 2,
-    "Intercontinental Cup": 2,
-},
-
-# Borussia Dortmund
-165: {
-    "Bundesliga": 8,
-    "DFB-Pokal": 5,
-    "DFL-Supercup": 6,
-    "UEFA Champions League": 1,
-    "UEFA Cup Winners' Cup": 1,
-    "Intercontinental Cup": 1,
-},
-
-# Bayer Leverkusen
-168: {
-    "Bundesliga": 1,
-    "DFB-Pokal": 2,
-    "DFL-Supercup": 1,
-    "UEFA Cup": 1,
-},
-
-# Eintracht Frankfurt
-169: {
-    "Bundesliga": 1,
-    "DFB-Pokal": 5,
-    "UEFA Europa League": 2,
-    "UEFA Cup": 1,
-},
-
-# VfB Stuttgart
-172: {
-    "Bundesliga": 5,
-    "DFB-Pokal": 3,
-    "DFL-Supercup": 1,
-},
-
-# Borussia Mönchengladbach
-163: {
-    "Bundesliga": 5,
-    "DFB-Pokal": 3,
-    "UEFA Cup": 2,
-},
-
-# Werder Bremen
-162: {
-    "Bundesliga": 4,
-    "DFB-Pokal": 6,
-    "DFL-Supercup": 3,
-    "UEFA Cup Winners' Cup": 1,
-},
-
-# Wolfsburg
-161: {
-    "Bundesliga": 1,
-    "DFB-Pokal": 1,
-    "DFL-Supercup": 1,
-},
-
-# Hamburger SV
-164: {
-    "Bundesliga": 6,
-    "DFB-Pokal": 3,
-    "UEFA Champions League": 1,
-    "UEFA Cup Winners' Cup": 1,
-    "Intercontinental Cup": 1,
-},
-
-# FC Köln
-192: {
-    "Bundesliga": 3,
-    "DFB-Pokal": 4,
-},
-
-# Freiburg
-160: {
-},
-
-# Mainz 05
-1640: {
-},
-
-# Hoffenheim
-167: {
-},
-
-# Augsburg
-170: {
-},
-
-# Union Berlin
-182: {
-},
-
-# RB Leipzig
-173: {
-    "DFB-Pokal": 2,
-    "DFL-Supercup": 1,
-},
-
-# St. Pauli
-191: {
-},
-
-# Heidenheim
-44: {
-},
-
-# Hannover 96
-181: {
-    "Bundesliga": 2,
-    "DFB-Pokal": 1,
-},
-
-# Kaiserslautern
-180: {
-    "Bundesliga": 4,
-    "DFB-Pokal": 2,
-},
-
-
-
-# ================= LIGUE 1 =================
-
-# Paris Saint-Germain
-85: {
-    "Ligue 1": 13,
-    "Coupe de France": 16,
-    "Trophée des Champions": 13,
-    "Coupe de la Ligue": 9,
-    "UEFA Champions League": 1,
-},
-
-# Marseille
-81: {
-    "Ligue 1": 10,
-    "Coupe de France": 10,
-    "Trophée des Champions": 3,
-    "Coupe de la Ligue": 3,
-    "UEFA Champions League": 1,
-    "UEFA Intertoto Cup": 1,
-},
-
-# Monaco
-91: {
-    "Ligue 1": 8,
-    "Coupe de France": 5,
-    "Trophée des Champions": 4,
-    "Coupe de la Ligue": 1,
-},
-
-# Lyon
-80: {
-    "Ligue 1": 7,
-    "Coupe de France": 5,
-    "Trophée des Champions": 8,
-    "Coupe de la Ligue": 1,
-    "UEFA Intertoto Cup": 1,
-},
-
-# Lille
-79: {
-    "Ligue 1": 4,
-    "Coupe de France": 6,
-    "Trophée des Champions": 1,
-},
-
-# Nantes
-83: {
-    "Ligue 1": 8,
-    "Coupe de France": 4,
-    "Trophée des Champions": 3,
-},
-
-# Saint-Étienne
-106: {
-    "Ligue 1": 10,
-    "Coupe de France": 6,
-    "Coupe de la Ligue": 1,
-    "Trophée des Champions": 5,
-},
-
-# Nice
-84: {
-    "Ligue 1": 4,
-    "Coupe de France": 3,
-},
-
-# Strasbourg
-576: {
-    "Ligue 1": 1,
-    "Coupe de France": 3,
-    "Coupe de la Ligue": 3,
-    "UEFA Intertoto Cup": 1,
-},
-
-# Lens
-116: {
-    "Ligue 1": 1,
-    "Coupe de la Ligue": 2,
-},
-
-# Rennes
-94: {
-    "Coupe de France": 3,
-    "Trophée des Champions": 1,
-},
-
-# Auxerre
-108: {
-    "Ligue 1": 1,
-    "Coupe de France": 4,
-},
-
-# Toulouse
-96: {
-    "Coupe de France": 2,
-},
-
-# Brest
-1063: {
-},
-
-# Metz
-112: {
-},
-
-# Angers
-77: {
-},
-
-# Lorient
-97: {
-},
-
-# Le Havre
-111: {
-},
-
-# Paris FC
-1041: {
-},
-
-# FC Metz
-112: {
-},
-
+    541: {
+        "La Liga": 36,
+        "Copa del Rey": 20,
+        "Supercopa de España": 13,
+        "UEFA Champions League": 15,
+        "UEFA Europa League": 2,
+        "UEFA Super Cup": 6,
+        "FIFA Club World Cup": 9,
+    },
+
+    529: {
+        "La Liga": 28,
+        "Copa del Rey": 32,
+        "Supercopa de España": 15,
+        "UEFA Champions League": 5,
+        "UEFA Super Cup": 5,
+        "FIFA Club World Cup": 3,
+    },
+
+    530: {
+        "La Liga": 11,
+        "Copa del Rey": 10,
+        "Supercopa de España": 2,
+        "UEFA Europa League": 3,
+        "UEFA Super Cup": 3,
+        "UEFA Cup Winners' Cup": 1,
+        "Intercontinental Cup": 1,
+    },
+
+    531: {
+        "La Liga": 8,
+        "Copa del Rey": 25,
+        "Supercopa de España": 3,
+    },
+
+    536: {
+        "La Liga": 1,
+        "Copa del Rey": 5,
+        "Supercopa de España": 1,
+        "UEFA Europa League": 7,
+        "UEFA Super Cup": 1,
+    },
+
+    532: {
+        "La Liga": 6,
+        "Copa del Rey": 8,
+        "Supercopa de España": 2,
+        "UEFA Cup Winners' Cup": 1,
+        "UEFA Super Cup": 2,
+        "UEFA Europa League": 1,
+    },
+
+    533: {
+        "UEFA Europa League": 1,
+    },
+
+    543: {
+        "La Liga": 1,
+        "Copa del Rey": 3,
+    },
+
+    548: {
+        "La Liga": 2,
+        "Copa del Rey": 3,
+        "Supercopa de España": 1,
+    },
+
+    540: {
+        "Copa del Rey": 4,
+    },
+
+    542: {
+    },
+
+    538: {
+        "Intertoto Cup": 1,
+    },
+
+    546: {
+    },
+
+    727: {
+    },
+
+    728: {
+    },
+
+    798: {
+        "Copa del Rey": 1,
+        "Supercopa de España": 1,
+    },
+
+    547: {
+    },
+
+    797: {
+    },
+
+    5460: {
+    },
+
+    724: {
+    },
+
+    # ================= SERIE A =================
+
+    496: {
+        "Serie A": 36,
+        "Coppa Italia": 15,
+        "Supercoppa Italiana": 9,
+        "UEFA Champions League": 2,
+        "UEFA Europa League": 3,
+        "UEFA Super Cup": 2,
+        "Intercontinental Cup": 2,
+    },
+
+    505: {
+        "Serie A": 20,
+        "Coppa Italia": 9,
+        "Supercoppa Italiana": 8,
+        "UEFA Champions League": 3,
+        "UEFA Europa League": 3,
+        "UEFA Super Cup": 2,
+        "FIFA Club World Cup": 1,
+        "Intercontinental Cup": 2,
+    },
+
+    489: {
+        "Serie A": 19,
+        "Coppa Italia": 5,
+        "Supercoppa Italiana": 8,
+        "UEFA Champions League": 7,
+        "UEFA Super Cup": 5,
+        "FIFA Club World Cup": 1,
+        "Intercontinental Cup": 3,
+    },
+
+    492: {
+        "Serie A": 4,
+        "Coppa Italia": 6,
+        "Supercoppa Italiana": 2,
+        "UEFA Cup": 1,
+    },
+
+    497: {
+        "Serie A": 3,
+        "Coppa Italia": 9,
+        "Supercoppa Italiana": 2,
+        "UEFA Conference League": 1,
+        "Inter-Cities Fairs Cup": 1,
+    },
+
+    487: {
+        "Serie A": 2,
+        "Coppa Italia": 7,
+        "Supercoppa Italiana": 5,
+        "UEFA Cup Winners' Cup": 1,
+        "UEFA Super Cup": 1,
+    },
+
+    502: {
+        "Serie A": 2,
+        "Coppa Italia": 6,
+        "Supercoppa Italiana": 1,
+        "UEFA Cup Winners' Cup": 1,
+    },
+
+    500: {
+        "Serie A": 7,
+        "Coppa Italia": 3,
+        "Intertoto Cup": 1,
+    },
+
+    503: {
+        "Serie A": 7,
+        "Coppa Italia": 5,
+    },
+
+    523: {
+        "Coppa Italia": 3,
+        "UEFA Cup": 2,
+        "UEFA Super Cup": 1,
+        "UEFA Cup Winners' Cup": 1,
+    },
+
+    499: {
+        "UEFA Europa League": 1,
+        "Coppa Italia": 1,
+    },
+
+    494: {
+    },
+
+    495: {
+        "Serie A": 9,
+        "Coppa Italia": 1,
+    },
+
+    490: {
+        "Serie A": 1,
+    },
+
+    504: {
+        "Serie A": 1,
+    },
+
+    867: {
+    },
+
+    488: {
+    },
+
+    515: {
+    },
+
+    520: {
+    },
+
+    895: {
+    },
+
+    # ================= BUNDESLIGA =================
+
+    157: {
+        "Bundesliga": 34,
+        "DFB-Pokal": 20,
+        "DFL-Supercup": 11,
+        "UEFA Champions League": 6,
+        "UEFA Super Cup": 2,
+        "FIFA Club World Cup": 2,
+        "Intercontinental Cup": 2,
+    },
+
+    165: {
+        "Bundesliga": 8,
+        "DFB-Pokal": 5,
+        "DFL-Supercup": 6,
+        "UEFA Champions League": 1,
+        "UEFA Cup Winners' Cup": 1,
+        "Intercontinental Cup": 1,
+    },
+
+    168: {
+        "Bundesliga": 1,
+        "DFB-Pokal": 2,
+        "DFL-Supercup": 1,
+        "UEFA Cup": 1,
+    },
+
+    169: {
+        "Bundesliga": 1,
+        "DFB-Pokal": 5,
+        "UEFA Europa League": 2,
+        "UEFA Cup": 1,
+    },
+
+    172: {
+        "Bundesliga": 5,
+        "DFB-Pokal": 3,
+        "DFL-Supercup": 1,
+    },
+
+    163: {
+        "Bundesliga": 5,
+        "DFB-Pokal": 3,
+        "UEFA Cup": 2,
+    },
+
+    162: {
+        "Bundesliga": 4,
+        "DFB-Pokal": 6,
+        "DFL-Supercup": 3,
+        "UEFA Cup Winners' Cup": 1,
+    },
+
+    161: {
+        "Bundesliga": 1,
+        "DFB-Pokal": 1,
+        "DFL-Supercup": 1,
+    },
+
+    164: {
+        "Bundesliga": 6,
+        "DFB-Pokal": 3,
+        "UEFA Champions League": 1,
+        "UEFA Cup Winners' Cup": 1,
+        "Intercontinental Cup": 1,
+    },
+
+    192: {
+        "Bundesliga": 3,
+        "DFB-Pokal": 4,
+    },
+
+    160: {
+    },
+
+    1640: {
+    },
+
+    167: {
+    },
+
+    170: {
+    },
+
+    182: {
+    },
+
+    173: {
+        "DFB-Pokal": 2,
+        "DFL-Supercup": 1,
+    },
+
+    191: {
+    },
+
+    44: {
+    },
+
+    181: {
+        "Bundesliga": 2,
+        "DFB-Pokal": 1,
+    },
+
+    180: {
+        "Bundesliga": 4,
+        "DFB-Pokal": 2,
+    },
+
+    # ================= LIGUE 1 =================
+
+    85: {
+        "Ligue 1": 13,
+        "Coupe de France": 16,
+        "Trophée des Champions": 13,
+        "Coupe de la Ligue": 9,
+        "UEFA Champions League": 1,
+    },
+
+    81: {
+        "Ligue 1": 10,
+        "Coupe de France": 10,
+        "Trophée des Champions": 3,
+        "Coupe de la Ligue": 3,
+        "UEFA Champions League": 1,
+        "UEFA Intertoto Cup": 1,
+    },
+
+    91: {
+        "Ligue 1": 8,
+        "Coupe de France": 5,
+        "Trophée des Champions": 4,
+        "Coupe de la Ligue": 1,
+    },
+
+    80: {
+        "Ligue 1": 7,
+        "Coupe de France": 5,
+        "Trophée des Champions": 8,
+        "Coupe de la Ligue": 1,
+        "UEFA Intertoto Cup": 1,
+    },
+
+    79: {
+        "Ligue 1": 4,
+        "Coupe de France": 6,
+        "Trophée des Champions": 1,
+    },
+
+    83: {
+        "Ligue 1": 8,
+        "Coupe de France": 4,
+        "Trophée des Champions": 3,
+    },
+
+    106: {
+        "Ligue 1": 10,
+        "Coupe de France": 6,
+        "Coupe de la Ligue": 1,
+        "Trophée des Champions": 5,
+    },
+
+    84: {
+        "Ligue 1": 4,
+        "Coupe de France": 3,
+    },
+
+    576: {
+        "Ligue 1": 1,
+        "Coupe de France": 3,
+        "Coupe de la Ligue": 3,
+        "UEFA Intertoto Cup": 1,
+    },
+
+    116: {
+        "Ligue 1": 1,
+        "Coupe de la Ligue": 2,
+    },
+
+    94: {
+        "Coupe de France": 3,
+        "Trophée des Champions": 1,
+    },
+
+    108: {
+        "Ligue 1": 1,
+        "Coupe de France": 4,
+    },
+
+    96: {
+        "Coupe de France": 2,
+    },
+
+    1063: {
+    },
+
+    112: {
+    },
+
+    77: {
+    },
+
+    97: {
+    },
+
+    111: {
+    },
+
+    1041: {
+    },
 
 }
 
 
-
-
-
-
-
-
-
-
-
+# ================= CLEAN NAMES =================
 
 TEAM_NAMES = {
 
@@ -1020,181 +885,68 @@ TEAM_NAMES = {
     "Arsenal": "Arsenal",
     "Liverpool": "Liverpool",
     "Chelsea": "Chelsea",
-
     "Paris Saint Germain": "PSG",
-
     "Inter": "Inter Milan",
-
     "Internazionale": "Inter Milan",
-
     "FC Barcelona": "Barcelona",
-
     "Real Madrid": "Real Madrid",
 
 }
 
 
-
-
-
-
-
-
-
 countries = [
 
-        {
-            "name": "England",
-            "flag": "https://upload.wikimedia.org/wikipedia/en/b/be/Flag_of_England.svg",
-            "leagues": [
+    {
+        "name": "England",
+        "flag": "https://upload.wikimedia.org/wikipedia/en/b/be/Flag_of_England.svg",
+        "leagues": [
+            {"name": "Premier League", "code": "PL", "logo": "https://media.api-sports.io/football/leagues/39.png", "type": "league"},
+            {"name": "FA Cup", "code": "FAC", "logo": "https://media.api-sports.io/football/leagues/45.png", "type": "cup"},
+            {"name": "EFL Cup", "code": "ELCUP", "logo": "https://media.api-sports.io/football/leagues/48.png", "type": "cup"},
+        ]
+    },
 
-                {
-                    "name": "Premier League",
-                    "code": "PL",
-                    "logo": "https://media.api-sports.io/football/leagues/39.png",
-                    "type": "league"
-                },
+    {
+        "name": "Spain",
+        "flag": "https://flagcdn.com/w40/es.png",
+        "leagues": [
+            {"name": "La Liga", "code": "PD", "logo": "https://media.api-sports.io/football/leagues/140.png", "type": "league"},
+            {"name": "Copa del Rey", "code": "CDR", "logo": "https://media.api-sports.io/football/leagues/143.png", "type": "cup"},
+            {"name": "Super Cup", "code": "SC", "logo": "https://media.api-sports.io/football/leagues/556.png", "type": "supercup"},
+        ]
+    },
 
-                {
-                    "name": "FA Cup",
-                    "code": "FAC",
-                    "logo": "https://media.api-sports.io/football/leagues/45.png",
-                    "type": "cup"
-                },
+    {
+        "name": "Italy",
+        "flag": "https://flagcdn.com/w40/it.png",
+        "leagues": [
+            {"name": "Serie A", "code": "SA", "logo": "https://media.api-sports.io/football/leagues/135.png", "type": "league"},
+            {"name": "Coppa Italia", "code": "COP", "logo": "https://media.api-sports.io/football/leagues/137.png", "type": "cup"},
+            {"name": "Supercoppa", "code": "DSC", "logo": "https://media.api-sports.io/football/leagues/547.png", "type": "supercup"},
+        ]
+    },
 
-                {
-                    "name": "EFL Cup",
-                    "code": "ELCUP",
-                    "logo": "https://media.api-sports.io/football/leagues/48.png",
-                    "type": "cup"
-                },
+    {
+        "name": "Germany",
+        "flag": "https://flagcdn.com/w40/de.png",
+        "leagues": [
+            {"name": "Bundesliga", "code": "BL1", "logo": "https://media.api-sports.io/football/leagues/78.png", "type": "league"},
+            {"name": "DFB Pokal", "code": "DFB", "logo": "https://media.api-sports.io/football/leagues/81.png", "type": "cup"},
+            {"name": "DFL Super Cup", "code": "DSUP", "logo": "https://media.api-sports.io/football/leagues/529.png", "type": "supercup"},
+        ]
+    },
 
-            ]
-        },
+    {
+        "name": "France",
+        "flag": "https://flagcdn.com/w40/fr.png",
+        "leagues": [
+            {"name": "Ligue 1", "code": "FL1", "logo": "https://media.api-sports.io/football/leagues/61.png", "type": "leauge"},
+            {"name": "Coupe de France", "code": "CDF", "logo": "https://media.api-sports.io/football/leagues/66.png", "type": "cup"},
+            {"name": "Trophée des Champions", "code": "TDC", "logo": "https://media.api-sports.io/football/leagues/526.png", "type": "supercup"},
+        ]
+    },
 
-
-        {
-            "name": "Spain",
-            "flag": "https://flagcdn.com/w40/es.png",
-            "leagues": [
-
-                {
-                    "name": "La Liga",
-                    "code": "PD",
-                    "logo": "https://media.api-sports.io/football/leagues/140.png",
-                    "type": "league"
-                },
-
-                {
-                    "name": "Copa del Rey",
-                    "code": "CDR",
-                    "logo": "https://media.api-sports.io/football/leagues/143.png",
-                    "type": "cup"
-                },
-
-                {
-                    "name": "Super Cup",
-                    "code": "SC",
-                    "logo": "https://media.api-sports.io/football/leagues/556.png",
-                    "type": "supercup"
-                },
-
-            ]
-        },
-
-
-        {
-            "name": "Italy",
-            "flag": "https://flagcdn.com/w40/it.png",
-            "leagues": [
-
-                {
-                    "name": "Serie A",
-                    "code": "SA",
-                    "logo": "https://media.api-sports.io/football/leagues/135.png",
-                    "type": "league"
-                },
-
-                {
-                    "name": "Coppa Italia",
-                    "code": "COP",
-                    "logo": "https://media.api-sports.io/football/leagues/137.png",
-                    "type": "cup"
-                },
-
-                {
-                    "name": "Supercoppa",
-                    "code": "DSC",
-                    "logo": "https://media.api-sports.io/football/leagues/547.png",
-                    "type": "supercup"
-                },
-
-            ]
-        },
-
-
-        {
-            "name": "Germany",
-            "flag": "https://flagcdn.com/w40/de.png",
-            "leagues": [
-
-                {
-                    "name": "Bundesliga",
-                    "code": "BL1",
-                    "logo": "https://media.api-sports.io/football/leagues/78.png",
-                    "type": "league"                },
-
-                {
-                    "name": "DFB Pokal",
-                    "code": "DFB",
-                    "logo": "https://media.api-sports.io/football/leagues/81.png",
-                    "type": "cup"
-                },
-
-                {
-                    "name": "DFL Super Cup",
-                    "code": "DSUP",
-                    "logo": "https://media.api-sports.io/football/leagues/529.png",
-                    "type": "supercup"
-                },
-
-            ]
-        },
-
-
-        {
-            "name": "France",
-            "flag": "https://flagcdn.com/w40/fr.png",
-            "leagues": [
-
-                {
-                    "name": "Ligue 1",
-                    "code": "FL1",
-                    "logo": "https://media.api-sports.io/football/leagues/61.png",
-                    "type": "leauge"
-                },
-
-                {
-                    "name": "Coupe de France",
-                    "code": "CDF",
-                    "logo": "https://media.api-sports.io/football/leagues/66.png",
-                    "type": "cup"                },
-
-                {
-                    "name": "Trophée des Champions",
-                    "code": "TDC",
-                    "logo": "https://media.api-sports.io/football/leagues/526.png",
-                    "type": "supercup"
-                },
-
-            ]
-        },
-
-    ]
-
-
-
-
+]
 
 
 def get_common_context():
@@ -1204,17 +956,11 @@ def get_common_context():
     }
 
 
-
-
-
 def clean_team_name(name):
-
     return TEAM_NAMES.get(name, name)
 
 
-
-
-
+# ================= HOME =================
 def matches(request, matchday=1):
 
     matchday = int(matchday)
@@ -1242,18 +988,14 @@ def matches(request, matchday=1):
     )
 
 
-
-
-
-
-
+# ================= GET MATCHES =================
 def get_matches(code, matchday):
 
     cache_key = f"matches_{code}_{SEASON}_{matchday}"
 
     cached = cache.get(cache_key)
 
-    if cached:
+    if cached is not None:
         return cached
 
     league = LEAGUES[code]["id"]
@@ -1261,22 +1003,18 @@ def get_matches(code, matchday):
     url = "https://v3.football.api-sports.io/fixtures"
 
     params = {
-    "league": league,
-    "season": SEASON,
-    "round": f"Regular Season - {matchday}"
+        "league": league,
+        "season": SEASON,
+        "round": f"Regular Season - {matchday}"
     }
 
-    
-
-
     response = requests.get(
-    url,
-    headers=headers,
-    params=params
-)
+        url,
+        headers=headers,
+        params=params
+    )
 
     data = response.json()
-
 
     fixtures = data.get("response", [])
 
@@ -1290,17 +1028,13 @@ def get_matches(code, matchday):
 
             "homeTeam": {
                 "id": f["teams"]["home"]["id"],
-                "name": clean_team_name(
-                    f["teams"]["home"]["name"]
-                ),
+                "name": clean_team_name(f["teams"]["home"]["name"]),
                 "crest": f["teams"]["home"]["logo"]
             },
 
             "awayTeam": {
                 "id": f["teams"]["away"]["id"],
-                "name": clean_team_name(
-                    f["teams"]["away"]["name"]
-                ),
+                "name": clean_team_name(f["teams"]["away"]["name"]),
                 "crest": f["teams"]["away"]["logo"]
             },
 
@@ -1316,7 +1050,6 @@ def get_matches(code, matchday):
             "utcDate": f["fixture"]["date"],
         })
 
-
     competition = {
         "name": LEAGUES[code]["name"],
         "logo": LEAGUES[code]["logo"]
@@ -1324,22 +1057,9 @@ def get_matches(code, matchday):
 
     result = (competition, matches)
 
-    cache.set(cache_key, result, timeout=300)
+    cache.set(cache_key, result, CACHE_TTL)
 
     return result
-
-
-
-
-
-
-
-
-    
-
-
-
-
 
 
 def get_team_statistics_cached(team_id, league_id):
@@ -1364,25 +1084,22 @@ def get_team_statistics_cached(team_id, league_id):
     except requests.RequestException:
         data = {}
 
-    
     if isinstance(data, list):
         data = {}
 
-    cache.set(cache_key, data, 60 * 60 * 4)
+    cache.set(cache_key, data, CACHE_TTL)
 
     return data
 
 
-
-
-
+# ================= MATCH DETAIL =================
 def match_detail(request, id):
 
     cache_key = f"match_detail_v5_{id}"
 
     cached = cache.get(cache_key)
 
-    if cached:
+    if cached is not None:
         return render(
             request,
             "pages/match_detail.html",
@@ -1438,13 +1155,10 @@ def match_detail(request, id):
         "referee": f["fixture"].get("referee")
     }
 
-
-
     home_id = game["home_id"]
     away_id = game["away_id"]
 
     league_id = f["league"]["id"]
-
 
     def build_lines(players, reverse=False):
         rows = defaultdict(list)
@@ -1472,7 +1186,6 @@ def match_detail(request, id):
 
         return lines
 
-
     def build_team_lineup(team_data, is_away=False):
         starting = []
 
@@ -1494,8 +1207,6 @@ def match_detail(request, id):
                 "photo": player_photo,
             })
 
-
-
         substitutes = []
 
         for item in team_data.get("substitutes", []):
@@ -1516,12 +1227,12 @@ def match_detail(request, id):
 
         return {
             "team": clean_team_name(team_data["team"]["name"]),
-             "logo": team_data["team"]["logo"],
-             "formation": team_data.get("formation"),
-             "coach": coach_data.get("name"),
-             "starting": starting,
-             "lines": build_lines(starting, reverse=is_away),
-             "substitutes": substitutes,
+            "logo": team_data["team"]["logo"],
+            "formation": team_data.get("formation"),
+            "coach": coach_data.get("name"),
+            "starting": starting,
+            "lines": build_lines(starting, reverse=is_away),
+            "substitutes": substitutes,
         }
 
     lineup_response = requests.get(
@@ -1543,9 +1254,6 @@ def match_detail(request, id):
         lineups["home"] = build_team_lineup(lineups_data[0], is_away=False)
         lineups["away"] = build_team_lineup(lineups_data[1], is_away=True)
 
-
-
-
     events_response = requests.get(
         "https://v3.football.api-sports.io/fixtures/events",
         headers=headers,
@@ -1554,9 +1262,6 @@ def match_detail(request, id):
     )
 
     events_json = events_response.json()
-
-    print("EVENTS RESPONSE:", events_json)
-    
 
     events = []
 
@@ -1592,17 +1297,8 @@ def match_detail(request, id):
             "type": event.get("type"),
             "detail": event.get("detail"),
 
-            "side":side,
+            "side": side,
         })
-
-
-        print(event.get("assist"))
-
-
-
-        
-
-
 
     home_last_response = requests.get(
         "https://v3.football.api-sports.io/fixtures",
@@ -1615,9 +1311,7 @@ def match_detail(request, id):
         timeout=15
     )
 
-
     away_last_response = requests.get(
-        
         "https://v3.football.api-sports.io/fixtures",
         headers=headers,
         params={
@@ -1628,37 +1322,23 @@ def match_detail(request, id):
         timeout=15
     )
 
-
-
     home_last_matches = sorted(
         home_last_response.json().get("response", []),
         key=lambda x: x["fixture"]["date"],
         reverse=True
     )[:5]
 
-
-
     away_last_matches = sorted(
         away_last_response.json().get("response", []),
         key=lambda x: x["fixture"]["date"],
         reverse=True
     )[:5]
-        
-        
-    
-    
-    
-    
 
-
-
-    
     def parse_stat_value(value):
         if value is None:
             return 0
-    
+
         if isinstance(value, str):
-            
             cleaned = value.replace("%", "").strip()
             try:
                 return float(cleaned) if "." in cleaned else int(cleaned)
@@ -1775,20 +1455,10 @@ def match_detail(request, id):
         away_id=game["away_id"],
     )
 
-
-
-
-
-
-
-
-
-
     comparison = {
-    "home": {},
-    "away": {},
+        "home": {},
+        "away": {},
     }
-
 
     def get_team_comparison(data):
 
@@ -1801,52 +1471,31 @@ def match_detail(request, id):
         biggest = data.get("biggest", {})
 
         return {
-            
-            "played":
-                fixtures.get("played", {}).get("total", 0),
 
-            "wins":
-                fixtures.get("wins", {}).get("total", 0),
+            "played": fixtures.get("played", {}).get("total", 0),
 
-            "draws":
-                fixtures.get("draws", {}).get("total", 0),
+            "wins": fixtures.get("wins", {}).get("total", 0),
 
-            "losses":
-                fixtures.get("loses", {}).get("total", 0),
+            "draws": fixtures.get("draws", {}).get("total", 0),
 
-            "goals_for":
-                goals.get("for", {}).get("total", {}).get("total", 0),
+            "losses": fixtures.get("loses", {}).get("total", 0),
 
-            "goals_against":
-                goals.get("against", {}).get("total", {}).get("total", 0),
+            "goals_for": goals.get("for", {}).get("total", {}).get("total", 0),
 
-            "clean_sheets":
-                clean_sheet.get("total", 0),
+            "goals_against": goals.get("against", {}).get("total", {}).get("total", 0),
 
-            "big_chances":
-                biggest.get("chances", {}).get("created", 0),
+            "clean_sheets": clean_sheet.get("total", 0),
+
+            "big_chances": biggest.get("chances", {}).get("created", 0),
         }
-
 
     home_statistics = get_team_statistics_cached(home_id, league_id)
 
     away_statistics = get_team_statistics_cached(away_id, league_id)
 
-
-
     comparison["home"] = get_team_comparison(home_statistics)
 
     comparison["away"] = get_team_comparison(away_statistics)
-
-
-    print(comparison)
-
-
-    print("HOME LAST:", len(home_last_matches))
-    print("AWAY LAST:", len(away_last_matches))
-
-
-
 
     context = {
         "game": game,
@@ -1857,11 +1506,9 @@ def match_detail(request, id):
         "comparison": comparison,
         "home_last_matches": home_last_matches,
         "away_last_matches": away_last_matches,
-
     }
 
-
-    cache.set(cache_key, context, 60 * 15)
+    cache.set(cache_key, context, CACHE_TTL)
 
     return render(
         request,
@@ -1870,27 +1517,22 @@ def match_detail(request, id):
     )
 
 
-
-
+# ================= TEAM DETAIL =================
 def team_detail(request, id):
 
     cache_key = f"team_detail_v2_{id}"
 
     cached = cache.get(cache_key)
 
-    if cached:
+    if cached is not None:
         return render(
             request,
             "pages/team_detail.html",
             cached
         )
 
-
-    
-
     team = None
     venue = None
-
 
     try:
 
@@ -1905,12 +1547,9 @@ def team_detail(request, id):
 
         team_data = team_response.json()
 
-
     except requests.RequestException:
 
         team_data = {}
-
-
 
     if team_data.get("response"):
 
@@ -1919,26 +1558,17 @@ def team_detail(request, id):
         team = team_entry.get("team")
         venue = team_entry.get("venue")
 
-
         if team:
 
             team["name"] = clean_team_name(
                 team["name"]
             )
 
-
     if team is None:
         team = {"id": int(id), "name": "Unknown Team", "logo": None}
 
-
-
-    
-
-
     def fetch_fixtures(extra_params):
 
-
-        
         try:
 
             response = requests.get(
@@ -1952,33 +1582,16 @@ def team_detail(request, id):
                 timeout=15
             )
 
-
             data = response.json()
-            
-            print("STATUS:", response.status_code)
-            print("PARAMS:", {
-                "team": id,
-                "season": SEASON,
-                **extra_params
-            })
-            print("RESULTS:", data.get("results"))
-            print("ERRORS:", data.get("errors"))
-            print("MESSAGE:", data.get("message"))
-
-
 
         except requests.RequestException:
 
             return []
 
-
-
         fixtures = data.get(
             "response",
             []
         )
-
-
 
         for f in fixtures:
 
@@ -1986,31 +1599,19 @@ def team_detail(request, id):
                 f["teams"]["home"]["name"]
             )
 
-
             f["teams"]["away"]["name"] = clean_team_name(
                 f["teams"]["away"]["name"]
             )
 
-
-
         return fixtures
-
-
-
-
-
-
 
     season_fixtures = fetch_fixtures(
         {}
     )
 
-
     season_fixtures.sort(
-        key=lambda f:f["fixture"]["date"]
+        key=lambda f: f["fixture"]["date"]
     )
-
-
 
     from datetime import datetime, timezone
 
@@ -2020,10 +1621,10 @@ def team_detail(request, id):
     upcoming_matches = []
 
     for match in season_fixtures:
-        
+
         match_date = datetime.fromisoformat(
             match["fixture"]["date"].replace("Z", "+00:00")
-    )
+        )
 
         if match["fixture"]["status"]["short"] == "FT":
             finished_matches.append(match)
@@ -2031,19 +1632,13 @@ def team_detail(request, id):
         elif match_date > now:
             upcoming_matches.append(match)
 
-
-
     last_matches = finished_matches[-5:]
 
     last_matches.reverse()
 
     scheduled_matches = upcoming_matches[:5]
 
-
-
     next_match = scheduled_matches[0] if scheduled_matches else None
-
-
 
     form = []
     wins = 0
@@ -2051,19 +1646,19 @@ def team_detail(request, id):
     losses = 0
 
     for match in last_matches:
-        
+
         home = match["teams"]["home"]["id"] == int(id)
 
         home_goals = match["goals"]["home"]
         away_goals = match["goals"]["away"]
 
         if home_goals is None or away_goals is None:
-             continue
+            continue
 
         if home:
             if home_goals > away_goals:
                 form.append("W")
-                wins += 1 
+                wins += 1
             elif home_goals == away_goals:
                 form.append("D")
                 draws += 1
@@ -2082,15 +1677,8 @@ def team_detail(request, id):
                 form.append("L")
                 losses += 1
 
-
-
-
-
-
-    
-
     team_statistics = {
-        
+
         "played": 0,
         "wins": 0,
         "draws": 0,
@@ -2109,7 +1697,7 @@ def team_detail(request, id):
         "biggest_win": 0,
         "biggest_loss": 0,
 
-    } 
+    }
 
     for match in season_fixtures:
         if match["fixture"]["status"]["short"] != "FT":
@@ -2127,7 +1715,7 @@ def team_detail(request, id):
             is_home = True
 
         else:
-            
+
             goals_for = away_goals
             goals_against = home_goals
             is_home = False
@@ -2166,67 +1754,41 @@ def team_detail(request, id):
 
     team_statistics["goal_difference"] = (
         team_statistics["goals_for"]
-    -
-        team_statistics["goals_against"]
+        - team_statistics["goals_against"]
     )
-
 
     if team_statistics["played"]:
 
         team_statistics["average_goals"] = round(
-
             team_statistics["goals_for"] /
             team_statistics["played"],
-
             2
-
-       )
+        )
 
         team_statistics["win_rate"] = round(
-
-          team_statistics["wins"] * 100 /
-          team_statistics["played"],
-
-          1
-
+            team_statistics["wins"] * 100 /
+            team_statistics["played"],
+            1
         )
 
     else:
         team_statistics["average_goals"] = 0
         team_statistics["win_rate"] = 0
 
-
-
-
-
-
-
-
     team_league_code = None
-
-
 
     if season_fixtures:
 
-
         league_ids = [
-
             f["league"]["id"]
-
             for f in season_fixtures
-
         ]
-
-
 
         most_common_league_id = Counter(
             league_ids
         ).most_common(1)[0][0]
 
-
-
         for league_code, league_info in LEAGUES.items():
-
 
             if league_info["id"] == most_common_league_id:
 
@@ -2234,14 +1796,7 @@ def team_detail(request, id):
 
                 break
 
-
-
-
-
-
     standings = []
-
-
 
     if team_league_code:
 
@@ -2249,37 +1804,22 @@ def team_detail(request, id):
             team_league_code
         )
 
-
-
-
-
-
     trophies_cache_key = f"team_trophies_{id}"
-
-
 
     trophies = cache.get(
         trophies_cache_key
     )
 
-
-
     if trophies is None:
-
 
         raw_trophies = TEAM_TROPHIES.get(
             int(id),
             {}
         )
 
-
-
         trophies = []
 
-
-
-        for name,count in raw_trophies.items():
-
+        for name, count in raw_trophies.items():
 
             trophies.append({
 
@@ -2291,75 +1831,38 @@ def team_detail(request, id):
 
             })
 
-
-
         cache.set(
-
             trophies_cache_key,
-
             trophies,
-
-            60 * 60 * 6
-
+            CACHE_TTL
         )
-
-
-
-
-
-
 
     # ================= SQUAD =================
 
-
     squad_cache_key = f"team_squad_{id}"
-
-
 
     squad = cache.get(
         squad_cache_key
     )
 
-
-
     if squad is None:
-
-
 
         squad = []
 
-
-
         try:
 
-
             squad_response = requests.get(
-
                 "https://v3.football.api-sports.io/players/squads",
-
                 headers=headers,
-
                 params={
-
                     "team": id
-
                 },
-
                 timeout=15
-
             )
-
-
 
             squad_json = squad_response.json()
 
-
-
             if squad_json.get("response"):
-
-
-
-
 
                 for player in squad_json["response"][0].get("players", []):
 
@@ -2367,32 +1870,14 @@ def team_detail(request, id):
                     number = player.get("number")
                     position = player.get("position")
 
-
                     if not age or not position:
                         continue
 
-
-    
                     if age < 17:
                         continue
 
-
-    
                     if number and number > 73:
                         continue
-
-
-                   
-
-                    
-                    
-
-
-
-              
-
-
-
 
                     squad.append({
 
@@ -2400,209 +1885,128 @@ def team_detail(request, id):
 
                         "name": player.get("name"),
 
-                        "age": age ,
+                        "age": age,
 
-                        "number": number ,
+                        "number": number,
 
-                        "position": position ,
+                        "position": position,
 
                         "photo": player.get("photo")
 
                     })
 
-
                 squad = sorted(
                     squad,
                     key=lambda x: x["age"] or 0,
                     reverse=True
-                )    
-
-
-
+                )
 
         except requests.RequestException:
 
-
             squad = []
 
-
-
-
         cache.set(
-
             squad_cache_key,
-
             squad,
-
-            60 * 60 * 6
-
+            CACHE_TTL
         )
 
-
-
-
-    
-
-
     goalkeepers = []
-
     defenders = []
-
     midfielders = []
-
     attackers = []
 
-
-
     for player in squad:
-        
+
         position = player.get("position")
-
-
 
         if position == "Goalkeeper":
             goalkeepers.append(player)
-
-
 
         elif position == "Defender":
 
             defenders.append(player)
 
-
-
         elif position == "Midfielder":
 
             midfielders.append(player)
-
-
 
         elif position == "Attacker":
 
             attackers.append(player)
 
-
-
-
-
-
-
-
     players_stats = []
 
     league_id = None
-
 
     if team_league_code:
 
         league_id = LEAGUES[team_league_code]["id"]
 
-
         players_cache_key = (
             f"players_stats_{id}_{league_id}_{SEASON}"
         )
-
 
         players_stats = cache.get(
             players_cache_key
         )
 
-
     if players_stats is None:
-
 
         players_stats = []
 
-
         if league_id:
-
 
             page = 1
 
-
             while True:
-
 
                 try:
 
-
                     response = requests.get(
-
                         "https://v3.football.api-sports.io/players",
-
                         headers=headers,
-
                         params={
-
                             "team": id,
-
                             "league": league_id,
-
                             "season": SEASON,
-
                             "page": page
-
                         },
-
                         timeout=20
-
                     )
-
 
                     data = response.json()
 
-
-
                 except requests.RequestException:
 
-
                     break
-
-
-
 
                 results = data.get(
                     "response",
                     []
                 )
 
-
-
                 if not results:
 
                     break
 
-
-
-
-
                 for item in results:
-
-
 
                     player = item.get(
                         "player",
                         {}
                     )
 
-
-
                     statistics_list = item.get(
                         "statistics",
                         []
                     )
 
-
-
                     if not statistics_list:
 
                         continue
 
-
-
                     stats = statistics_list[0]
-
-
 
                     players_stats.append({
 
@@ -2614,121 +2018,56 @@ def team_detail(request, id):
 
                         "age": player.get("age"),
 
+                        "position": stats.get("games", {}).get("position"),
 
-                        "position":
-                            stats.get("games", {}).get("position"),
+                        "appearances": stats.get("games", {}).get("appearences", 0),
 
+                        "minutes": stats.get("games", {}).get("minutes", 0),
 
+                        "rating": stats.get("games", {}).get("rating", "0"),
 
-                        "appearances":
-                            stats.get("games", {}).get("appearences",0),
+                        "goals": stats.get("goals", {}).get("total") or 0,
 
+                        "assists": stats.get("goals", {}).get("assists") or 0,
 
+                        "shots": stats.get("shots", {}).get("total") or 0,
 
-                        "minutes":
-                            stats.get("games", {}).get("minutes",0),
+                        "shots_on": stats.get("shots", {}).get("on") or 0,
 
+                        "passes": stats.get("passes", {}).get("total") or 0,
 
+                        "key_passes": stats.get("passes", {}).get("key") or 0,
 
-                        "rating":
-                            stats.get("games", {}).get("rating","0"),
+                        "accuracy": stats.get("passes", {}).get("accuracy") or "0%",
 
+                        "dribbles": stats.get("dribbles", {}).get("success") or 0,
 
+                        "tackles": stats.get("tackles", {}).get("total") or 0,
 
-                        "goals":
-                            stats.get("goals",{}).get("total") or 0,
+                        "interceptions": stats.get("tackles", {}).get("interceptions") or 0,
 
+                        "yellow": stats.get("cards", {}).get("yellow") or 0,
 
-
-                        "assists":
-                            stats.get("goals",{}).get("assists") or 0,
-
-
-
-                        "shots":
-                            stats.get("shots",{}).get("total") or 0,
-
-
-
-                        "shots_on":
-                            stats.get("shots",{}).get("on") or 0,
-
-
-
-                        "passes":
-                            stats.get("passes",{}).get("total") or 0,
-
-
-
-                        "key_passes":
-                            stats.get("passes",{}).get("key") or 0,
-
-
-
-                        "accuracy":
-                            stats.get("passes",{}).get("accuracy") or "0%",
-
-
-
-                        "dribbles":
-                            stats.get("dribbles",{}).get("success") or 0,
-
-
-
-                        "tackles":
-                            stats.get("tackles",{}).get("total") or 0,
-
-
-
-                        "interceptions":
-                            stats.get("tackles",{}).get("interceptions") or 0,
-
-
-
-                        "yellow":
-                            stats.get("cards",{}).get("yellow") or 0,
-
-
-
-                        "red":
-                            stats.get("cards",{}).get("red") or 0,
-
+                        "red": stats.get("cards", {}).get("red") or 0,
 
                     })
-
-
 
                 paging = data.get(
                     "paging",
                     {}
                 )
 
-
-
-                if page >= paging.get("total",1):
+                if page >= paging.get("total", 1):
 
                     break
 
-
-
                 page += 1
 
-
-
-
-
             cache.set(
-
                 players_cache_key,
-
                 players_stats,
-
-                60 * 60 * 6
-
+                CACHE_TTL
             )
-
-
-
 
     team_leaders = {}
 
@@ -2750,7 +2089,7 @@ def team_detail(request, id):
                 players_stats,
                 key=lambda p: float(
                     p.get("rating") or 0
-            )
+                )
             ),
 
             "most_minutes": max(
@@ -2780,7 +2119,7 @@ def team_detail(request, id):
 
             "most_tackles": max(
                 players_stats,
-                 key=lambda p: p.get("tackles") or 0
+                key=lambda p: p.get("tackles") or 0
             ),
 
             "most_interceptions": max(
@@ -2800,103 +2139,57 @@ def team_detail(request, id):
 
         }
 
-
-
-
-
-
-
-
-
-
-
-
     context = {
-
 
         "team": team,
 
-
         "venue": venue,
-
 
         "last_matches": last_matches,
 
-
         "scheduled_matches": scheduled_matches,
-
 
         "season_fixtures": season_fixtures,
 
-
         "team_league_code": team_league_code,
-
 
         "standings": standings,
 
-
         "trophies": trophies,
-
 
         "squad": squad,
 
-
         "goalkeepers": goalkeepers,
-
 
         "defenders": defenders,
 
-
         "midfielders": midfielders,
-
 
         "attackers": attackers,
 
-
         "players_statistics": players_stats,
 
-
         "team_statistics": team_statistics,
-
 
         "team_leaders": team_leaders,
 
         "form": form,
-        
+
         "wins_last5": wins,
-        
+
         "draws_last5": draws,
 
         "losses_last5": losses,
 
         "next_match": next_match,
 
-
     }
 
-
-
-
-
-
-
-
     cache.set(
-
         cache_key,
-
         context,
-
-        60 * 60 * 4
-
-
+        CACHE_TTL
     )
-
-
-
-
-
-
 
     return render(
 
@@ -2909,12 +2202,6 @@ def team_detail(request, id):
     )
 
 
-
-
-
-
-    
-
 def get_team_stats_full(team_id, season=SEASON):
 
     cache_key = f"compare_team_full_v1_{team_id}_{season}"
@@ -2923,8 +2210,6 @@ def get_team_stats_full(team_id, season=SEASON):
 
     if cached is not None:
         return cached
-
-    
 
     team = None
 
@@ -2961,11 +2246,9 @@ def get_team_stats_full(team_id, season=SEASON):
             "stats": {},
         }
 
-        cache.set(cache_key, result, 60 * 60 * 6)
+        cache.set(cache_key, result, CACHE_TTL)
 
         return result
-
-    
 
     try:
 
@@ -2983,8 +2266,6 @@ def get_team_stats_full(team_id, season=SEASON):
         data = {}
 
     fixtures = data.get("response", [])
-
-
 
     team_statistics = {
 
@@ -3084,12 +2365,9 @@ def get_team_stats_full(team_id, season=SEASON):
         "stats": team_statistics,
     }
 
-    cache.set(cache_key, result, 60 * 60 * 4)
+    cache.set(cache_key, result, CACHE_TTL)
 
     return result
-
-
-
 
 
 def build_team_comparison_rows(team1, team2):
@@ -3126,10 +2404,6 @@ def build_team_comparison_rows(team1, team2):
 
     return rows
 
-
-
-
-    
 
 def compare_team(request, id):
 
@@ -3178,15 +2452,13 @@ def compare_team(request, id):
                             "league_name": league_info["name"],
                         })
 
-            cache.set(search_cache_key, search_results, 60 * 60 * 2)
-
+            cache.set(search_cache_key, search_results, CACHE_TTL)
 
     comparison_rows = []
 
     if team1 and team2:
 
         comparison_rows = build_team_comparison_rows(team1, team2)
-
 
     context = {
 
@@ -3205,14 +2477,7 @@ def compare_team(request, id):
     )
 
 
-
-
-
-
-
-
-
-
+# ================= STANDINGS =================
 def get_standings(code):
 
     league = LEAGUES[code]["id"]
@@ -3260,7 +2525,7 @@ def get_standings(code):
             row["team"]["name"]
         )
 
-    cache.set(cache_key, table, 60 * 60)
+    cache.set(cache_key, table, CACHE_TTL)
 
     return table
 
@@ -3278,22 +2543,17 @@ def competition_standings(request, code):
     table = get_standings(code)
 
     context = {
-    "live_table": table,
-    "competition": LEAGUES[code],
-    "competitions": LEAGUES,
-    "code": code,
+        "live_table": table,
+        "competition": LEAGUES[code],
+        "competitions": LEAGUES,
+        "code": code,
     }
 
     return render(
-    request,
-    LEAGUES[code]["standings_template"],
-    context
+        request,
+        LEAGUES[code]["standings_template"],
+        context
     )
-
-
-    
-
-
 
 
 def standings(request):
@@ -3302,8 +2562,6 @@ def standings(request):
         request,
         "PL"
     )
-
-
 
 
 def competition(request, code, matchday=1):
@@ -3342,9 +2600,6 @@ def competition(request, code, matchday=1):
     )
 
 
-
-
-
 def league_statistics(request, code):
 
     if code not in LEAGUES:
@@ -3366,7 +2621,6 @@ def league_statistics(request, code):
             "pages/league_statistics.html",
             cached
         )
-
 
     def fetch_player_leaders(endpoint):
         url = f"https://v3.football.api-sports.io/players/{endpoint}"
@@ -3416,7 +2670,6 @@ def league_statistics(request, code):
 
         return leaders
 
-
     top_scorers = fetch_player_leaders("topscorers")
 
     top_assists = fetch_player_leaders("topassists")
@@ -3424,7 +2677,6 @@ def league_statistics(request, code):
     top_yellow_cards = fetch_player_leaders("topyellowcards")
 
     top_red_cards = fetch_player_leaders("topredcards")
-
 
     standings = get_standings(code)
 
@@ -3461,7 +2713,7 @@ def league_statistics(request, code):
 
     }
 
-    cache.set(cache_key, context, 60 * 60)
+    cache.set(cache_key, context, CACHE_TTL)
 
     return render(
 
@@ -3520,7 +2772,6 @@ def search_teams(request):
     )
 
 
-
 def signup(request):
 
     if request.method == "POST":
@@ -3545,11 +2796,6 @@ def signup(request):
             "form": form,
         }
     )
-
-
-
-
-
 
 
 @login_required
@@ -3634,9 +2880,6 @@ def submit_prediction(request, match_id):
     )
 
 
-
-
-
 def predictions_page(request, code, matchday):
 
     user_stats = None
@@ -3714,11 +2957,6 @@ def predictions_page(request, code, matchday):
     return render(request, "pages/predictions.html", context)
 
 
-
-
-
-
-
 def leaderboard(request):
 
     users = (
@@ -3774,9 +3012,81 @@ def news_detail(request, id):
     )
 
 
+def get_team_squad_positions(team_id):
+
+    cache_key = f"squad_positions_{team_id}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/players/squads",
+            headers=headers,
+            params={"team": team_id},
+            timeout=15
+        )
+
+        data = response.json()
+
+    except requests.RequestException:
+        return {}
+
+    squads = data.get("response", [])
+
+    if not squads:
+        return {}
+
+    positions = {}
+
+    for p in squads[0].get("players", []):
+        positions[p["id"]] = p.get("position")
+
+    cache.set(cache_key, positions, CACHE_TTL)
+
+    return positions
 
 
+def get_team_squad_info(team_id):
 
+    cache_key = f"squad_info_{team_id}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/players/squads",
+            headers=headers,
+            params={"team": team_id},
+            timeout=15
+        )
+
+        data = response.json()
+
+    except requests.RequestException:
+        return {}
+
+    squads = data.get("response", [])
+
+    if not squads:
+        return {}
+
+    squad_info = {}
+
+    for p in squads[0].get("players", []):
+        squad_info[p["id"]] = {
+            "position": p.get("position"),
+            "photo": p.get("photo"),
+        }
+
+    cache.set(cache_key, squad_info, CACHE_TTL)
+
+    return squad_info
 
 
 def get_matchday_players(code, matchday):
@@ -3788,10 +3098,16 @@ def get_matchday_players(code, matchday):
     if cached is not None:
         return cached
 
-    
     competition, matches = get_matches(code, matchday)
 
     all_players = []
+
+    position_map = {
+        "Goalkeeper": "حراسة",
+        "Defender": "دفاع",
+        "Midfielder": "وسط",
+        "Attacker": "هجوم",
+    }
 
     for match in matches:
 
@@ -3812,57 +3128,44 @@ def get_matchday_players(code, matchday):
 
             team_name = clean_team_name(team_data["team"]["name"])
             team_logo = team_data["team"]["logo"]
+            team_id = team_data["team"]["id"]
+
+            squad_info = get_team_squad_info(team_id)
 
             for item in team_data.get("startXI", []):
 
                 player = item.get("player", {})
+                player_id = player.get("id")
 
-                grid = player.get("grid")
+                player_squad_info = squad_info.get(player_id, {})
 
-                if not grid:
-                    position_group = "غير محدد"
+                english_position = player_squad_info.get("position")
+                player_photo = player_squad_info.get("photo")
+
+                if english_position:
+                    position_group = position_map.get(english_position, "غير محدد")
                 else:
-                    row_num = int(grid.split(":")[0])
-
-                    all_rows = [
-                        int(p["player"]["grid"].split(":")[0])
-                        for p in team_data["startXI"]
-                        if p["player"].get("grid")
-                    ]
-
-                    max_row = max(all_rows)
-
-                    if row_num == 1:
-                        position_group = "حراسة"
-                    elif row_num == max_row:
-                        position_group = "هجوم"
-                    elif row_num == 2:
-                        position_group = "دفاع"
-                    else:
-                        position_group = "وسط"
+                    fallback_map = {
+                        "G": "حراسة",
+                        "D": "دفاع",
+                        "M": "وسط",
+                        "F": "هجوم",
+                    }
+                    position_group = fallback_map.get(player.get("pos"), "غير محدد")
 
                 all_players.append({
-                    "id": player.get("id"),
+                    "id": player_id,
                     "name": player.get("name"),
                     "number": player.get("number"),
+                    "photo": player_photo,
                     "team_name": team_name,
                     "team_logo": team_logo,
                     "position_group": position_group,
                 })
 
-    cache.set(cache_key, all_players, 60 * 60 * 6)
+    cache.set(cache_key, all_players, CACHE_TTL)
 
     return all_players
-
-
-
-
-
-
-
-
-
-
 
 
 @login_required
@@ -3914,7 +3217,6 @@ def team_of_week_form(request, code, matchday):
             matchday=matchday
         )
 
-        
         fan_team.players.all().delete()
 
         for pid in selected_ids:
@@ -3940,15 +3242,14 @@ def team_of_week_form(request, code, matchday):
         )
 
     return render(
-    request,
-    "pages/team_of_week_form.html",
-    {
-        "code": code,
-        "matchday": matchday,
-        "eligible_players": eligible_players,
-        "existing_player_ids": list(existing_player_ids),
-        # ...
-    }
+        request,
+        "pages/team_of_week_form.html",
+        {
+            "code": code,
+            "matchday": matchday,
+            "eligible_players": eligible_players,
+            "existing_player_ids": list(existing_player_ids),
+        }
     )
 
 
@@ -3973,263 +3274,12 @@ def team_of_week_view(request, code, matchday, user_id):
     )
 
 
-def get_team_squad_positions(team_id):
-
-    cache_key = f"squad_positions_{team_id}"
-
-    cached = cache.get(cache_key)
-
-    if cached is not None:
-        return cached
-
-    try:
-        response = requests.get(
-            "https://v3.football.api-sports.io/players/squads",
-            headers=headers,
-            params={"team": team_id},
-            timeout=15
-        )
-
-        data = response.json()
-
-    except requests.RequestException:
-        return {}
-
-    squads = data.get("response", [])
-
-    if not squads:
-        return {}
-
-    positions = {}
-
-    for p in squads[0].get("players", []):
-        positions[p["id"]] = p.get("position")
-
-    cache.set(cache_key, positions, 60 * 60 * 24)
-
-    return positions
-
-
-def get_matchday_players(code, matchday):
-
-    cache_key = f"matchday_players_{code}_{SEASON}_{matchday}"
-
-    cached = cache.get(cache_key)
-
-    if cached is not None:
-        return cached
-
-    
-    competition, matches = get_matches(code, matchday)
-
-    all_players = []
-
-    position_map = {
-        "Goalkeeper": "حراسة",
-        "Defender": "دفاع",
-        "Midfielder": "وسط",
-        "Attacker": "هجوم",
-    }
-
-    for match in matches:
-
-        try:
-            response = requests.get(
-                "https://v3.football.api-sports.io/fixtures/lineups",
-                headers=headers,
-                params={"fixture": match["id"]},
-                timeout=15
-            )
-
-            data = response.json()
-
-        except requests.RequestException:
-            continue
-
-        for team_data in data.get("response", []):
-
-            team_name = clean_team_name(team_data["team"]["name"])
-            team_logo = team_data["team"]["logo"]
-            team_id = team_data["team"]["id"]
-
-            squad_positions = get_team_squad_positions(team_id)
-
-            for item in team_data.get("startXI", []):
-
-                player = item.get("player", {})
-                player_id = player.get("id")
-
-                
-                english_position = squad_positions.get(player_id)
-
-                if english_position:
-                    position_group = position_map.get(english_position, "غير محدد")
-                else:
-                    fallback_map = {
-                        "G": "حراسة",
-                        "D": "دفاع",
-                        "M": "وسط",
-                        "F": "هجوم",
-                    }
-                    position_group = fallback_map.get(player.get("pos"), "غير محدد")
-
-                all_players.append({
-                    "id": player_id,
-                    "name": player.get("name"),
-                    "number": player.get("number"),
-                    "team_name": team_name,
-                    "team_logo": team_logo,
-                    "position_group": position_group,
-                })
-
-    
-    cache.set(cache_key, all_players, 60 * 60 * 6)
-
-    return all_players
-
-
-
-
-
-
-
-def get_team_squad_info(team_id):
-
-    cache_key = f"squad_info_{team_id}"
-
-    cached = cache.get(cache_key)
-
-    if cached is not None:
-        return cached
-
-    try:
-        response = requests.get(
-            "https://v3.football.api-sports.io/players/squads",
-            headers=headers,
-            params={"team": team_id},
-            timeout=15
-        )
-
-        data = response.json()
-
-    except requests.RequestException:
-        return {}
-
-    squads = data.get("response", [])
-
-    if not squads:
-        return {}
-
-    squad_info = {}
-
-    for p in squads[0].get("players", []):
-        squad_info[p["id"]] = {
-            "position": p.get("position"),
-            "photo": p.get("photo"),
-        }
-
-    
-    cache.set(cache_key, squad_info, 60 * 60 * 24)
-
-    return squad_info
-
-
-def get_matchday_players(code, matchday):
-
-    cache_key = f"matchday_players_{code}_{SEASON}_{matchday}"
-
-    cached = cache.get(cache_key)
-
-    if cached is not None:
-        return cached
-
-    
-    competition, matches = get_matches(code, matchday)
-
-    all_players = []
-
-    position_map = {
-        "Goalkeeper": "حراسة",
-        "Defender": "دفاع",
-        "Midfielder": "وسط",
-        "Attacker": "هجوم",
-    }
-
-    for match in matches:
-
-        try:
-            response = requests.get(
-                "https://v3.football.api-sports.io/fixtures/lineups",
-                headers=headers,
-                params={"fixture": match["id"]},
-                timeout=15
-            )
-
-            data = response.json()
-
-        except requests.RequestException:
-            continue
-
-        for team_data in data.get("response", []):
-
-            team_name = clean_team_name(team_data["team"]["name"])
-            team_logo = team_data["team"]["logo"]
-            team_id = team_data["team"]["id"]
-
-            
-            squad_info = get_team_squad_info(team_id)
-
-            for item in team_data.get("startXI", []):
-
-                player = item.get("player", {})
-                player_id = player.get("id")
-
-                player_squad_info = squad_info.get(player_id, {})
-
-                english_position = player_squad_info.get("position")
-                player_photo = player_squad_info.get("photo")
-
-                
-                if english_position:
-                    position_group = position_map.get(english_position, "غير محدد")
-                else:
-                    fallback_map = {
-                        "G": "حراسة",
-                        "D": "دفاع",
-                        "M": "وسط",
-                        "F": "هجوم",
-                    }
-                    position_group = fallback_map.get(player.get("pos"), "غير محدد")
-
-                all_players.append({
-                    "id": player_id,
-                    "name": player.get("name"),
-                    "number": player.get("number"),
-                    "photo": player_photo,
-                    "team_name": team_name,
-                    "team_logo": team_logo,
-                    "position_group": position_group,
-                })
-
-
-    cache.set(cache_key, all_players, 60 * 60 * 6)
-
-    return all_players
-
-
-
-
-
-
-
 @login_required
 def profile(request):
 
     user = request.user
 
-
     total_predictions = user.predictions.count()
-
 
     total_points = (
         user.predictions
@@ -4240,7 +3290,6 @@ def profile(request):
         or 0
     )
 
-
     correct_predictions = (
         user.predictions
         .filter(
@@ -4249,15 +3298,12 @@ def profile(request):
         .count()
     )
 
-
     accuracy = 0
 
     if total_predictions:
         accuracy = round(
             (correct_predictions / total_predictions) * 100
         )
-
-
 
     users = (
         User.objects
@@ -4271,7 +3317,6 @@ def profile(request):
         )
     )
 
-
     rank = None
 
     for index, u in enumerate(users, start=1):
@@ -4279,8 +3324,6 @@ def profile(request):
         if u.id == user.id:
             rank = index
             break
-
-
 
     return render(
         request,
@@ -4295,16 +3338,21 @@ def profile(request):
     )
 
 
-
-
-
-
-
-
-
+# ================= PLAYER DETAIL =================
 def player_detail(request, id):
 
     cache_key = f"player_detail_v2_{id}"
+
+    # ✅ تصحيح: كان ناقص التحقق من الكاش قبل الطلب، فيطلب من المصدر
+    # الخارجي في كل زيارة بدون استثناء بغض النظر عن مدة الكاش
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return render(
+            request,
+            "pages/player_detail.html",
+            cached
+        )
 
     player_response = requests.get(
 
@@ -4334,18 +3382,13 @@ def player_detail(request, id):
             }
         )
 
-
     player_data = player_json["response"][0]
 
     player_info = player_data["player"]
 
     statistics = player_data.get("statistics", [])
 
-
-    
-
     competition_stats = []
-
 
     for stat in statistics:
         league = stat.get("league", {})
@@ -4356,108 +3399,58 @@ def player_detail(request, id):
         shots = stat.get("shots", {})
         cards = stat.get("cards", {})
 
-
         competition_stats.append({
-            
-            "league_name":
-                league.get("name"),
 
+            "league_name": league.get("name"),
 
-            "league_logo":
-                league.get("logo"),
+            "league_logo": league.get("logo"),
 
+            "team_name": stat.get("team", {}).get("name"),
 
-            "team_name":
-                stat.get("team", {}).get("name"),
+            "appearances": games.get("appearences") or 0,
 
+            "minutes": games.get("minutes") or 0,
 
-            "appearances":
-                games.get("appearences") or 0,
+            "rating": games.get("rating") or 0,
 
+            "goals": goals.get("total") or 0,
 
-            "minutes":
-                games.get("minutes") or 0,
+            "assists": goals.get("assists") or 0,
 
+            "shots": shots.get("total") or 0,
 
-            "rating":
-                games.get("rating") or 0,
+            "shots_on": shots.get("on") or 0,
 
+            "passes": passes.get("total") or 0,
 
-            "goals":
-                goals.get("total") or 0,
+            "pass_accuracy": passes.get("accuracy") or 0,
 
+            "key_passes": passes.get("key") or 0,
 
-            "assists":
-                goals.get("assists") or 0,
+            "yellow": cards.get("yellow") or 0,
 
-
-            "shots":
-                shots.get("total") or 0,
-
-
-            "shots_on":
-                shots.get("on") or 0,
-
-
-            "passes":
-                passes.get("total") or 0,
-
-
-            "pass_accuracy":
-                passes.get("accuracy") or 0,
-
-
-            "key_passes":
-                passes.get("key") or 0,
-
-
-            "yellow":
-                cards.get("yellow") or 0,
-
-
-            "red":
-                cards.get("red") or 0,
-
+            "red": cards.get("red") or 0,
 
         })
 
-
-
-  
-
     defense_competition_stats = []
-    
+
     defense_total = {
         "tackles": 0,
-
         "blocks": 0,
-
         "interceptions": 0,
-
         "duels_total": 0,
-
         "duels_won": 0,
-
         "fouls_committed": 0,
-
         "fouls_drawn": 0,
-
         "penalty_committed": 0,
-
         "saves": 0,
-
         "goals_conceded": 0,
-
     }
-
-
-
 
     for stat in statistics:
 
-
         league = stat.get("league", {})
-
 
         tackles = stat.get("tackles", {})
         duels = stat.get("duels", {})
@@ -4465,129 +3458,61 @@ def player_detail(request, id):
         penalty = stat.get("penalty", {})
         goals = stat.get("goals", {})
 
+        defense_total["tackles"] += (tackles.get("total") or 0)
 
+        defense_total["blocks"] += (tackles.get("blocks") or 0)
 
-    # مجموع كل البطولات
+        defense_total["interceptions"] += (tackles.get("interceptions") or 0)
 
-        defense_total["tackles"] += (
-            tackles.get("total") or 0
-        )
+        defense_total["duels_total"] += (duels.get("total") or 0)
 
+        defense_total["duels_won"] += (duels.get("won") or 0)
 
-        defense_total["blocks"] += (
-            tackles.get("blocks") or 0
-        )
+        defense_total["fouls_committed"] += (fouls.get("committed") or 0)
 
+        defense_total["fouls_drawn"] += (fouls.get("drawn") or 0)
 
-        defense_total["interceptions"] += (
-            tackles.get("interceptions") or 0
-        )
+        defense_total["penalty_committed"] += (penalty.get("committed") or 0)
 
+        defense_total["saves"] += (goals.get("saves") or 0)
 
-        defense_total["duels_total"] += (
-            duels.get("total") or 0
-        )
-
-
-        defense_total["duels_won"] += (
-            duels.get("won") or 0
-        )
-
-
-        defense_total["fouls_committed"] += (
-            fouls.get("committed") or 0
-        )
-
-
-        defense_total["fouls_drawn"] += (
-            fouls.get("drawn") or 0
-        )
-
-
-        defense_total["penalty_committed"] += (
-            penalty.get("committed") or 0
-        )
-
-
-        defense_total["saves"] += (
-            goals.get("saves") or 0
-        )
-
-
-        defense_total["goals_conceded"] += (
-            goals.get("conceded") or 0
-        )
-
-
-
+        defense_total["goals_conceded"] += (goals.get("conceded") or 0)
 
         defense_competition_stats.append({
-            
-            "league_name":
-                league.get("name"),
 
+            "league_name": league.get("name"),
 
-            "league_logo":
-                league.get("logo"),
+            "league_logo": league.get("logo"),
 
+            "tackles": tackles.get("total") or 0,
 
-            "tackles":
-                tackles.get("total") or 0,
+            "blocks": tackles.get("blocks") or 0,
 
+            "interceptions": tackles.get("interceptions") or 0,
 
-            "blocks":
-                tackles.get("blocks") or 0,
+            "duels_total": duels.get("total") or 0,
 
+            "duels_won": duels.get("won") or 0,
 
-            "interceptions":
-                tackles.get("interceptions") or 0,
-
-
-            "duels_total":
-                duels.get("total") or 0,
-
-
-            "duels_won":
-                duels.get("won") or 0,
-
-
-            "fouls_committed":
-                fouls.get("committed") or 0,
+            "fouls_committed": fouls.get("committed") or 0,
 
         })
 
-
-
-
     defense_stats = defense_total
 
-
-
-
-
     goalkeeper_competition_stats = []
-    
+
     goalkeeper_total = {
-        "appearances":0,
-
-        "saves":0,
-
-        "goals_conceded":0,
-
-        "clean_sheets":0,
-
-        "penalty_saved":0,
-
-        "save_percentage_values":[],
-
-
+        "appearances": 0,
+        "saves": 0,
+        "goals_conceded": 0,
+        "clean_sheets": 0,
+        "penalty_saved": 0,
+        "save_percentage_values": [],
     }
 
-
-
-
     for stat in statistics:
-        
+
         league = stat.get("league", {})
 
         games = stat.get("games", {})
@@ -4596,117 +3521,65 @@ def player_detail(request, id):
 
         penalty = stat.get("penalty", {})
 
-
         saves = goals.get("saves") or 0
 
         conceded = goals.get("conceded") or 0
 
-
         shots_faced = saves + conceded
 
-
         save_percentage = 0
-
 
         if shots_faced > 0:
             save_percentage = round(
                 (saves / shots_faced) * 100
             )
 
-
-
-    
-
-
-        goalkeeper_total["appearances"] += (
-            games.get("appearences") or 0
-        )
-
+        goalkeeper_total["appearances"] += (games.get("appearences") or 0)
 
         goalkeeper_total["saves"] += saves
 
-
         goalkeeper_total["goals_conceded"] += conceded
-
 
         goalkeeper_total["clean_sheets"] += (
             stat.get("clean_sheet", {}).get("total") or 0
         )
 
-
-        goalkeeper_total["penalty_saved"] += (
-            penalty.get("saved") or 0
-        )
-
+        goalkeeper_total["penalty_saved"] += (penalty.get("saved") or 0)
 
         if save_percentage:
             goalkeeper_total["save_percentage_values"].append(
                 save_percentage
             )
 
-
-
-
-
         goalkeeper_competition_stats.append({
-            "league_name":
-                league.get("name"),
+            "league_name": league.get("name"),
 
+            "league_logo": league.get("logo"),
 
-            "league_logo":
-                league.get("logo"),
+            "appearances": games.get("appearences") or 0,
 
+            "saves": saves,
 
-            "appearances":
-                games.get("appearences") or 0,
+            "goals_conceded": conceded,
 
+            "save_percentage": save_percentage,
 
-            "saves":
-                saves,
+            "clean_sheets": stat.get("clean_sheet", {}).get("total") or 0,
 
-
-            "goals_conceded":
-                conceded,
-
-
-            "save_percentage":
-                save_percentage,
-
-
-            "clean_sheets":
-                stat.get("clean_sheet", {}).get("total") or 0,
-
-
-            "penalty_saved":
-                penalty.get("saved") or 0,
+            "penalty_saved": penalty.get("saved") or 0,
 
         })
 
-
-
-
-
-
     goalkeeper_stats = {
-        "appearances":
-            goalkeeper_total["appearances"],
+        "appearances": goalkeeper_total["appearances"],
 
+        "saves": goalkeeper_total["saves"],
 
-        "saves":
-            goalkeeper_total["saves"],
+        "goals_conceded": goalkeeper_total["goals_conceded"],
 
+        "clean_sheets": goalkeeper_total["clean_sheets"],
 
-        "goals_conceded":
-            goalkeeper_total["goals_conceded"],
-
-
-        "clean_sheets":
-            goalkeeper_total["clean_sheets"],
-
-
-        "penalty_saved":
-            goalkeeper_total["penalty_saved"],
-
+        "penalty_saved": goalkeeper_total["penalty_saved"],
 
         "save_percentage":
             round(
@@ -4718,12 +3591,6 @@ def player_detail(request, id):
             else 0,
 
     }
-
-    
-
-
-
-    
 
     player = {
 
@@ -4743,145 +3610,85 @@ def player_detail(request, id):
 
     }
 
-    
-
     player_stats = {}
 
-    
-
     if statistics:
-        
-        
-        stat = statistics[0]
 
+        stat = statistics[0]
 
         player["team"] = {
             "name": stat["team"]["name"],
             "logo": stat["team"]["logo"],
         }
 
-
         player["position"] = stat.get("games", {}).get("position")
 
-
-
         total = {
-            "appearances":0,
-            "goals":0,
-            "assists":0,
-            "shots":0,
-            "shots_on":0,
-            "key_passes":0,
-            "dribbles":0,
-            "passes":0,
-            "ratings":[],
-            
+            "appearances": 0,
+            "goals": 0,
+            "assists": 0,
+            "shots": 0,
+            "shots_on": 0,
+            "key_passes": 0,
+            "dribbles": 0,
+            "passes": 0,
+            "ratings": [],
         }
 
-
-
         for stat in statistics:
-            
-            total["appearances"] += (
-                stat.get("games", {}).get("appearences") or 0
-            )
 
+            total["appearances"] += (stat.get("games", {}).get("appearences") or 0)
 
-            total["goals"] += (
-                stat.get("goals", {}).get("total") or 0
-            )
+            total["goals"] += (stat.get("goals", {}).get("total") or 0)
 
+            total["assists"] += (stat.get("goals", {}).get("assists") or 0)
 
-            total["assists"] += (
-                stat.get("goals", {}).get("assists") or 0
-            )
+            total["shots"] += (stat.get("shots", {}).get("total") or 0)
 
+            total["shots_on"] += (stat.get("shots", {}).get("on") or 0)
 
-            total["shots"] += (
-                stat.get("shots", {}).get("total") or 0
-            )
+            total["key_passes"] += (stat.get("passes", {}).get("key") or 0)
 
+            total["dribbles"] += (stat.get("dribbles", {}).get("success") or 0)
 
-            total["shots_on"] += (
-                stat.get("shots", {}).get("on") or 0
-            )
-
-
-            total["key_passes"] += (
-                stat.get("passes", {}).get("key") or 0
-            )
-
-
-            total["dribbles"] += (
-                stat.get("dribbles", {}).get("success") or 0
-            )
-
-
-            total["passes"] += (
-                stat.get("passes", {}).get("total") or 0
-            )
-
-
+            total["passes"] += (stat.get("passes", {}).get("total") or 0)
 
             rating = stat.get("games", {}).get("rating")
 
             if rating:
-                
+
                 total["ratings"].append(
                     float(rating)
                 )
 
-
         player_stats = {
 
-            "appearances":
-                total["appearances"],
+            "appearances": total["appearances"],
 
+            "goals": total["goals"],
 
-            "goals":
-                total["goals"],
-
-
-            "assists":
-                total["assists"],
-
+            "assists": total["assists"],
 
             "rating":
                 round(
                     sum(total["ratings"]) / len(total["ratings"]),
-                2
-            )
-            if total["ratings"] else 0,
+                    2
+                )
+                if total["ratings"] else 0,
 
+            "shots": total["shots"],
 
-            "shots":
-                total["shots"],
+            "shots_on": total["shots_on"],
 
+            "key_passes": total["key_passes"],
 
-            "shots_on":
-                total["shots_on"],
+            "dribbles": total["dribbles"],
 
+            "passes": total["passes"],
 
-            "key_passes":
-                total["key_passes"],
-
-
-            "dribbles":
-                total["dribbles"],
-
-
-            "passes":
-                total["passes"],
-
-
-            "pass_accuracy":
-                stat.get("passes", {}).get("accuracy",0),
+            "pass_accuracy": stat.get("passes", {}).get("accuracy", 0),
 
         }
-        
-
-        
-
 
     context = {
 
@@ -4901,7 +3708,7 @@ def player_detail(request, id):
 
     }
 
-    cache.set(cache_key, context, 60 * 60)
+    cache.set(cache_key, context, CACHE_TTL)
 
     return render(
 
@@ -4914,18 +3721,13 @@ def player_detail(request, id):
     )
 
 
-
 def search(request):
 
     query = request.GET.get("q")
 
-
     results = []
 
-
     if query:
-
-
 
         teams_response = requests.get(
 
@@ -4941,16 +3743,11 @@ def search(request):
 
         )
 
-
         teams_json = teams_response.json()
-
-
 
         for item in teams_json.get("response", []):
 
-
             team = item["team"]
-
 
             results.append({
 
@@ -4964,63 +3761,44 @@ def search(request):
 
             })
 
-
-
-
-
-
         players_response = requests.get(
-            
+
             "https://v3.football.api-sports.io/players",
 
-        headers=headers,
+            headers=headers,
 
-        params={
-            "search": query
-        },
+            params={
+                "search": query
+            },
 
-        timeout=15
+            timeout=15
 
         )
 
-
         players_json = players_response.json()
-
-
-        print(players_json)
-
-
 
         for item in players_json.get("response", []):
 
+            player = item["player"]
 
-           player = item["player"]
-           
-           results.append({
-            "type": "player",
+            results.append({
+                "type": "player",
 
-            "id": player["id"],
+                "id": player["id"],
 
-            "name": player["name"],
+                "name": player["name"],
 
-            "photo": player.get("photo")
+                "photo": player.get("photo")
 
-        })
-        
-
-
-
+            })
 
     context = {
-
 
         "query": query,
 
         "results": results
 
     }
-
-
 
     return render(
 
@@ -5031,12 +3809,6 @@ def search(request):
         context
 
     )
-
-
-
-
-
-
 
 
 POSITION_CATEGORY = {
@@ -5090,7 +3862,7 @@ def get_player_full(player_id, season=SEASON):
             "stats": {},
         }
 
-        cache.set(cache_key, result, 60 * 60 * 6)
+        cache.set(cache_key, result, CACHE_TTL)
 
         return result
 
@@ -5113,15 +3885,11 @@ def get_player_full(player_id, season=SEASON):
 
         games = stat.get("games", {}) or {}
 
-
-    
     first_stat = statistics_list[0] if statistics_list else {}
 
     position = first_stat.get("games", {}).get("position")
 
     team = first_stat.get("team", {}) or {}
-
-
 
     total = {
         "appearances": 0,
@@ -5250,7 +4018,7 @@ def get_player_full(player_id, season=SEASON):
         "stats": parsed_stats,
     }
 
-    cache.set(cache_key, result, 60 * 60 * 6)
+    cache.set(cache_key, result, CACHE_TTL)
 
     return result
 
@@ -5311,7 +4079,6 @@ def build_comparison_rows(player1, player2, comparison_type):
     return rows
 
 
-
 def compare_player(request, id):
 
     player1 = get_player_full(id)
@@ -5327,7 +4094,7 @@ def compare_player(request, id):
     if player2_id:
 
         player2 = get_player_full(player2_id)
-    
+
     elif query:
 
         search_cache_key = f"player_search_{query.lower()}_{SEASON}"
@@ -5410,8 +4177,7 @@ def compare_player(request, id):
 
                 })
 
-            cache.set(search_cache_key, search_results, 60 * 60 * 6)
-
+            cache.set(search_cache_key, search_results, CACHE_TTL)
 
     comparison_type = "attack"
 
@@ -5422,7 +4188,6 @@ def compare_player(request, id):
             "attack"
         )
 
-
     comparison_rows = []
 
     if player1 and player2:
@@ -5432,7 +4197,6 @@ def compare_player(request, id):
             player2,
             comparison_type
         )
-
 
     context = {
 
@@ -5452,24 +4216,18 @@ def compare_player(request, id):
     )
 
 
-
-
-
-
 def team_statistics(request, id):
 
     cache_key = f"team_statistics_{id}"
 
     cached = cache.get(cache_key)
 
-    if cached:
+    if cached is not None:
         return render(
             request,
             "pages/team_statistics.html",
             cached
         )
-
-    
 
     team = None
 
@@ -5497,8 +4255,6 @@ def team_statistics(request, id):
     except requests.RequestException:
         pass
 
-
-
     statistics = {}
 
     try:
@@ -5509,7 +4265,7 @@ def team_statistics(request, id):
             params={
                 "team": id,
                 "season": SEASON,
-                "league": LEAGUES["PL"]["id"]   
+                "league": LEAGUES["PL"]["id"]
             },
             timeout=20
         )
@@ -5522,8 +4278,6 @@ def team_statistics(request, id):
 
     except requests.RequestException:
         pass
-
-    
 
     players_stats = []
 
@@ -5572,7 +4326,7 @@ def team_statistics(request, id):
     cache.set(
         cache_key,
         context,
-        60 * 30
+        CACHE_TTL
     )
 
     return render(
@@ -5582,23 +4336,12 @@ def team_statistics(request, id):
     )
 
 
-
-
-
-
-
-
-
-
-
-
-
+# ================= CUP MATCHES (BY ROUND) =================
 
 def get_cup_rounds(code):
 
     league_info = LEAGUES.get(code)
 
-    
     if not league_info or "id" not in league_info:
         return []
 
@@ -5660,35 +4403,14 @@ def get_cup_rounds(code):
             "utcDate": f["fixture"]["date"],
         })
 
-    
     ordered_rounds = [
         {"round": name, "matches": matches}
         for name, matches in rounds.items()
     ]
 
-    cache.set(cache_key, ordered_rounds, 60 * 30)
+    cache.set(cache_key, ordered_rounds, CACHE_TTL)
 
     return ordered_rounds
-
-
-    CUP_THEMES = {
-
-    "FAC":   "#dc2626", 
-    "ELCUP": "#16a34a",   
-
-    "CDR":   "#dc2626",   
-    "SC":    "#f59e0b",   
-
-    "COP":   "#16a34a",  
-    "DSC":   "#7c3aed",   
-
-    "DFB":   "#000000",   
-    "DSUP":  "#dc2626", 
-
-    "CDF":   "#2563eb",  
-    "TDC":   "#f59e0b",   
-
-}
 
 
 def cup_competition(request, code):
@@ -5701,28 +4423,16 @@ def cup_competition(request, code):
     competition = competition.copy()
     competition["theme_color"] = competition.get("theme_color", "#dc2626")
 
-
     rounds = get_cup_rounds(code)
 
     context = {
-        
+
         "competition": competition,
         "competitions": LEAGUES,
         "countries": countries,
         "code": code,
-        "cup_code": code,       
+        "cup_code": code,
         "rounds": rounds,
     }
 
-
-    print("CODE:", code)
-    print("COMP:", competition)
-    print("COLOR:", competition.get("theme_color"))
-
-
-    
-
     return render(request, "pages/cup_competition.html", context)
-
-
-
