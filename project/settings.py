@@ -177,6 +177,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
+import os
+
+API_SPORTS_KEY= os.environ.get('API_SPORTS_KEY', 'bb8a30c3bfe6ea8d30849cbf9ea8cb8f')
+
+
+
+
 
 
 
