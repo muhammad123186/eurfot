@@ -492,7 +492,7 @@
 
 
 
-        {% for game in matches %}
+{% for game in matches %}
 
 
 
@@ -524,25 +524,55 @@
 
                 <div class="score-status">
 
-                    FULL TIME
+    {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
 
-                </div>
+        {{ game.elapsed }}'
+
+    {% elif game.status == "HT" %}
+
+        Half Time
+
+    {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+
+        FULL TIME
+
+    {% elif game.status == "NS" %}
+
+        {{ game.utcDate|date:"H:i" }}
+
+    {% elif game.status == "PST" %}
+
+        Postponed
+
+    {% elif game.status == "CANC" %}
+
+        Cancelled
+
+    {% else %}
+
+        {{ game.status }}
+
+    {% endif %}
+
+</div>
 
 
 
                 <div class="score-value">
 
-                    <span>{{ game.score.fullTime.home }}</span>
+    {% if game.status == "NS" %}
 
-                    <b>-</b>
+        <span>VS</span>
 
-                    <span>{{ game.score.fullTime.away }}</span>
+    {% else %}
 
-                </div>
+        <span>{{ game.score.fullTime.home }}</span>
+        <b>-</b>
+        <span>{{ game.score.fullTime.away }}</span>
 
+    {% endif %}
 
-
-            </div>
+</div>
 
 
 
@@ -581,6 +611,7 @@
 
 
         {% endfor %}
+
 
 
 
