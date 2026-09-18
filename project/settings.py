@@ -181,5 +181,14 @@ API_SPORTS_KEY= os.environ.get('API_SPORTS_KEY', 'bb8a30c3bfe6ea8d30849cbf9ea8cb
 
 
 
+INSTALLED_APPS = [
+    # ... التطبيقات الحالية ...
+    'django.contrib.sitemaps',
+]
+
+
+
+
+
 
 
