@@ -1,6 +1,7 @@
 from django.urls import path
 from .import views
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
 
@@ -173,6 +174,9 @@ urlpatterns = [
 
 
     path('team/<int:id>/compare/', views.compare_team, name='compare_team'),
+
+
+    path('google0648db8e851360e4.html', TemplateView.as_view(template_name="google0648db8e851360e4.html")),
 
 ]
 
