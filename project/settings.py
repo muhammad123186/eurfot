@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'c$^w$ejrk=_rr9+lhj+6b(%l(8a3sg++=qv)kt&xp=sbk$h3l^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "eurofor.onrender.com",
@@ -72,10 +72,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'pages.context_processors.sidebar_context',   # ← هذا الصحيح الآن
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'project.wsgi.application'
 

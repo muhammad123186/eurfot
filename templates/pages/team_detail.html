@@ -7,16 +7,7 @@
 <div style="max-width:900px;margin:auto;padding:20px;font-family:Arial;">
 
     <!-- ================= TEAM CARD ================= -->
-
-    <div style="
-    background: linear-gradient(-20deg,#111,rgba(0, 26, 255, 0.384)); 
-    color:white;
-    border-radius:15px 15px 0 0;
-    padding:30px;
-    text-align:center;
-    position:relative;
-    overflow:hidden;
-">
+    <div class="team-card">
 
     {% if team.id %}
 
@@ -29,8 +20,8 @@
     {% endif %}
 
 
-    <p><img src="{{ team.logo }}" width="100" style="margin-bottom:20px;"></p>
-    {{ team.name }}
+    <p><img src="{{ team.logo }}" class="team-logo"></p>
+    <span class="team-name">{{team.name }}</span>
 
 </div>
 
@@ -363,7 +354,7 @@
    <div id="season-fixtures" class="tab-content" style="display:none;">
 
     <h2 class="fixtures-title">
-        Season Fixtures
+        
     </h2>
 
     <div class="fixtures-list">
@@ -379,7 +370,7 @@
 
             <!-- Home -->
             <div class="fixture-home">
-                <img src="{{ game.teams.home.logo }}">
+                <img src="{{ game.teams.home.logo }}" class="team-home img">
                 <span>{{ game.teams.home.name }}</span>
             </div>
 
@@ -439,7 +430,7 @@
 
                 <th>GF</th>
 
-                <th>GA</th>
+                <th class="ga-title">GA</th>
 
                 <th>GD</th>
 
@@ -514,7 +505,7 @@
                 </td>
 
 
-                <td>
+                <td class="ga-title">
                     {{ row.all.goals.against }}
                 </td>
 
@@ -1245,7 +1236,9 @@
 
     z-index:5;
 
-    margin-left: 85%;
+    margin-left: 66%;
+
+    margin-top: 2%;
 
 }
 
@@ -1677,70 +1670,26 @@
 }
 
 
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media(max-width:1000px){
-
-    .club-overview{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-    .leaders-preview-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-@media(max-width:700px){
-
-    .club-overview{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .result-card{
-
-        flex-wrap:wrap;
-
-        justify-content:center;
-
-    }
-
-    .result-team{
-
-        width:auto;
-
-    }
-
-}
-
-
 
 
 
 /* ===============================
         SEASON FIXTURES
 ================================ */
+res · CSS
 .fixtures-title{
     text-align:center;
     color:white;
     font-size:30px;
     margin-bottom:30px;
 }
-
+ 
 .fixtures-list{
     display:flex;
     flex-direction:column;
     gap:14px;
 }
-
+ 
 .fixture-card{
     display:grid;
     grid-template-columns:60px 260px 110px 260px 120px;
@@ -1748,67 +1697,75 @@
     background:#141414;
     border:1px solid #2b2b2b;
     border-radius:16px;
-    padding:12px 20px;
     color:white;
+    padding:10px 0;
 }
-
+ 
+/* LEAGUE LOGO */
 .fixture-league{
     display:flex;
+    align-items:center;
     justify-content:center;
 }
-
+ 
 .fixture-league img{
     width:34px;
     height:34px;
     object-fit:contain;
 }
-
+ 
 /* HOME = الشعار ثم الاسم */
 .fixture-home{
     display:flex;
     align-items:center;
-    justify-content:flex-start;
+    justify-content:center;
     gap:10px;
     font-weight:700;
-    margin-left: 30%;
 }
-
+ 
 .fixture-home img{
     width:32px;
     height:32px;
     object-fit:contain;
+    flex-shrink:0;
 }
-
+ 
 /* SCORE */
 .fixture-score{
-    text-align:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     font-size:26px;
     font-weight:600;
-    margin-left: 10%;
 }
-
+ 
 /* AWAY = الاسم ثم الشعار */
 .fixture-away{
     display:flex;
     align-items:center;
-    justify-content:flex-end;
+    justify-content:center;
     gap:10px;
     font-weight:700;
-    margin-right: 20%;
 }
-
+ 
 .fixture-away img{
     width:32px;
     height:32px;
     object-fit:contain;
+    flex-shrink:0;
 }
-
+ 
+/* DATE */
 .fixture-date{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
     text-align:right;
     color:#aaa;
     font-size:14px;
+    padding-right:14px;
 }
-
+ 
 .empty-fixtures{
     background:#111;
     color:white;
@@ -1853,7 +1810,7 @@
 
     border-radius:20px;
 
-    overflow:hidden;
+    
 
 }
 
@@ -2227,32 +2184,6 @@
 }
 
 
-
-/* RESPONSIVE */
-
-@media(max-width:900px){
-
-    .squad-grid{
-
-        grid-template-columns:repeat(3,1fr);
-
-    }
-
-}
-
-
-
-@media(max-width:600px){
-
-    .squad-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-}
-
-
 /* ==========================================
               TEAM STATISTICS
 ========================================== */
@@ -2343,82 +2274,6 @@
 
     font-weight:700;
 
-}
-
-
-
-/* ================= MOBILE ================= */
-
-@media(max-width:700px){
-
-    .team-stats-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-}
-
-@media(max-width:500px){
-
-    .team-stats-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-@keyframes fade{
-
-from{
-opacity:0;
-transform:translateY(10px);
-}
-
-to{
-opacity:1;
-transform:none;
-}
-
-}
-
-
-/* ===============================
-              MOBILE
-================================ */
-
-@media(max-width:600px){
-
-    .trophies-grid{
-        grid-template-columns: 1fr;
-    }
-
-    .trophy-card{
-        padding:12px 16px;
-    }
-
-}
-
-
-@media (max-width:1100px){
-    .squad-grid{
-        grid-template-columns:repeat(4,1fr);
-    }
-}
-
-@media(max-width:900px){
-    .squad-grid{
-        grid-template-columns:repeat(3, 100px);
-        gap:20px;
-    }
-}
-
-@media(max-width:500px){
-    .squad-grid{
-        grid-template-columns:repeat(2, 100px);
-        gap:15px;
-    }
 }
 
 
@@ -2539,30 +2394,159 @@ transform:none;
 }
 
 
-/* RESPONSIVE */
 
-@media(max-width:1000px){
 
-    .leaders-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-}
-
-@media(max-width:600px){
-
-    .leaders-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
+.team-card{
+    background: linear-gradient(-20deg,#111,rgba(0, 26, 255, 0.384)); 
+    color:white;
+    border-radius:15px 15px 0 0;
 }
 
 
 
+.team-logo{
+     width:100; 
+     margin-bottom:2px;
+     margin-left: 45%;
+     margin-top: 5%;
+}
+
+
+
+.team-name{
+    margin-left: 45%;
+    font-size: 20px;
+    font-weight: 600;
+    
+}
+
+
+
+
+
+
+
+@media (max-width:1000px) {
+
+
+    body{
+        zoom: 140%;
+    }
+
+
+
+
+    .club-overview{
+        zoom: 110%;
+    }
+
+
+
+    .compare-team-btn{
+        margin-left: 77%;
+        margin-top: 5%;
+    }
+
+
+    .teeam-card{
+        width: 100%;
+    }
+
+
+
+     .fixture-card{
+        grid-template-columns:40px 1fr 70px 1fr 70px;
+        font-size:13px;
+        zoom: 150%;
+    }
+ 
+    .fixture-home,
+    .fixture-away{
+        gap:6px;
+        font-size:13px;
+    }
+ 
+    .fixture-home img,
+    .fixture-away img{
+        width:24px;
+        height:24px;
+    }
+ 
+    .fixture-league img{
+        width:26px;
+        height:26px;
+    }
+ 
+    .fixture-score{
+        font-size:18px;
+    }
+
+
+
+    .standings-table{
+        zoom: 120%;
+        width: 6%;
+        margin-left: -3%;
+    }
+
+
+
+    .ga-title{
+        display: none;
+    }
+
+
+
+    .team-stats-grid{
+        display:grid;
+
+        grid-template-columns:repeat(4, 120px);
+
+        row-gap: 2px;
+
+        column-gap: 55px;
+
+        zoom: 100%;
+    }
+
+
+
+    .leaders-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        zoom: 100%;
+
+    }
+
+
+
+    .trophies-grid{
+        display:grid;
+        grid-template-columns:repeat(2, 210px);
+        zoom: 120%;
+
+    }
+
+
+
+    .squad-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:18px;
+
+    }
+
+
+    .squad-section{
+        display: grid;
+        grid-template-columns:repeat(3,120);
+        zoom: 120%;
+    }
+
+
+    
+
+}
 
 
 </style>

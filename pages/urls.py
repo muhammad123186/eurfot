@@ -4,7 +4,11 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
 
-    path("", views.matches, name="matches"),
+
+
+    path("", views.today_matches_view, name="matches"),
+
+    path("premier-league/", views.matches, name="premier_league_home"),
 
     path(
         "matches/<int:matchday>/",

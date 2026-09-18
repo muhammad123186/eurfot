@@ -31,21 +31,27 @@
 
         {% csrf_token %}
 
-        <div class="fantasy-pitch">
+           <div class="fantasy-pitch">
 
-            <!-- ================= هجوم ================= -->
-            <div class="formation-row" data-group="هجوم" data-count="2"></div>
+    <!-- خطوط الملعب -->
+    <div class="penalty-box"></div>
+    <div class="goal-box"></div>
+    <div class="penalty-spot"></div>
+    <div class="center-circle"></div>
 
-            <!-- ================= وسط ================= -->
-            <div class="formation-row" data-group="وسط" data-count="4"></div>
+    <!-- ================= هجوم ================= -->
+    <div class="formation-row" data-group="هجوم" data-count="2"></div>
 
-            <!-- ================= دفاع ================= -->
-            <div class="formation-row" data-group="دفاع" data-count="4"></div>
+    <!-- ================= وسط ================= -->
+    <div class="formation-row" data-group="وسط" data-count="4"></div>
 
-            <!-- ================= حراسة ================= -->
-            <div class="formation-row" data-group="حراسة" data-count="1"></div>
+    <!-- ================= دفاع ================= -->
+    <div class="formation-row" data-group="دفاع" data-count="4"></div>
 
-        </div>
+    <!-- ================= حراسة ================= -->
+    <div class="formation-row" data-group="حراسة" data-count="1"></div>
+
+</div>
 
         <button type="submit" style="width:100%;padding:12px;background:rgb(0, 255, 200);color:black;border:none;border-radius:8px;font-size:16px;cursor:pointer;margin-top:20px;">
             save
@@ -159,6 +165,189 @@
 .picker-option.disabled{
     opacity:0.3;
     pointer-events:none;
+}
+
+
+
+
+.fantasy-pitch{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(45deg,rgba(30, 255, 0, 0.541));
+    border-radius:15px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-evenly;
+    gap:15px;
+    min-height:500px;
+}
+
+.formation-row{
+    position:relative;
+    z-index:1;
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+}
+
+/* منطقة الـ 18 - جنب الحارس بالأسفل */
+.penalty-box{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:220px;
+    height:110px;
+    border:2px solid rgba(255,255,255,.65);
+    border-bottom:none;
+    z-index:0;
+}
+
+/* منطقة الـ 6 */
+.goal-box{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:100px;
+    height:45px;
+    border:2px solid rgba(255,255,255,.65);
+    border-bottom:none;
+    z-index:0;
+}
+
+/* نقطة الجزاء */
+.penalty-spot{
+    position:absolute;
+    left:50%;
+    bottom:90px;
+    transform:translateX(-50%);
+    width:6px;
+    height:6px;
+    background:rgba(255,255,255,.65);
+    border-radius:50%;
+    z-index:0;
+}
+
+/* نص الدائرة - عند خط منتصف الملعب بالأعلى */
+.center-circle{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:150px;
+    height:150px;
+    border:2px solid rgba(255,255,255,.65);
+    border-radius:50%;
+    z-index:0;
+}
+
+
+
+
+.fantasy-pitch{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(45deg,rgba(30, 255, 0, 0.541));
+    border-radius:15px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-evenly;
+    gap:15px;
+    min-height:500px;
+}
+
+.formation-row{
+    position:relative;
+    z-index:1;
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+}
+
+/* منطقة الـ 18 - جنب الحارس بالأسفل */
+.penalty-box{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:220px;
+    height:110px;
+    border:2px solid rgba(255,255,255,.65);
+    border-bottom:none;
+    z-index:0;
+}
+
+/* منطقة الـ 6 */
+.goal-box{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:100px;
+    height:45px;
+    border:2px solid rgba(255,255,255,.65);
+    border-bottom:none;
+    z-index:0;
+}
+
+/* نقطة الجزاء */
+.penalty-spot{
+    position:absolute;
+    left:50%;
+    bottom:90px;
+    transform:translateX(-50%);
+    width:6px;
+    height:6px;
+    background:rgba(255,255,255,.65);
+    border-radius:50%;
+    z-index:0;
+}
+
+/* نص الدائرة - عند خط منتصف الملعب بالأعلى */
+.center-circle{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:150px;
+    height:150px;
+    border:2px solid rgba(255,255,255,.65);
+    border-radius:50%;
+    z-index:0;
+}
+
+@media (max-width:1000px) {
+
+    body{
+        zoom: 190%;
+    }
+
+    .penalty-box{
+        width: 170px;
+        height: 85px;
+    }
+
+    .goal-box{
+        width: 80px;
+        height: 35px;
+    }
+
+    .penalty-spot{
+        bottom: 70px;
+    }
+
+    .center-circle{
+        width: 110px;
+        height: 110px;
+    }
+
+
+
+    
+
 }
 
 </style>

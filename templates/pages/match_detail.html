@@ -2,6 +2,9 @@
 
 {% block content %}
 
+{{ player_stats|json_script:"player-stats-data" }}
+
+
 <div class="site-header">
 
     <div class="logo-box">
@@ -65,8 +68,7 @@ border:2px solid rgba(0, 140, 255, 0.8);
 
 </div>
 
-
-<body style="background: linear-gradient(-45deg,black,black,black,black,black,black,rgba(0, 4, 255, 0.404));"></body>
+<div class="page-layot">
 
 
 <div class="match-container">
@@ -113,6 +115,23 @@ alt="{{ game.home_name }}"
 </h3>
 
 
+{% if home_scorers %}
+<div class="scorers-list">
+    {% for scorer in home_scorers %}
+        <div class="scorer-line">
+            <span class="goal-icon">⚽</span>
+            <span>
+                {{ scorer.player }}
+                {% for g in scorer.goals %}
+                    {{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
 </div>
 
 
@@ -157,9 +176,17 @@ VS
 
 
 <div class="status">
-
-{{ game.status }}
-
+    {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+        {{ game.status }} - {{ game.elapsed }}'
+    {% elif game.status == "HT" %}
+        Half Time
+    {% elif game.status == "FT" %}
+        FT
+    {% elif game.status == "NS" %}
+        Not Started
+    {% else %}
+        {{ game.status }}
+    {% endif %}
 </div>
 
 
@@ -188,6 +215,22 @@ alt="{{ game.away_name }}"
 
 </h3>
 
+
+{% if away_scorers %}
+<div class="scorers-list">
+    {% for scorer in away_scorers %}
+        <div class="scorer-line">
+            <span class="goal-icon">⚽</span>
+            <span>
+                {{ scorer.player }}
+                {% for g in scorer.goals %}
+                    {{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 </div>
 
@@ -238,7 +281,7 @@ alt="{{ game.away_name }}"
 <span>
 <img 
 src="{{ game.competition.logo }}"
-class="competition-logo" style="width:42px;"
+class="competition-logo" style="width:42px; margin-top: -5%;"
 >
 </span>
 
@@ -352,11 +395,22 @@ Events
 
 
 <button
-class="tab-btn"
+class="tab-btns"
 onclick="showTab('comparison',this)"
 >
 
 Comparison
+
+</button>
+
+
+
+<button
+class="tab-btn"
+onclick="showTab('h2h',this)"
+>
+
+H2H
 
 </button>
 
@@ -622,6 +676,7 @@ No matches available
         <div class="lineup-info">
           <h2>{{ team.team }}</h2>
           <p>Formation: {{ team.formation }}</p>
+          <p>Manager: {{ team.coach }}</p>
         </div>
       </div>
     {% endfor %}
@@ -630,15 +685,25 @@ No matches available
   <!-- الملعب -->
   <div class="pitch">
 
+
+     <!-- خطوط منطقة الـ 18 والـ 6 -->
+    <div class="penalty-box home-box"></div>
+    <div class="goal-box home-goal"></div>
+    <div class="penalty-spot home-spot"></div>
+
+    <div class="penalty-box away-box"></div>
+    <div class="goal-box away-goal"></div>
+    <div class="penalty-spot away-spot"></div>
+
     {% for key, team in lineups.items %}
       <div class="team-side {% if key == 'home' %}home-side{% else %}away-side{% endif %}">
 
         {% for line in team.lines %}
           <div class="formation-line {% if line.is_gk %}gk-line{% endif %}">
 
-            {% for player in line.players %}
-              <div class="player-position">
-                <div class="player-circle">
+        {% for player in line.players %}
+  <div class="player-position" data-player-id="{{ player.id }}" onclick="openPlayerStats({{ player.id }}, '{{ player.name|escapejs }}')">
+    <div class="player-circle">
 
     {% if player.photo %}
         <img src="{{ player.photo }}" class="player-photo" onerror="this.style.display='none'; this.parentElement.textContent='{{ player.number }}';">
@@ -646,11 +711,19 @@ No matches available
         {{ player.number }}
     {% endif %}
 
-</div>
+    </div>
 
-<span>{{ player.name }}</span>
-              </div>
-            {% endfor %}
+    {% if player.rating %}
+    <div class="player-rating rating-{{ player.rating_class }}">
+        {{ player.rating }}
+    </div>
+    {% endif %}
+
+    <div class="player-name">
+    <span>{{ player.name }}</span>
+    </div>
+  </div>
+{% endfor %}
 
           </div>
         {% endfor %}
@@ -719,7 +792,6 @@ No matches available
 <div id="statistics" class="tab-content">
 
   {% if statistics %}
-
     <!-- رأس القسم: شعار واسم كل فريق -->
     <div class="stats-header-container">
 
@@ -765,7 +837,6 @@ No matches available
   {% endif %}
 
 </div>
-
 
     
     
@@ -1151,70 +1222,177 @@ No matches available
 
 
 
+<!-- ================= H2H ================= -->
+<div id="h2h" class="tab-content">
 
+    <div class="h2h-summary">
+
+        <div class="h2h-summary-box">
+            <img src="{{ game.home_logo }}" class="h2h-summary-logo">
+            <div class="h2h-summary-label">{{ game.home_name }}</div>
+            <div class="h2h-summary-value">{{ h2h.home_wins }} wins</div>
+           
+        </div>
+
+        <div class="h2h-summary-box">
+            <div class="h2h-summary-value">{{ h2h.draws }}</div>
+            <div class="h2h-summary-label">Draws</div>
+        </div>
+
+        <div class="h2h-summary-box">
+            <img src="{{ game.away_logo }}" class="h2h-summary-logos">
+            <div class="h2h-summary-label">{{ game.away_name }}</div>
+            <div class="h2h-summary-value">{{ h2h.away_wins }} wins</div>
+            
+            
+        </div>
+
+    </div>
+
+    <div class="h2h-list">
+
+        {% for m in h2h.matches %}
+
+        <div class="h2h-row">
+
+            <div class="h2h-date">{{ m.date|date:"d/m/Y" }}</div>
+
+            <div class="h2h-team home">
+                <span>{{ m.home_name }}</span>
+                <img src="{{ m.home_logo }}">
+            </div>
+
+            <div class="h2h-score">
+                {{ m.home_goals }} - {{ m.away_goals }}
+            </div>
+
+            <div class="h2h-team away">
+                <img src="{{ m.away_logo }}">
+                <span>{{ m.away_name }}</span>
+            </div>
+
+            <div class="h2h-competition">{{ m.competition }}</div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="h2h-empty">No previous matches found</div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+</div>
+
+
+
+
+
+<div id="player-stats-overlay" class="player-stats-overlay">
+
+    <div class="player-stats-box">
+
+        <button type="button" class="player-stats-close" onclick="closePlayerStats()">✕</button>
+
+        <h3 id="player-stats-name"></h3>
+
+        <div id="player-stats-body" class="player-stats-body">
+            <!-- تتعبى بالـ JS -->
+        </div>
+
+    </div>
+
+</div>
 
 
 <!-- ================= TAB SCRIPT ================= -->
-
-
-
 <script>
 
 
 function showTab(tabId, button){
 
-
-
     document
     .querySelectorAll(".tab-content")
     .forEach(tab => {
-
-
         tab.classList.remove("active");
-
-
     });
-
-
-
-
-
 
     document
     .querySelectorAll(".tab-btn")
     .forEach(btn => {
-
-
         btn.classList.remove("active");
-
-
     });
-
-
-
-
-
-
 
     document
     .getElementById(tabId)
     .classList.add("active");
 
-
-
-
-
-
     button.classList.add("active");
-
-
 
 }
 
 
+/* ================= PLAYER STATS ================= */
+
+const allPlayerStats = JSON.parse(
+    document.getElementById('player-stats-data').textContent
+);
+
+function openPlayerStats(playerId, playerName) {
+
+    const stats = allPlayerStats[playerId];
+
+    const nameEl = document.getElementById('player-stats-name');
+    const bodyEl = document.getElementById('player-stats-body');
+
+    nameEl.textContent = playerName;
+
+    if (!stats) {
+        bodyEl.innerHTML = '<p class="player-stats-empty">No statistics available for this player</p>';
+        document.getElementById('player-stats-overlay').classList.add('active');
+        return;
+    }
+
+    bodyEl.innerHTML = `
+
+        <div class="stats-section-title">General</div>
+        <div class="stat-line"><span>Minutes Played</span><b>${stats.minutes ?? '-'}</b></div>
+        <div class="stat-line"><span>Position</span><b>${stats.position ?? '-'}</b></div>
+        <div class="stat-line"><span>Rating</span><b>${stats.rating ?? '-'}</b></div>
+        <div class="stat-line"><span>Yellow Cards</span><b>${stats.yellow_cards}</b></div>
+        <div class="stat-line"><span>Red Cards</span><b>${stats.red_cards}</b></div>
+
+        <div class="stats-section-title">Attacking</div>
+        <div class="stat-line"><span>Goals</span><b>${stats.goals}</b></div>
+        <div class="stat-line"><span>Assists</span><b>${stats.assists}</b></div>
+        <div class="stat-line"><span>Total Shots</span><b>${stats.shots_total}</b></div>
+        <div class="stat-line"><span>Shots on Target</span><b>${stats.shots_on}</b></div>
+        <div class="stat-line"><span>Total Passes</span><b>${stats.passes_total}</b></div>
+        <div class="stat-line"><span>Key Passes</span><b>${stats.passes_key}</b></div>
+        <div class="stat-line"><span>Pass Accuracy</span><b>${stats.passes_accuracy ?? '-'}%</b></div>
+        <div class="stat-line"><span>Dribbles</span><b>${stats.dribbles_success} / ${stats.dribbles_attempts}</b></div>
+
+        <div class="stats-section-title">Defensive</div>
+        <div class="stat-line"><span>Tackles</span><b>${stats.tackles_total}</b></div>
+        <div class="stat-line"><span>Blocks</span><b>${stats.blocks}</b></div>
+        <div class="stat-line"><span>Interceptions</span><b>${stats.interceptions}</b></div>
+        <div class="stat-line"><span>Duels Won</span><b>${stats.duels_won} / ${stats.duels_total}</b></div>
+        <div class="stat-line"><span>Fouls Committed</span><b>${stats.fouls_committed}</b></div>
+        <div class="stat-line"><span>Fouls Drawn</span><b>${stats.fouls_drawn}</b></div>
+
+        <div class="stats-section-title">Goalkeeping</div>
+        <div class="stat-line"><span>Saves</span><b>${stats.saves ?? '-'}</b></div>
+        <div class="stat-line"><span>Goals Conceded</span><b>${stats.conceded ?? '-'}</b></div>
+        <div class="stat-line"><span>Penalties Saved</span><b>${stats.penalty_saved}</b></div>
+
+    `;
+
+    document.getElementById('player-stats-overlay').classList.add('active');
+}
 
 </script>
-
 
 
 
@@ -1223,6 +1401,11 @@ function showTab(tabId, button){
 
 
 <style>
+
+
+body{
+    background: #080808;
+}
 
 .site-header{
     width:100%;
@@ -1359,7 +1542,7 @@ function showTab(tabId, button){
 .match-card{
 
 
-    background: linear-gradient(-45deg,black,black,black,black,black,rgb(255,0,0));
+    background: linear-gradient(-45deg,black,black,black,black,black,rgb(255, 0, 0));
 
     color:white;
 
@@ -1415,7 +1598,7 @@ function showTab(tabId, button){
     justify-content:center;
 
 
-    align-items:center;
+    align-items:flex-start;
 
 
     gap:70px;
@@ -1437,6 +1620,11 @@ function showTab(tabId, button){
 
 
     text-align:center;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
 
 
 }
@@ -1509,6 +1697,8 @@ function showTab(tabId, button){
 
     align-items:center;
 
+    margin-top: 30px;
+
 
 }
 
@@ -1544,8 +1734,7 @@ function showTab(tabId, button){
 
     145deg,
 
-    black,
-    black
+    #222
 
     );
 
@@ -1559,7 +1748,7 @@ function showTab(tabId, button){
 
 
 
-    font-weight:900;
+    font-weight:800;
 
 
 
@@ -1592,7 +1781,7 @@ function showTab(tabId, button){
     border-radius:30px;
 
 
-    background:#111;
+    background:rgba(255, 0, 0, 0.678);
 
 
     color:white;
@@ -1608,10 +1797,29 @@ function showTab(tabId, button){
 
 
 
+.scorers-list{
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+}
 
+.scorer-line{
+    display:inline-flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:6px;
+    font-size:13px;
+    color:#ccc;
+    white-space:nowrap;
+}
 
-
-
+.goal-icon{
+    width:16px;
+    flex-shrink:0;
+    text-align:center;
+}
 
 
 
@@ -1824,6 +2032,56 @@ function showTab(tabId, button){
 
 
 
+.tab-btns{
+    flex:1;
+
+
+    max-width:180px;
+
+
+    padding:14px 20px;
+
+
+    border:none;
+
+
+    border-radius:15px;
+
+
+    background:#181818;
+
+
+    color:#aaa;
+
+
+    font-size:15px;
+
+
+    font-weight:800;
+
+
+    cursor:pointer;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.tab-btns:hover{
+    color:white;
+    
+    transform:translateY(-3px);
+}
+
+
+
+
+
+
+
 
 
 /* ================= TAB CONTENT ================= */
@@ -1872,7 +2130,7 @@ function showTab(tabId, button){
 
 .team-form{
     
-    flex:1;
+    
 
     background:
 
@@ -2209,37 +2467,6 @@ function showTab(tabId, button){
 
 
 
-/* MOBILE */
-
-
-@media(max-width:800px){
-
-
-    .form-container{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-}
-
-
-
-@media(max-width:800px){
-
-    .form-container{
-
-        flex-direction:column;
-
-    }
-
-}
-
-
-
-
-
 
 /* ===============================
         LINEUPS BOX
@@ -2406,7 +2633,7 @@ function showTab(tabId, button){
     justify-content: center;
 }
 
-.player-position { text-align: center; width: 80px; }
+.player-position { text-align: center; width: 80px; position: relative; }
 
 .player-circle {
     width: 38px; height: 38px;
@@ -2437,6 +2664,100 @@ function showTab(tabId, button){
     object-fit:cover;
     border-radius:50%;
 }
+
+
+
+.player-rating{
+    position:absolute;
+    top:-12px;
+    left:84%;
+    transform:translateX(-50%);
+    min-width:22px;
+    height:18px;
+    padding:0 4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:5px;
+    font-size:11px;
+    font-weight:900;
+    color:white;
+    border:1px solid rgba(255,255,255,.5);
+    z-index:3;
+}
+
+.rating-red{
+    background:#e53935;
+}
+
+.rating-orange{
+    background:#fb8a00c4;
+}
+
+.rating-green{
+    background:#00c853b0;
+}
+
+.rating-blue{
+    background:#2978ffd3;
+}
+
+
+
+
+/* ===== منطقة الـ 18 (Penalty Box) - وضع أفقي Desktop ===== */
+.penalty-box{
+    position:absolute;
+    border:2px solid rgba(255,255,255,.45);
+    z-index:1;
+}
+
+.home-box{
+    left:0; top:50%;
+    transform:translateY(-50%);
+    width:130px; height:240px;
+    border-left:none;
+}
+
+.away-box{
+    right:0; top:50%;
+    transform:translateY(-50%);
+    width:130px; height:240px;
+    border-right:none;
+}
+
+/* ===== منطقة الـ 6 (Goal Area) ===== */
+.goal-box{
+    position:absolute;
+    border:2px solid rgba(255,255,255,.45);
+    z-index:1;
+}
+
+.home-goal{
+    left:0; top:50%;
+    transform:translateY(-50%);
+    width:50px; height:110px;
+    border-left:none;
+}
+
+.away-goal{
+    right:0; top:50%;
+    transform:translateY(-50%);
+    width:50px; height:110px;
+    border-right:none;
+}
+
+/* ===== نقطة الجزاء ===== */
+.penalty-spot{
+    position:absolute;
+    width:6px; height:6px;
+    background:rgba(255,255,255,.6);
+    border-radius:50%;
+    z-index:1;
+}
+
+.home-spot{ left:105px; top:50%; transform:translateY(-50%); }
+.away-spot{ right:105px; top:50%; transform:translateY(-50%); }
 
 
 
@@ -2570,9 +2891,9 @@ function showTab(tabId, button){
     border-radius:10px;
     font-size:16px;
     font-weight:900;
-    background:#1a1a1a;
+    background:white;
     border:1px solid #2a2a2a;
-    color:#888;
+    color:black;
     transition:.25s;
 }
 ء
@@ -2596,24 +2917,6 @@ function showTab(tabId, button){
     color:#777;
     padding:50px 0;
     font-size:15px;
-}
-
-@media(max-width:800px){
-
-    .stats-row{
-        grid-template-columns:55px 1fr 55px;
-        gap:8px;
-    }
-
-    .stats-box{
-        height:36px;
-        font-size:14px;
-    }
-
-    .stats-type{
-        font-size:11px;
-    }
-
 }
 
 
@@ -2940,6 +3243,11 @@ function showTab(tabId, button){
 
 
 
+
+
+
+
+
 .comparison-team img{
 
     width:80px;
@@ -3108,93 +3416,799 @@ function showTab(tabId, button){
 
 
 
-/* ================= RESPONSIVE ================= */
+/* ================= H2H ================= */
 
-@media(max-width:900px){
+.h2h-summary{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-bottom:30px;
+}
 
-    .comparison-header{
+.h2h-summary-box{
+    background:linear-gradient(145deg,#161616,#0b0b0b);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:20px 30px;
+    text-align:center;
+    min-width:140px;
+}
 
-        flex-direction:column;
+.h2h-summary-value{
+    font-size:24px;
+    font-weight:400;
+    color:#ff0000;
+}
 
-        gap:25px;
+.h2h-summary-label{
+    margin-top:8px;
+    font-size:12px;
+    color:#aaa;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.h2h-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.h2h-row{
+    display:grid;
+    grid-template-columns:90px 1fr 80px 1fr 120px;
+    align-items:center;
+    gap:12px;
+    background:#111;
+    border:1px solid #292929;
+    border-radius:16px;
+    padding:14px 20px;
+    color:white;
+}
+
+.h2h-date{
+    font-size:12px;
+    color:#999;
+}
+
+.h2h-team{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.h2h-team.home{
+    justify-content:flex-end;
+}
+
+.h2h-team.away{
+    justify-content:flex-start;
+}
+
+.h2h-team img{
+    width:26px;
+    height:26px;
+    object-fit:contain;
+}
+
+.h2h-score{
+    text-align:center;
+    font-size:18px;
+    font-weight:900;
+    background:#1a1a1a;
+    border-radius:10px;
+    padding:6px 0;
+}
+
+.h2h-competition{
+    font-size:11px;
+    color:#888;
+    text-align:right;
+}
+
+.h2h-empty{
+    text-align:center;
+    color:#777;
+    padding:40px 0;
+}
+
+
+
+.h2h-summary-logo{
+    width: 45px;
+    height: 45px;
+}
+
+
+.h2h-summary-logos{
+    width: 45px;
+    height: 45px;
+}
+
+@media (max-width: 1000px) {
+
+    .page-layot{
+        zoom: 100%;
+    }
+
+
+    .match-container {
+        zoom: 165%;
+    }
+
+
+    .match-card{
+        width: 100%;
+        margin-left: -1.5%;
+    }
+
+
+    .form-container{
+    width:92%;
+    display:flex;
+    flex-direction:row;
+    gap:37px;
+    margin-top:30px;
+    margin-left: 25px;
+    
+    }
+
+
+    .match-tabs{
+        margin-left: 5%;
+    }
+
+
+    .team-form {
+        width: 50%;
+        margin-left: -3%;
+        gap: 20px;
+        
+    }
+
+
+    .mini-matches{
+        gap: 21px;
+    }
+
+
+    .mini-match{
+        width: 140%;
+        gap: 3px;
+    }
+
+
+    .site-header{
+        width: 107%;
+    }
+
+
+    #lineups{
+        margin-left: 2.5%;
+    }
+
+
+    .team-form{
+        margin-left: -1.3%;
+    }
+
+
+
+    
+
+.pitch {
+    flex-direction: column;
+    height: 640px;
+    width: 105%;
+    zoom: 170%;
+    font-weight: 500;
+}
+
+/* الخط النصفي يصير أفقي بدل عمودي */
+.pitch::before{
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+}
+
+.pitch::after{
+    top: 50%;
+    left: 50%;
+}
+
+.team-side {
+    flex-direction: column;
+    width: 100%;
+    height: 50%;
+    padding: 10px 5px;
+}
+
+/* فريق الأواي فوق، بيهجم لتحت باتجاه النص */
+.away-side {
+    flex-direction: column-reverse;
+    
+}
+
+/* فريق الهوم تحت، بيهجم لفوق باتجاه النص */
+.home-side {
+    flex-direction: column;
+    
+}
+
+.formation-line {
+    flex-direction: row-reverse;
+    width: 100%;
+    height: auto;
+    justify-content: space-evenly;
+}
+
+.gk-line {
+    flex: 0.6;
+    justify-content: center;
+}
+
+.player-position {
+    width: 55px;
+    
+}
+
+.player-circle {
+    width: 45px;
+    height: 45px;
+    font-size: 13px;
+    
+}
+
+.player-name {
+    display: none;
+}
+
+
+
+
+.player-rating{
+    top: 1px;
+    left: 65PX;
+    min-width:23px;
+    height:16px;
+    font-size:12px;
+    border-radius:7px;
+    font-weight: 700;
+}
+
+
+
+ /* ===== منطقة الـ 18 - وضع طولي Mobile ===== */
+.home-box{
+    left:50%; top:0; bottom:auto; right:auto;
+    transform:translateX(-50%);
+    width:240px; height:110px;
+    border-top:none;
+    border-right:2px solid rgba(255,255,255,.45);
+    border-bottom:2px solid rgba(255,255,255,.45);
+    border-left:2px solid rgba(255,255,255,.45);
+}
+
+.away-box{
+    left:50%; bottom:0; top:auto; right:auto;
+    transform:translateX(-50%);
+    width:240px; height:110px;
+    border-bottom:none;
+    border-right:2px solid rgba(255,255,255,.45);
+    border-top:2px solid rgba(255,255,255,.45);
+    border-left:2px solid rgba(255,255,255,.45);
+}
+
+/* ===== منطقة الـ 6 - وضع طولي Mobile ===== */
+.home-goal{
+    left:50%; top:0; bottom:auto; right:auto;
+    transform:translateX(-50%);
+    width:110px; height:50px;
+    border-top:none;
+    border-right:2px solid rgba(255,255,255,.45);
+    border-bottom:2px solid rgba(255,255,255,.45);
+    border-left:2px solid rgba(255,255,255,.45);
+}
+
+.away-goal{
+    left:50%; bottom:0; top:auto; right:auto;
+    transform:translateX(-50%);
+    width:110px; height:50px;
+    border-bottom:none;
+    border-right:2px solid rgba(255,255,255,.45);
+    border-top:2px solid rgba(255,255,255,.45);
+    border-left:2px solid rgba(255,255,255,.45);
+}
+
+/* ===== نقطة الجزاء - Mobile ===== */
+.home-spot{
+    left:51%; top:80px; bottom:auto; right:auto;
+    transform:translateX(-50%);
+}
+
+.away-spot{
+    left:51%; bottom:80px; top:auto; right:auto;
+    transform:translateX(-50%);
+}
+
+
+
+    .lineup-info{
+        font-weight: 700;
+        
+    }
+
+
+
+    .bench-container{
+        zoom: 105%;
+        gap: 100px;
+        margin-left: 0%;
+        width: 110%;
+    }
+
+
+    .bench-number {
+        width: 15%;
+        height: 20%;
+        font-weight: 900;
+    }
+
+
+    .bench-player{
+        font-size: 21px;
+        font-weight: 500;
+    }
+
+
+    .bench-title{
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+
+
+
+    .stats-list{
+        width: 100%;
+        zoom: 135%;
+    }
+    
+    
+    #statistics{
+        width: 100%;
+        margin-left: -1%;
+    }
+    
+
+
+
+    .stats-box{
+        background: white;
+        color: black;
+        border-radius: px;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+
+
+    .stats-team-card{
+        font-size: 21px;
+        font-weight: 100;
+    }
+
+
+    .stats-team-card img{
+        width: 100%;
+    }
+
+
+
+    .assist-name{
+        font-weight: 500;
+        font-size: 20px;
+    }
+
+
+    .events-timeline{
+        zoom: 110%;
+        margin-left: 4%;
+    }
+
+
+
+    .event-badge{
+        font-size: 15px;
+        font-weight: 500;
+        margin-left: 6%;
+    }
+
+
+
+    .comparison-box{
+        zoom: 100%;
+        margin-left: 2.5%;
+    }
+
+
+
+.comparison-header,
+.comparison-row {
+    margin-left: -5%;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    
+}
+
+.comparison-team {
+    width: 45px;
+    height: 45px;
+    margin-left: 10%;
+    
+}
+
+.comparison-team img {
+    width: 100%;
+}
+
+.comparison-vs {
+    margin-left: 10%;
+}
+
+.comparison-vs h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.comparison-value {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    margin-left: -5%;
+}
+
+.comparison-value.home {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    margin-left: 0;
+}
+
+
+#comparison{
+    margin-left: 0%;
+    width: 620px;
+}
+
+
+
+
+
+.tab-btns{
+
+
+    flex:1;
+
+
+    width:23%;
+
+
+    padding:14px 20px;
+
+
+    border:none;
+
+
+    border-radius:15px;
+
+
+    background:#181818;
+
+
+    color:#aaa;
+
+
+    font-size:15px;
+
+
+    font-weight:800;
+
+
+    cursor:pointer;
+
+
+    transition:.3s;
+
+
+    text-indent: -12px;
+
+    margin-left: -2%;
+
+
+}
+
+
+
+
+
+.tab-btns:hover{
+
+
+    color:white;
+
+
+    transform:translateY(-3px);
+
+
+}
+
+
+
+
+
+
+
+
+
+
+    .status{
+        background: red;
+    }
+
+
+    .player-stats-overlay{
+        zoom: 178%;
+        margin-top: 5%;
+        
+    }
+
+
+    #player-stats-name{
+        font-size: 23px;
+        font-weight: 900;
 
     }
 
-    .comparison-team{
 
-        width:100%;
-
+    .stat-line{
+        font-size: 20px;
+        font-weight: 700;
     }
 
-    .comparison-row{
 
-        grid-template-columns:65px 1fr 65px;
-
-        padding:15px;
-
+    .tab-btn{
+        margin-left: -2%;
+        width: 25%;
     }
 
-    .comparison-value{
 
-        font-size:22px;
+    .match-tabs{
+        margin-left: 10%;
+    }
+    
 
+
+
+    .h2h-row{
+        grid-template-columns:1fr;
+        text-align:center;
+        gap:8px;
     }
 
-    .comparison-title{
-
-        font-size:14px;
-
+    .h2h-team.home,
+    .h2h-team.away{
+        justify-content:center;
     }
 
-}
+    .h2h-competition{
+        text-align:center;
+    }
 
 
 
 
-/* =====================================================
-                    MOBILE
-===================================================== */
 
-@media(max-width:900px){
+/* ================= PLAYER STATS MODAL ================= */
 
-.events-timeline::before{
-
-    left:22px;
-
-}
-
-.timeline-item{
-
-    grid-template-columns:45px 1fr;
-
-    gap:15px;
-
-}
-
-.timeline-content{
-
-    width:100%;
-
-}
-
-.timeline-item.home .timeline-content,
-
-.timeline-item.away .timeline-content{
-
-    justify-self:stretch;
-
-}
-
-.timeline-center{
-
-    grid-row:1;
-
-}
-
-.timeline-content.empty{
-
+.player-stats-overlay{
     display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.85);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+}
 
+.player-stats-overlay.active{
+    display:flex;
+}
+
+.player-stats-box{
+    position:relative;
+    background:linear-gradient(145deg,#161616,#0b0b0b);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:25px;
+    width:90%;
+    max-width:380px;
+    max-height:80vh;
+    overflow-y:auto;
+    color:white;
+}
+
+.player-stats-close{
+    position:absolute;
+    top:12px;
+    right:15px;
+    background:none;
+    border:none;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+#player-stats-name{
+    text-align:center;
+    margin:0 0 20px;
+    font-size:19px;
+}
+
+.player-stats-body{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.stat-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 14px;
+    background:#1a1a1a;
+    border-radius:10px;
+    border:1px solid #2a2a2a;
+    font-size:14px;
+}
+
+.stat-line span{
+    color:#999;
+}
+
+.stat-line b{
+    color:white;
+}
+
+.player-stats-empty{
+    text-align:center;
+    color:#777;
+    padding:20px 0;
+}
+
+
+.stats-section-title{
+    color:rgb(255, 0, 0);
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    margin:16px 0 4px;
+    padding-bottom:6px;
+    border-bottom:1px solid #2a2a2a;
+}
+
+.stats-section-title:first-child{
+    margin-top:0;
+}
+
+
+
+.scorers-list{
+    margin-top:6px;
+}
+
+.scorer-line{
+    font-size:15px;
+    font-weight: 200;
+}
+
+.team{
+    width:100%;
+}
+
+
+
+
+.h2h-summary{
+    width: 107%;
+    margin-left: 2%;
+}
+
+.h2h-summary-logo{
+    width: 30px;
+    height: 30px;
+}
+
+
+.h2h-summary-logos{
+    width: 30px;
+    height: 30px;
+}
+
+
+
+
+.h2h-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-left: 5%;
+    width: 100%;
+}
+
+.h2h-row{
+    display:grid;
+    grid-template-columns:90px 1fr 80px 1fr 120px;
+    align-items:center;
+    gap:12px;
+    background:#111;
+    border:1px solid #292929;
+    border-radius:16px;
+    padding:14px 20px;
+    color:white;
+}
+
+.h2h-date{
+    font-size:12px;
+    color:#999;
+}
+
+.h2h-team{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.h2h-team.home{
+    justify-content:flex-end;
+}
+
+.h2h-team.away{
+    justify-content:flex-start;
+}
+
+.h2h-team img{
+    width:26px;
+    height:26px;
+    object-fit:contain;
+}
+
+.h2h-score{
+    text-align:center;
+    font-size:18px;
+    font-weight:900;
+    background:#1a1a1a;
+    border-radius:10px;
+    padding:6px 0;
+}
+
+.h2h-competition{
+    font-size:11px;
+    color:#888;
+    text-align:right;
+}
+
+.h2h-empty{
+    text-align:center;
+    color:#777;
+    padding:40px 0;
 }
 
 }

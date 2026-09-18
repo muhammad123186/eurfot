@@ -10,50 +10,15 @@
 <div class="site-header">
 
     <div class="logo-box">
-
-
-        <h1>EURO<span>FOR</span></h1>
-
+        <h1>EUR<span>FOT</span></h1>
     </div>
 
     <div class="header-right">
 
         {% if user.is_authenticated %}
-
-<a href="{% url 'profile' %}" 
-class="profile-btn"
-style="
-width:80px;
-height:20px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:black;
-white-space:nowrap;
-color:white;
-padding:10px 15px;
-border-radius:8px;
-text-decoration:none;
-font-weight:bold;
-font-size:14px;
-margin-right:8px;
-transition:.25s;
-box-shadow:0 15px 30px rgba(0,0,0,.7),
-inset 2px 2px 10px black;
-border:2px solid rgba(0, 140, 255, 0.8);
-">
-
-👤 {{ user.username }}
-
-</a>
-
-
-{% else %}
-
-        
-            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
-                Sign Up
-            </a>
+            <a href="{% url 'profile' %}" class="profile-btn">👤 {{ user.username }}</a>
+        {% else %}
+            <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
         {% endif %}
 
         <form action="{% url 'search' %}" method="GET" class="search-box">
@@ -61,11 +26,28 @@ border:2px solid rgba(0, 140, 255, 0.8);
             <button type="submit">🔍</button>
         </form>
 
+        <!-- زر البحث للهاتف بس -->
+        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+
     </div>
 
 </div>
 
 
+<!-- ================= MOBILE SEARCH OVERLAY ================= -->
+
+<div id="mobile-search-overlay" class="mobile-search-overlay">
+
+    <div class="mobile-search-header">
+        <button type="button" class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
+    </div>
+
+    <form action="{% url 'search' %}" method="GET" class="mobile-search-form">
+        <input type="text" name="q" placeholder="Search" autofocus>
+        <button type="submit">🔍</button>
+    </form>
+
+</div>
 
 
 <div class="page-layout">
@@ -152,7 +134,7 @@ border:2px solid rgba(0, 140, 255, 0.8);
 
         <!-- COMPETITION LOGO & TITLE -->
         <div style="text-align:center; margin:20px;">
-            <img src="{{ competition.logo|default:'' }}" width="74">
+            <img src="{{ competition.logo|default:'' }}" class="competition-logo">
             <h2 style="color:white; margin-top:10px;">{{ competition.name }}</h2>
         </div>
 
@@ -195,7 +177,7 @@ Round {{ forloop.counter }}
             <div class="team home">
                 <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();">
                     <img src="{{ game.homeTeam.crest }}">
-                    <span>{{ game.homeTeam.name }}</span>
+                    <span class="team-home">{{ game.homeTeam.name }}</span>
                 </a>
             </div>
 
@@ -210,7 +192,7 @@ Round {{ forloop.counter }}
 
             <div class="team away">
                 <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();">
-                    <span>{{ game.awayTeam.name }}</span>
+                    <span class="team-away">{{ game.awayTeam.name }}</span>
                     <img src="{{ game.awayTeam.crest }}">
                 </a>
             </div>
@@ -225,9 +207,95 @@ Round {{ forloop.counter }}
     </div>
 </div>
 
+<div class="mobile-sidebar">
+
+
+
+    {% for country in countries %}
+
+
+
+    <div class="mobile-country">
+
+
+
+        <button class="mobile-country-btn">
+
+
+
+            <img
+
+                src="{{ country.flag }}"
+
+                alt="{{ country.name }}"
+
+            >
+
+
+
+            <span class="mobile-arrow">▾</span>
+
+
+
+        </button>
+
+
+
+        <div class="mobile-country-leagues">
+
+
+
+            {% for league in country.leagues %}
+
+
+
+            {% if league.type == "cup" or league.type == "supercup" %}
+    <a href="{% url 'cup_competition' league.code %}">
+{% else %}
+    <a href="{% url 'competition' league.code %}">
+{% endif %}
+
+
+
+                <img
+
+                    src="{{ league.logo }}"
+
+                    alt="{{ league.name }}"
+
+                >
+
+
+
+                <span>{{ league.name }}</span>
+
+
+
+            </a>
+
+
+
+            {% endfor %}
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+    {% endfor %}
+
+
+
+</div>
 
 
 <style>
+
 body{
     margin:0;
     padding:0;
@@ -576,9 +644,366 @@ box-shadow:0 0 15px var(--cup-color);
 
 
 
+/* ================= MOBILE SEARCH ================= */
+
+.mobile-search-btn{
+    display: none;
+}
+
+.mobile-search-overlay{
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    z-index: 10000;
+    flex-direction: column;
+}
+
+.mobile-search-overlay.active{
+    display: flex;
+}
+
+.mobile-search-header{
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.mobile-search-close{
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: black;
+    cursor: pointer;
+}
+
+.mobile-search-form{
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+}
+
+.mobile-search-form input{
+    flex: 1;
+    padding: 14px 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+.mobile-search-form button{
+    padding: 14px 18px;
+    border: none;
+    background: black;
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+.mobile-sidebar{
+    display: none;
+}
+
+
+@media (max-width:1000px) {
+
+    body{
+        zoom: 420%;
+    }
+
+    .sidebar{
+        display: none;
+    }
+
+    .page-layout{
+        margin-left: 11%;
+        height: auto !important;
+        min-height: 0 !important;
+        flex-direction: column;
+        zoom: 102%;
+        margin-top: -29%;
+    }
+
+    .main-content{
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+    }
+
+    /* ===== HEADER ===== */
+
+    .site-header{
+        width: 152%;
+        height: 3%;
+        margin-top: -2%;
+    }
+
+    .header-right{
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: nowrap;
+    }
+
+    .logo-box{
+        width: 50%;
+        font-size: 10px;
+        margin-left: -1%;
+    }
+
+    .logo-box h1{
+        font-size: 25px;
+    }
+
+    .profile-btn{
+        flex-shrink: 0;
+        flex-grow: 0;
+        width: auto !important;
+        height: auto !important;
+        padding: 6px 10px !important;
+        margin-left: 8%;
+    }
+
+    .signup-btn{
+        width: 292%;
+        font-size: 10px;
+        text-indent: -1%;
+        border-radius: 5px;
+        transform: translateX(-100%);
+        padding: 5%;
+    }
+
+    .search-box{
+        display: none !important;
+    }
+
+    .mobile-search-btn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 32px;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-top: -10%;
+        margin-left: 12%;
+    }
+
+    /* ===== COMPETITION LOGO ===== */
+
+    .main-content > div:first-child{
+        margin-top: 2% !important;
+    }
+
+    /* ===== TABS ===== */
+
+    .tabs-row{
+        margin: 3% 0 0 -5%;
+    }
+
+    .tabs{
+        margin-left: -1%;
+    }
+
+    .tabs a{
+        font-size: 12px;
+        padding: 10px 30px;
+        margin-top: 1%;
+    }
+
+    /* ===== ROUNDS NAV ===== */
+
+    .matchweek{
+        max-width: 100%;
+        padding: 0 5%;
+        gap: 6px;
+        margin-left: -5%;
+        margin-top: 10%;
+    }
+
+    .competition-logo{
+        margin-left: -5%;
+        width: 60%;
+    }
+
+    .matchweek a{
+        font-size: 12px;
+        padding: 5px 10px;
+        margin-left: -1%;
+    }
+
+    .round-title{
+        margin-top: 20px;
+        font-size: 15px;
+        margin-left: -8%;
+    }
+
+
+    
+
+    /* ===== MATCH CARD ===== */
+
+    .match-card{
+        width: 97%;
+        height: 60px;
+        margin-left: -22px;
+        padding: 0 12px;
+    }
 
 
 
+    .team img{
+        width: 24px;
+        height: 24px;
+    }
+
+    .team a{
+        font-size: 13px;
+    }
+
+    .score-board{
+        width: 56px;
+        height: 55px;
+    }
+
+    .score-status{
+        font-size: 10px;
+        margin-top: -14px;
+    }
+
+    .score-value{
+        font-size: 18px;
+        margin-top: 6px;
+    }
+
+    .team-home{
+        font-size: 12px;
+    }
+
+
+    .team-away{
+        font-size: 12px;
+    }
+    
+
+}
+
+
+@media (max-width: 1000px) {
+
+    .mobile-sidebar {
+        position: fixed !important;
+        top: var(--header-height, 800px);
+        left: 15;
+        width: 92% !important;
+        height: 55px !important;
+        display: flex !important;
+        align-items: flex-end;
+        justify-content: center;
+        background: #090909;
+        border-top: 2px solid red;
+        z-index: 999;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }
+
+    .main-content {
+        flex: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin-top: calc(var(--header-height, 60px) + 55px) !important;
+    }
+
+    .mobile-country {
+        position: relative;
+        width: 20%;
+        height: 50px;
+        flex-shrink: 0;
+    }
+
+    .mobile-country-btn {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 45px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 0;
+        margin: 0;
+        background: #090909;
+        border: none;
+        color: white;
+        cursor: pointer;
+        z-index: 100;
+    }
+
+    .mobile-country-btn img {
+        width: 23px;
+        height: 16px;
+        object-fit: cover;
+        border-radius: 2px;
+    }
+
+    .mobile-arrow {
+        font-size: 8px;
+        color: white;
+    }
+
+    .mobile-country-leagues {
+        display: none;
+        position: absolute;
+        bottom: 50px;
+        top: auto;
+        left: 85%;
+        transform: translateX(-50%);
+        width: 145%;
+        background: #222;
+        border: 1px solid red;
+        border-radius: 7px 7px 0 0;
+        padding: 4px;
+        z-index: 101;
+        box-sizing: border-box;
+    }
+
+    .mobile-country.active .mobile-country-leagues {
+        display: block;
+    }
+
+    .mobile-country-leagues a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        padding: 5px 4px;
+        color: white;
+        text-decoration: none;
+        font-size: 9px;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+
+    .mobile-country-leagues a img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+}
 
 </style>
 
@@ -594,6 +1019,53 @@ document.querySelectorAll(".country-btn").forEach(function(btn){
         item.classList.toggle("active");
     });
 });
+
+document.querySelectorAll(".mobile-country-btn").forEach(function(btn){
+
+
+
+    btn.addEventListener("click", function(){
+
+
+
+        const item = this.parentElement;
+
+
+
+        document.querySelectorAll(".mobile-country").forEach(function(country){
+
+
+
+            if(country !== item){
+
+                country.classList.remove("active");
+
+            }
+
+
+
+        });
+
+
+
+        item.classList.toggle("active");
+
+
+
+    });
+
+
+
+});
+
+
+function openMobileSearch(){
+    document.getElementById('mobile-search-overlay').classList.add('active');
+}
+
+function closeMobileSearch(){
+    document.getElementById('mobile-search-overlay').classList.remove('active');
+}
 </script>
 
 </div>

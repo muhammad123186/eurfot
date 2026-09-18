@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+{% block content %}
+<body class="body">
+<div class="site-header">
+
+    <div class="logo-box">
+        <h1>EUR<span>FOT</span></h1>
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'profile' %}" class="profile-btn">
+                👤 {{ user.username }}
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+        <!-- زر البحث للهاتف بس -->
+        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MOBILE SEARCH OVERLAY ================= -->
+
+<div id="mobile-search-overlay" class="mobile-search-overlay">
+
+    <div class="mobile-search-header">
+        <button type="button" class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
+    </div>
+
+    <form action="{% url 'search' %}" method="GET" class="mobile-search-form">
+        <input type="text" name="q" placeholder="Search" autofocus>
+        <button type="submit">🔍</button>
+    </form>
+
+</div>
+
+
+<div class="page-layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar">
+
+        {% for country in countries %}
+
+        <div class="country-item">
+
+            <button class="country-btn">
+
+                <div class="country-left">
+                    <img class="country-flag-img" src="{{ country.flag }}" alt="{{ country.name }}">
+                    <span class="country-name">{{ country.name }}</span>
+                </div>
+
+                <span class="country-arrow">▸</span>
+
+            </button>
+
+            <div class="country-leagues">
+
+                {% for league in country.leagues %}
+
+                {% if league.type == "cup" or league.type == "supercup" %}
+                    <a href="{% url 'cup_competition' league.code %}" class="league-link">
+                {% else %}
+                    <a href="{% url 'competition' league.code %}" class="league-link">
+                {% endif %}
+
+                    <img src="{{ league.logo }}" class="league-logo" alt="{{ league.name }}">
+                    <span>{{ league.name }}</span>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+    <div class="main-content">
+
+        <h1 class="today-title">مباريات اليوم - Match days</h1>
+
+        {% for group in grouped_matches %}
+
+        <div class="league-group">
+
+            <div class="league-group-header">
+                <img src="{{ group.logo }}" alt="{{ group.name }}">
+                <span>{{ group.name }}</span>
+            </div>
+
+            {% for game in group.matches %}
+
+            <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
+
+                <div class="team home">
+                    <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+                        <img src="{{ game.homeTeam.crest }}">
+                        <span>{{ game.homeTeam.name }}</span>
+                    </a>
+                </div>
+
+                <div class="score-board">
+                    <div class="score-status">
+                        {{ game.status }}
+                    </div>
+                    <div class="score-value">
+                        <span>{{ game.score.fullTime.home|default:"-" }}</span>
+                        <b>-</b>
+                        <span>{{ game.score.fullTime.away|default:"-" }}</span>
+                    </div>
+                </div>
+
+                <div class="team away">
+                    <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+                        <span>{{ game.awayTeam.name }}</span>
+                        <img src="{{ game.awayTeam.crest }}">
+                    </a>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% empty %}
+
+        <h3 style="color:white;">لا توجد مباريات اليوم</h3>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- ================= MOBILE SIDEBAR ================= -->
+<div class="mobile-sidebar">
+
+    {% for country in countries %}
+
+    <div class="mobile-country">
+
+        <button class="mobile-country-btn">
+            <img src="{{ country.flag }}" alt="{{ country.name }}">
+            <span class="mobile-arrow">▾</span>
+        </button>
+
+        <div class="mobile-country-leagues">
+
+            {% for league in country.leagues %}
+
+            {% if league.type == "cup" or league.type == "supercup" %}
+                <a href="{% url 'cup_competition' league.code %}">
+            {% else %}
+                <a href="{% url 'competition' league.code %}">
+            {% endif %}
+
+                <img src="{{ league.logo }}" alt="{{ league.name }}">
+                <span>{{ league.name }}</span>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+</body>
+
+<style>
+
+body{
+    background: #080808;
+}
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:38px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.profile-btn,
+.signup-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:black;
+    white-space:nowrap;
+    color:white;
+    padding:10px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:14px;
+    margin-right:8px;
+    transition:.25s;
+    box-shadow:0 15px 30px rgba(0,0,0,.7), inset 2px 2px 10px black;
+    border:2px solid rgba(0, 140, 255, 0.8);
+}
+
+.signup-btn{
+    border:2px solid rgba(255, 0, 0, 0.774);
+}
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.search-box button:hover{
+    background:red;
+}
+
+
+/* ================= PAGE LAYOUT ================= */
+
+.page-layout{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    padding:20px;
+}
+
+.sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:0px;
+    margin-top:9px;
+    width:12.3%;
+}
+
+.country-item{
+    background: #181818;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:8px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.country-btn{
+    width:100%;
+    padding:16px 18px;
+    border:none;
+    background:none;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.country-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.country-arrow{
+    font-size:20px;
+    transition:.35s;
+}
+
+.country-leagues{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .45s ease;
+    background:#0b0b0b;
+}
+
+.country-item.active .country-leagues{
+    max-height:250px;
+}
+
+.country-item.active .country-arrow{
+    transform:rotate(90deg);
+}
+
+.country-flag-img{
+    width:32px;
+    height:23px;
+    object-fit:cover;
+    border-radius:2px;
+}
+
+.league-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 25px;
+    color:#dcdcdc;
+    text-decoration:none;
+    font-size:14px;
+    transition:.25s;
+    border-left:3px solid transparent;
+}
+
+.league-link:hover{
+    background:#151515;
+    color:white;
+    border-left-color:#ff0000;
+}
+
+.league-logo{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+}
+
+.main-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+
+/* ================= TODAY TITLE ================= */
+
+.today-title{
+    color:white;
+    font-size:26px;
+    margin:20px 0 30px;
+    text-align:center;
+}
+
+
+/* ================= LEAGUE GROUPS ================= */
+
+.league-group{
+    width:700px;
+    max-width:100%;
+    margin-bottom:35px;
+}
+
+.league-group-header{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background: linear-gradient(90deg,#151515,#0a0a0a);
+    border-left:5px solid #ff0000;
+    border-radius:10px;
+
+    padding:14px 20px;
+    margin-bottom:15px;
+
+}
+
+.league-group-header img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+}
+
+.league-group-header span{
+    color:white;
+    font-size:19px;
+    font-weight:800;
+}
+
+
+/* ================= MATCH CARD ================= */
+
+.match-card{
+    width:100%;
+    background: linear-gradient(90deg,black);
+    border-radius:12px;
+    margin:12px 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    height:70px;
+    color:white;
+    box-sizing:border-box;
+}
+
+.match-card:hover{
+    transform:scale(1.01);
+}
+
+.team{
+    width:35%;
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.team-name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:inherit;
+}
+
+.team img{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
+.home{
+    justify-content:flex-start;
+}
+
+.away{
+    justify-content:flex-end;
+}
+
+.score-board{
+    width:80px;
+    height:55px;
+    background: linear-gradient(145deg,#1a1a1a,#0a0a0a);
+    border-radius:14px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.score-status{
+    font-size:9px;
+    color:#ff0000;
+    font-weight:900;
+    margin-bottom:4px;
+}
+
+.score-value{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:18px;
+    font-weight:700;
+    color:white;
+}
+
+.score-value b{
+    color:#666;
+    font-weight:400;
+}
+
+
+/* ================= MOBILE SIDEBAR ================= */
+
+.mobile-sidebar{
+    display:none;
+}
+
+
+/* ================= MOBILE SEARCH ================= */
+
+.mobile-search-btn{
+    display:none;
+}
+
+.mobile-search-overlay{
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:white;
+    z-index:10000;
+    flex-direction:column;
+}
+
+.mobile-search-overlay.active{
+    display:flex;
+}
+
+.mobile-search-header{
+    display:flex;
+    justify-content:flex-end;
+    padding:20px;
+}
+
+.mobile-search-close{
+    background:none;
+    border:none;
+    font-size:22px;
+    color:black;
+    cursor:pointer;
+}
+
+.mobile-search-form{
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    gap:10px;
+}
+
+.mobile-search-form input{
+    flex:1;
+    padding:14px 18px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+    outline:none;
+}
+
+.mobile-search-form button{
+    padding:14px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:10px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+
+/* ================= MOBILE ================= */
+
+ @media (max-width: 1000px) {
+
+    body{
+        zoom: 190%;
+    }
+
+    .sidebar{
+        display:none;
+    }
+
+    .page-layout{
+        display:block;
+        padding:15px;
+    }
+
+    .main-content{
+        width:100%;
+    }
+
+    .league-group{
+        width:100%;
+    }
+
+
+    .league-group-header{
+        background: #222;
+        width: 100%;
+    }
+
+    .search-box{
+        display:none !important;
+    }
+
+    .site-header{
+        width: 100%;
+        height: 2%;
+        margin-top: -1%;
+        margin-left: -3%;
+    }
+
+    .mobile-search-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:34px;
+        height:34px;
+        background:black;
+        color:white;
+        border:none;
+        border-radius:50%;
+        font-size:15px;
+        cursor:pointer;
+    }
+
+    .header-right{
+        gap:12px;
+    }
+
+    .team span{
+        font-size:12px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-width:90px;
+        display:inline-block;
+    }
+
+
+    .league-group{
+        margin-left: -8%;
+        width: 100%;
+    }
+
+
+    .match-card{
+        margin-left: 6%;
+    }
+   
+
+    .mobile-sidebar {
+        position: fixed !important;
+        top: var(--header-height, 1090px);
+        left: 4%;
+        width: 92% !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: flex-end;
+        justify-content: center;
+        background: black;
+        border-top: none;
+        z-index: 999;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }
+
+    .main-content {
+        flex: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin-top: calc(var(--header-height, 60px) + 55px) !important;
+    }
+
+    .mobile-country {
+        position: relative;
+        width: 20%;
+        height: 170px;
+        flex-shrink: 0;
+    }
+
+    .mobile-country-btn {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 45px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 0;
+        margin: 0;
+        background: black;
+        border: none;
+        color: white;
+        cursor: pointer;
+        z-index: 100;
+    }
+
+    .mobile-country-btn img {
+        width: 23px;
+        height: 16px;
+        object-fit: cover;
+        border-radius: 2px;
+    }
+
+    .mobile-arrow {
+        font-size: 8px;
+        color: white;
+    }
+
+    .mobile-country-leagues {
+        display: none;
+        position: absolute;
+        bottom: 50px;
+        top: auto;
+        left: 82%;
+        transform: translateX(-50%);
+        width: 136%;
+        background: #222;
+        border: 1px solid red;
+        border-radius: 7px 7px 0 0;
+        padding: 4px;
+        z-index: 101;
+        box-sizing: border-box;
+    }
+
+    .mobile-country.active .mobile-country-leagues {
+        display: block;
+    }
+
+    .mobile-country-leagues a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        padding: 5px 4px;
+        color: white;
+        text-decoration: none;
+        font-size: 9px;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+
+    .mobile-country-leagues a img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+
+    
+
+}
+
+</style>
+
+
+<script>
+
+document.querySelectorAll(".country-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+        const item = this.parentElement;
+        const opened = document.querySelector(".country-item.active");
+        if(opened && opened !== item){
+            opened.classList.remove("active");
+        }
+        item.classList.toggle("active");
+    });
+});
+
+document.querySelectorAll(".mobile-country-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+        const item = this.parentElement;
+        document.querySelectorAll(".mobile-country").forEach(function(country){
+            if(country !== item){
+                country.classList.remove("active");
+            }
+        });
+        item.classList.toggle("active");
+    });
+});
+
+function openMobileSearch(){
+    document.getElementById('mobile-search-overlay').classList.add('active');
+}
+
+function closeMobileSearch(){
+    document.getElementById('mobile-search-overlay').classList.remove('active');
+}
+
+</script>
+
+{% endblock %}

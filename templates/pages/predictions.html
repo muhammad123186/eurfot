@@ -1,72 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<body style="background: linear-gradient(-45deg,#222222d8);">
+<body class="body">
 
 
 <div class="site-header">
 
+
+
     <div class="logo-box">
 
-        <h1>EURO<span>FOR</span></h1>
+
+
+        <h1>EUR<span>FOT</span></h1>
+
+
 
     </div>
 
+
+
     <div class="header-right">
+
+
 
         {% if user.is_authenticated %}
 
-<a href="{% url 'profile' %}" 
-class="profile-btn"
-style="
-width:80px;
-height:20px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:black;
-white-space:nowrap;
-color:white;
-padding:10px 15px;
-border-radius:8px;
-text-decoration:none;
-font-weight:bold;
-font-size:14px;
-margin-right:8px;
-transition:.25s;
-box-shadow:0 15px 30px rgba(0,0,0,.7),
-inset 2px 2px 10px black;
-border:2px solid rgba(0, 140, 255, 0.8);
-">
 
-{{ user.username }}
+
+<a href="{% url 'profile' %}" class="profile-btn">
+
+
+
+👤 {{ user.username }}
+
+
 
 </a>
 
 
-{% else %}
 
-        
-            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
-                Sign Up
-            </a>
+
+
+{% else %}
+       
+
+        <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+
         {% endif %}
 
-        <form action="{% url 'search' %}" method="GET" class="search-box">
-            <input type="text" name="q" placeholder="Search">
-            <button type="submit">🔍</button>
-        </form>
+
+
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+<!-- زر البحث للهاتف بس -->
+        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
 
     </div>
 
 </div>
 
 
-    
-    
+<!-- ================= MOBILE SEARCH OVERLAY ================= -->
+
+<div id="mobile-search-overlay" class="mobile-search-overlay">
+
+    <div class="mobile-search-header">
+
+        <button type="button" class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
+
+    </div>
+
+    <form action="{% url 'search' %}" method="GET" class="mobile-search-form">
+        <input type="text" name="q" placeholder="Search" autofocus>
+        <button type="submit">🔍</button>
+    </form>
 
 </div>
 
+</div>
 
 
 
@@ -159,8 +180,7 @@ border:2px solid rgba(0, 140, 255, 0.8);
         <div style="text-align:center;margin:20px;">
 
             <img
-            src="{{ competition.logo|default:'' }}"
-            width="94">
+            src="{{ competition.logo|default:'' }}" class="competition-logo">
 
         </div>
 
@@ -188,20 +208,18 @@ border:2px solid rgba(0, 140, 255, 0.8);
 
         <!-- MATCHWEEK -->
 
-        <div class="matchweek">
+        <div>
 
             {% if previous_matchday %}
-                <a href="{% url 'predictions_page' code previous_matchday %}">
+                <a href="{% url 'predictions_page' code previous_matchday %}" class="p-matchweek">
                     ◀ Matchweek {{ previous_matchday }}
                 </a>
             {% endif %}
 
-            <h2>
-                Matchweek {{ matchday }}
-            </h2>
+            
 
             {% if next_matchday %}
-                <a href="{% url 'predictions_page' code next_matchday %}">
+                <a href="{% url 'predictions_page' code next_matchday %}" class="n-matchweek">
                     Matchweek {{ next_matchday }} ▶
                 </a>
             {% endif %}
@@ -318,7 +336,7 @@ border:2px solid rgba(0, 140, 255, 0.8);
 </div>
 
 
-
+</body>
 
 <style>
 
@@ -327,21 +345,24 @@ body {
     margin: 0;
     min-height: 100vh;
     font-family: Arial, sans-serif;
+    background: linear-gradient(-45deg,#222222d8)
 }
 
 
 
 .site-header{
-    width:100%;
-    height: 40px;
-    background:linear-gradient(90deg,black,black,black,black,black);
-    padding:20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:4px solid red;
-    box-shadow:0 8px 20px rgb(251, 255, 0);
-    display:flex;
+    width: 102%;
+    height: 8%;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, black, black, black, black, black);
+    padding: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid red;
+    box-shadow: 0 8px 20px rgb(251, 255, 0);
+    margin-left: -8;
+    margin-top: -6;
 }
 
 
@@ -368,7 +389,7 @@ body {
 
 .logo-box h1{
     margin:0;
-    font-size:41px;
+    font-size:38px;
     font-weight:1000;
     letter-spacing:4px;
     color:rgb(255, 0, 0);
@@ -770,11 +791,257 @@ body {
 
 
 
+.competition-logo{
+    width: 70%;
+}
+
+.mobile-search-btn{
+    display: none;
+}
+
+.mobile-search-overlay{
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    z-index: 10000;
+    flex-direction: column;
+}
+
+.mobile-search-overlay.active{
+    display: flex;
+}
+
+.mobile-search-header{
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.mobile-search-close{
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: black;
+    cursor: pointer;
+}
+
+.mobile-search-form{
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+}
+
+.mobile-search-form input{
+    flex: 1;
+    padding: 14px 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+.mobile-search-form button{
+    padding: 14px 18px;
+    border: none;
+    background: black;
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+
+.signup-btn{
+
+    width:13%;
+
+    height:15%;
+
+    display:flex;
+
+    background: black;
+
+    white-space:nowrap;
+
+    color: white;
+
+    padding: 3% 5%;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-right: 3%;
+
+    transition: 0.25s;
+
+    box-shadow:0 15px 30px rgba(0,0,0,.7);
+
+    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
+
+    border:2px solid rgba(255, 0, 0, 0.774);
+
+    margin-left: -8%;
+         
+
+}
+
+
+
+.n-matchweek{
+    width:800px;
+    display:flex;
+    color:white;
+    margin-left: 98%;
+    margin-top: -3%;
+}
+
+.n-matchweek a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.n-matchweek h2{
+    color:white;
+}
+
+
+
+.p-matchweek{
+    width:800px;
+    display:flex;
+    color:white;
+    margin-top: -2%;
+    margin-left: -13%;
+}
+
+.p-matchweek a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.p-matchweek h2{
+    color:white;
+}
 
 
 
 
 
+
+
+@media (max-width:1000px) {
+
+    .sidebar{
+        display: none;
+    }
+
+
+    .body{
+        zoom: 230%;
+    }
+
+
+    .match-card{
+        height: 92px;
+        width: 70%;
+        margin-left: -15%;
+        margin-top: 2%;
+    }
+
+
+    .competition-logo{
+        margin-left: -100%;
+        width: 80%;
+    }
+
+
+    .prediction-btn{
+        margin-left: -70%;
+    }
+
+
+  
+
+    
+
+
+    .n-matchweek{
+    width:800px;
+    display:flex;
+    color:white;
+    margin-left: 69%;
+    margin-top: -3%;
+}
+
+.n-matchweek a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.n-matchweek h2{
+    color:white;
+}
+
+
+
+.p-matchweek{
+    width:800px;
+    display:flex;
+    color:white;
+    margin-top: -2%;
+}
+
+.p-matchweek a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.p-matchweek h2{
+    color:white;
+}
+
+
+
+.site-header{
+    width: 166%;
+    height: 5%;
+}
+
+
+
+
+    
+.signup-btn {
+
+        width: 60px;
+
+        font-size: 14px;
+
+        text-indent:-4%;
+
+        border-radius: 5px;
+
+        transform: translateX(-10%);
+
+        margin-top: 2%;
+
+        font-weight: 900;
+
+    }
+    
+}
 
 
 

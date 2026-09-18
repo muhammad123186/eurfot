@@ -1,4 +1,4 @@
-<body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black,rgba(17, 0, 255, 0.692));">
+<body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black);">
 
 
 
@@ -15,7 +15,7 @@
 
             <div>
 
-                <h1>{{ competition.name }}</h1>
+                <h2>الإحصائيات</h2>
 
                 <p>
                     Season {{ season }}
@@ -60,7 +60,7 @@
             <img class="quick-photo"
                  src="{{ p.player_photo }}">
 
-            <h3>{{ p.player_name }}</h3>
+            <h3 class="quick-name">{{ p.player_name }}</h3>
 
             <div class="quick-team">
 
@@ -97,7 +97,7 @@
             <img class="quick-photo"
                  src="{{ p.player_photo }}">
 
-            <h3>{{ p.player_name }}</h3>
+            <h3 class="quick-name">{{ p.player_name }}</h3>
 
             <div class="quick-team">
 
@@ -134,7 +134,7 @@
             <img class="club-big-logo"
                  src="{{ c.team.logo }}">
 
-            <h3>
+            <h3 class="quick-name">
 
                 {{ c.team.name }}
 
@@ -167,7 +167,7 @@
             <img class="club-big-logo"
                  src="{{ c.team.logo }}">
 
-            <h3>
+            <h3 class="quick-name">
 
                 {{ c.team.name }}
 
@@ -292,7 +292,7 @@
 
                                 </h4>
 
-                                <small>scorer</small>
+                                
 
                                 
 
@@ -325,8 +325,11 @@
                     </td>
 
                     <td>
+                        <span class="apper">
 
                         {{ player.appearances }}
+
+                        </span>
 
                     </td>
 
@@ -340,7 +343,7 @@
 
     </div>
 
-</div>
+
 
 
 
@@ -349,7 +352,7 @@
 
 <div id="top-assists" class="tab-content">
 
-    <table class="premium-table">
+    <table class="premium-table assists">
 
         <thead>
 
@@ -398,7 +401,7 @@
 
                         <h4>{{ player.player_name }}</h4>
 
-                        <small>Playmaker</small>
+                        
 
                     </div>
 
@@ -428,7 +431,15 @@
 
             </td>
 
-            <td>{{ player.appearances }}</td>
+            <td>
+
+            <span class="appera">
+
+            {{ player.appearances }}
+
+            </span>
+
+            </td>
 
         </tr>
 
@@ -470,7 +481,12 @@
 
         <tr>
 
-            <td class="place">{{ forloop.counter }}</td>
+            <td class="place">
+                
+                {{ forloop.counter }}
+
+            </td>
+
 
             <td>
 
@@ -482,8 +498,7 @@
 
                         <h4>{{ player.player_name }}</h4>
 
-                        <small>Football Player</small>
-
+                        
                     </div>
 
                 </div>
@@ -552,7 +567,11 @@
 
         <tr>
 
-            <td class="place">{{ forloop.counter }}</td>
+            <td class="place">
+                
+                {{ forloop.counter }}
+
+            </td>
 
             <td>
 
@@ -564,7 +583,7 @@
 
                         <h4>{{ player.player_name }}</h4>
 
-                        <small>Football Player</small>
+                        
 
                     </div>
 
@@ -632,18 +651,13 @@
 
                 <td class="place">
 
-                    {% if forloop.counter == 1 %}
-                        🥇
-                    {% elif forloop.counter == 2 %}
-                        🥈
-                    {% elif forloop.counter == 3 %}
-                        🥉
-                    {% else %}
-                        {{ forloop.counter }}
-                    {% endif %}
+                    
+                    
+                    {{ forloop.counter }}
+                    
+
 
                 </td>
-
                 <td>
 
                     <div class="club-card">
@@ -702,16 +716,9 @@
             <tr>
 
                 <td class="place">
-
-                    {% if forloop.counter == 1 %}
-                        🥇
-                    {% elif forloop.counter == 2 %}
-                        🥈
-                    {% elif forloop.counter == 3 %}
-                        🥉
-                    {% else %}
-                        {{ forloop.counter }}
-                    {% endif %}
+                        
+                    {{ forloop.counter }}
+            
 
                 </td>
 
@@ -747,7 +754,7 @@
 
 </div>
 
-
+</div>
 
 
 
@@ -1098,7 +1105,7 @@
 
 .tab-btn.active{
 
-    background:#006dff;
+    background:rgba(255, 0, 0, 0.575);
 
     color:white;
 
@@ -1151,6 +1158,16 @@
 
     text-align:center;
 
+}
+
+
+.apper{
+    margin-left: 7%;
+}
+
+
+.appera{
+    margin-left: 7%;
 }
 
 
@@ -1449,6 +1466,173 @@ grid-template-columns:1fr;
 
 }
 
+
+
+@media (max-width: 1000px) {
+
+    .statistics-page {
+        zoom: 160%;
+    }
+
+
+    .quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+        width: 120%;
+        margin-left: -7%;
+        margin-top: -2%;
+        height: 34%;
+        gap: 6px !important;   
+        
+
+     
+    }
+
+
+    .quick-title {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .quick-number {
+        font-size: 24px;
+        font-weight: 500;
+        margin-top: -1%;
+    }
+
+    .quick-photo {
+        width: 20%;
+        height: 20%;
+    }
+
+    .quick-team img {
+        width: 20px;
+    }
+
+    .quick-card {
+        font-size: 16px;
+        width: 70%;
+        padding: 4px;
+        margin-left: 18%;
+    }
+
+    .club-big-logo {
+        width: 24%;
+        height: 24%;
+    }
+
+    .tabs {
+        width: 120%;
+        margin-left: -3%;
+        margin-top: -3%;
+    }
+
+    .apper {
+        margin-left: 20%;
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+    .badge.gold {
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+    .badge.blue {
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+
+    .badge.red {
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+
+    .badge.yellow {
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+
+    .badge.green {
+        font-size: 21px;
+        font-weight: 400;
+    }
+
+    .quick-name {
+        font-size: 18px;
+        font-weight: 400;
+    }
+
+    .quick-photo {
+        width: 21%;
+        height: 25%;
+    }
+
+
+    .appera {
+        margin-left: 20%;
+        font-size: 22px;
+        font-weight: 400;
+    }
+
+
+    .place{
+        margin-right: 15%;
+    }
+
+
+    .hero{
+        width:107%;
+        margin-left: -4%;
+        margin-top: -7%;
+        font-size: 15px;
+    }
+
+
+    .premium-table th {
+        font-size: 13px;
+    }
+
+
+    .premium-table td {
+        font-size: 20px;
+        font-weight: 400;
+    }
+
+    .premium-table{
+        width: 110%;
+        margin-left: -1%;
+    }
+
+
+    .tab-btn{
+        font-size: 15px;
+        padding: 12px 2px;
+        width: 14%;
+        text-indent: -3px;
+    }
+
+
+    
+
+
+
+
+    
+
+    
+
+
+    
+
+
+    
+
+   
+
+}
 
 </style>
 

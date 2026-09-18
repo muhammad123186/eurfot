@@ -46,7 +46,7 @@
             <img class="league-logo" src="{{ competition.logo }}">
 
             <div>
-                <h1>{{ competition.name }}</h1>
+                <h2>ترتيب الدوري الايطالي</h2>
                 <p>Season {{ season }}</p>
             </div>
 
@@ -64,6 +64,71 @@
     </section>
 
 
+    <!-- ================= QUICK STATS CARDS ================= -->
+
+    <div class="quick-cards">
+
+                <!-- LEADER CARD -->
+        <div class="quick-card leader-card">
+
+            <div class="quick-card-title">
+                <span class="quick-icon">🏆</span>
+                Leader
+            </div>
+
+            <div class="quick-logos">
+
+                {% for row in live_table|slice:":1" %}
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                {% endfor %}
+
+            </div>
+
+            {% for row in live_table|slice:":1" %}
+                <span class="leader-name">{{ row.team.name }}</span>
+            {% endfor %}
+
+        </div>
+
+        <!-- TOP 4 CARD -->
+        <div class="quick-card top4-card">
+
+            <div class="quick-card-title">
+                <span class="quick-icon">🔵</span>
+                Top 4
+            </div>
+
+            <div class="quick-logos">
+
+                {% for row in live_table|slice:":4" %}
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <!-- RELEGATION CARD -->
+        <div class="quick-card relegation-card">
+
+            <div class="quick-card-title">
+                <span class="quick-icon">🔴</span>
+                Relegation
+            </div>
+
+            <div class="quick-logos">
+
+                {% for row in live_table|slice:"-3:" %}
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
     <!-- ================= TABLE ================= -->
 
     <table class="premium-table standings-full">
@@ -77,9 +142,9 @@
                 <th class="apps-title">D</th>
                 <th class="apps-title">L</th>
                 <th class="apps-title">GF</th>
-                <th class="apps-title">GA</th>
+                <th class="apps-titles">GA</th>
                 <th class="apps-title">GD</th>
-                <th class="goals-title">PTS</th>
+                <th class="goals-tit">PTS</th>
             </tr>
         </thead>
 
@@ -100,17 +165,18 @@
                     </div>
                 </td>
 
-                <td>{{ row.all.played }}</td>
-                <td>{{ row.all.win }}</td>
-                <td>{{ row.all.draw }}</td>
-                <td>{{ row.all.lose }}</td>
-                <td>{{ row.all.goals.for }}</td>
-                <td>{{ row.all.goals.against }}</td>
-                <td>{{ row.goalsDiff }}</td>
+                <td class="apps-titl">{{ row.all.played }}</td>
+                <td class="apps-titl">{{ row.all.win }}</td>
+                <td class="apps-titl">{{ row.all.draw }}</td>
+                <td class="apps-titl">{{ row.all.lose }}</td>
+                <td class="apps-titl">{{ row.all.goals.for }}</td>
+                <td class="apps-titles">{{ row.all.goals.against }}</td>
+                <td class="goals-diff">{{ row.goalsDiff }}</td>
+                <td class="badge-gold">{{ row.points }}</td>
 
-                <td>
-                    <span class="badge gold">{{ row.points }}</span>
-                </td>
+                    
+                    
+                
 
             </tr>
 
@@ -364,44 +430,10 @@ body{
 
     padding:18px;
 
-    text-align:left;
+    text-align:center;   /* كانت left */
+
 
 }
-
-
-
-
-.goals-title{
-
-    transform:translatex(70px);
-
-}
-
-
-.rank-title{
-
-    transform:translatex(39px);
-
-}
-
-
-
-.player-title{
-
-    transform:translatex(33px);
-
-}
-
-
-
-
-.apps-title{
-
-    transform:translatex(28px);
-    
-}
-
-
 
 
 .premium-table td{
@@ -487,9 +519,9 @@ body{
                 BADGES
 ===================================================== */
 
-.badge{
+.badge-gold{
 
-    display:inline-flex;
+    
 
     align-items:center;
 
@@ -505,9 +537,11 @@ body{
 
     font-size:18px;
 
+    
+
 }
 
-.badge.gold{
+.badge-gold{
 
     color:#ff0000;
 
@@ -584,38 +618,260 @@ body{
 }
 
 .legend-dot.ucl{ background:#0014c8; }
-.legend-dot.uel{ background:#ff6600; }
+.legend-dot.uel{ background:#ff4800; }
 .legend-dot.relegation{ background:#ff0000;}
 
 
+
 /* =====================================================
-                RESPONSIVE
+                QUICK STATS CARDS
 ===================================================== */
 
-@media(max-width:800px){
+.quick-cards{
 
-    .hero{
-        flex-direction:column;
-        gap:20px;
-    }
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:20px;
 
-    .premium-table th,
-    .premium-table td{
-        padding:12px 8px;
-        font-size:12px;
-    }
-
-    .club-card img{
-        width:26px;
-        height:26px;
-    }
-
-    .legend{
-        flex-direction:column;
-        gap:12px;
-    }
+    margin-bottom:35px;
 
 }
+
+.quick-card{
+
+    background: linear-gradient(135deg, #111, #1b1b1b);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.4);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.quick-card-title{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:#999;
+
+    margin-bottom:16px;
+
+}
+
+.quick-icon{
+    font-size:16px;
+}
+
+.quick-logos{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+
+}
+
+.quick-logos img{
+
+    width:42px;
+    height:42px;
+    object-fit:contain;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,.15));
+    transition:.25s;
+
+}
+
+.quick-logos img:hover{
+    transform:scale(1.15);
+}
+
+/* المتصدر شعاره أكبر شوي بما إنه لحاله */
+.leader-card .quick-logos img{
+    width:64px;
+    height:64px;
+}
+
+
+/* card accents */
+
+.top4-card{
+    border-top:3px solid rgb(4, 0, 255);
+}
+
+.relegation-card{
+    border-top:3px solid #ff0000;
+}
+
+.leader-card{
+    border-top:3px solid gold;
+}
+
+
+
+.leader-name{
+
+    margin-top:16px;
+    font-size:15px;
+    font-weight:800;
+    color:white;
+
+}
+
+
+
+
+
+
+@media (max-width:1000px){
+
+     .standings-page{
+       zoom:155%;
+    }
+
+    
+    .rank-title{
+        transform:translatex(5px);
+    }
+
+    .player-title{
+        transform:translatex(5px);
+    }
+
+    .apps-title{
+        transform:translatex(-3px);
+    }
+
+    .goals-title{
+        transform:translatex(-3px);
+    }
+
+
+    .goals-diff{
+        transform:translatex(0px);
+    }
+
+
+    
+
+    .club-card a{
+        font-size:15px;
+
+    }
+
+
+    .apps-titles{
+        display:none;
+    }
+
+    
+    .apps-titl{
+        transform:translatex(-5.5px);
+    }
+
+
+    .goals-diff{
+        transform:translatex(-4px);
+    }
+
+
+    .badge-gold{
+        transform:translatex(-16px);
+    }
+
+
+
+    .goals-tit{
+        transform:translatex(-14px);
+    }
+
+
+    .hero{
+        padding:20px 30px;
+        width:100%;
+        margin-left:-3%;
+    }
+
+
+    .club-card img{
+        width:32px;
+        height:32px;
+    }
+
+
+    .club-card a{
+        font-size:18px;
+        font-weight:500;
+    }
+
+
+    .site-header{
+        width:105%;
+    }
+
+
+    .quick-cards{
+        gap:10px;
+        margin-left: -3%;
+    }
+
+    .quick-card{
+        padding:14px;
+    }
+
+    .quick-logos img{
+        width:32px;
+        height:32px;
+    }
+
+    .leader-card .quick-logos img{
+        width:48px;
+        height:48px;
+    }
+
+
+    .top4-card{
+        width: 90%;
+        margin-left: 18%;
+    }
+
+
+    .top4-card img{
+        width: 30px;
+        height: 30px;
+    }
+
+    .leader-card{
+        width: 90%;
+        margin-left: 6%;
+    }
+
+    .relegation-card{
+        margin-left: 30%;
+        width: 80%;
+    }
+
+
+    .site-header{
+        display: none;
+    }
+
+
+    .premium-table{
+        width: 112%;
+    }
+
+
+}   
 
 </style>
 
