@@ -9,10 +9,7 @@ sitemaps = {
     'static': StaticViewSitemap,
 }
 
-urlpatterns = [
-    # ... مساراتك الحالية ...
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-]
+
 
 urlpatterns = [
 
@@ -188,6 +185,9 @@ urlpatterns = [
 
 
     path('google0648db8e851360e4.html', TemplateView.as_view(template_name="google0648db8e851360e4.html")),
+    
+    # مسار خريطة الموقع الشاملة
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
 ]
 

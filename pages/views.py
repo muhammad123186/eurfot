@@ -5296,7 +5296,7 @@ def get_today_matches():
             "matches": matches,
         })
 
-    cache.set(cache_key, grouped, 60 * 60)
+    cache.set(cache_key, grouped, 60 * 120)
 
     return grouped
 
