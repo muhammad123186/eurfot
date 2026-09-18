@@ -1026,9 +1026,12 @@ def clean_team_name(name):
 
 
 # ================= HOME ===========
-def matches(request, matchday=1):
+def matches(request, matchday=None):
 
-    matchday = int(matchday)
+    if matchday is None:
+        matchday = get_current_matchday("PL")
+    else:
+        matchday = int(matchday)
 
     data, games = get_matches("PL", matchday)
 
@@ -1119,6 +1122,49 @@ def get_matches(code, matchday):
     cache.set(cache_key, result, MATCHES_CACHE_TTL)
 
     return result
+
+
+
+def get_current_matchday(code):
+
+    league_id = LEAGUES[code]["id"]
+
+    cache_key = f"current_matchday_v1_{code}_{SEASON}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    url = "https://v3.football.api-sports.io/fixtures/rounds"
+
+    params = {
+        "league": league_id,
+        "season": SEASON,
+        "current": "true"
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=15)
+        data = response.json()
+    except requests.RequestException:
+        data = {}
+
+    rounds = data.get("response", [])
+
+    matchday = 1
+
+    if rounds:
+        round_name = rounds[0]  # مثال: "Regular Season - 5"
+
+        try:
+            matchday = int(round_name.split("-")[-1].strip())
+        except (ValueError, IndexError):
+            matchday = 1
+
+    cache.set(cache_key, matchday, MATCHES_CACHE_TTL)
+
+    return matchday
 
 
 def get_team_statistics_cached(team_id, league_id):
@@ -3270,10 +3316,15 @@ def standings(request):
     )
 
 
-def competition(request, code, matchday=1):
+def competition(request, code, matchday=None):
 
     if code not in LEAGUES:
         return render(request, "404.html")
+
+    if matchday is None:
+        matchday = get_current_matchday(code)
+    else:
+        matchday = int(matchday)
 
     data, games = get_matches(code, matchday)
 
@@ -3587,7 +3638,16 @@ def submit_prediction(request, match_id):
     )
 
 
-def predictions_page(request, code, matchday):
+
+def predictions_page(request, code, matchday=None):
+
+    if code not in LEAGUES:
+        return render(request, "404.html", status=404)
+
+    if matchday is None:
+        matchday = get_current_matchday(code)
+    else:
+        matchday = int(matchday)
 
     user_stats = None
 
@@ -3613,8 +3673,6 @@ def predictions_page(request, code, matchday):
             "predictions": predictions.count(),
         }
 
-    if code not in LEAGUES:
-        return render(request, "404.html", status=404)
 
     competition, matches = get_matches(code, matchday)
 
