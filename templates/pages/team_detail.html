@@ -89,53 +89,7 @@
 
 
 
-    {% if next_match %}
 
-<div class="next-match-card">
-
-    <div class="next-match-header">
-        Next Match
-    </div>
-
-    <div class="next-match-league">
-
-        <img src="{{ next_match.league.logo }}">
-        <span>{{ next_match.league.name }}</span>
-
-    </div>
-
-    <div class="next-match-teams">
-
-        <div class="team-side">
-            <img src="{{ next_match.teams.home.logo }}">
-            <h3>{{ next_match.teams.home.name }}</h3>
-        </div>
-
-        <div class="vs-box">
-
-            <span>VS</span>
-
-            <small>
-                {{ next_match.fixture.date|slice:"0:10" }}
-            </small>
-
-            <div class="match-info">
-    <div>🕒 {{ next_match.fixture.date|slice:"11:16" }}</div>
-    <div>🏟 {{ venue.name }}</div>
-</div>
-
-        </div>
-
-        <div class="team-side">
-            <img src="{{ next_match.teams.away.logo }}">
-            <h3>{{ next_match.teams.away.name }}</h3>
-        </div>
-
-    </div>
-
-</div>
-
-{% endif %}
 
 
 
@@ -1153,6 +1107,12 @@
 <!-- ================= CSS ================= -->
 
 <style>
+
+
+
+
+
+
 
 .team-tabs{
     display:flex;
@@ -2543,6 +2503,9 @@ res · CSS
         zoom: 120%;
     }
 
+
+
+    
 
     
 
