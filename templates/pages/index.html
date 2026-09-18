@@ -2225,11 +2225,23 @@ margin-left: -2%;
 @media (max-width:1000px) {
     body{
         padding-bottom: 60px; 
-        background: linear-gradient(-100deg,rgb(76, 0, 255),rgb(0, 204, 255));
+        background:linear-gradient(-100deg,rgb(76, 0, 255),rgb(0, 204, 255)) ;
         min-height: 180vh;
         zoom: 96.5%;
         
     }
+
+
+    html, body {
+    overflow-x: hidden !important;
+    max-width: 200vw;
+}
+
+.page-layout,
+.main-content {
+    max-width: 1980vw;
+    
+}
 
     
 
@@ -2338,7 +2350,7 @@ margin-left: -2%;
 
     .page-layout{
         zoom: 105%;
-        margin-top: -7%;
+        margin-top: -18%;
         
     }
 
@@ -2924,9 +2936,9 @@ margin-left: -2%;
 
     .mobile-sidebar {
         position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
-        top: var(--header-height, 56px); /* غيّرها لارتفاع الهيدر الفعلي */
-        left: 1.5%;
-        width: 24.3% !important;
+        top: var(--header-height, 849px); /* غيّرها لارتفاع الهيدر الفعلي */
+        left: 5.5%;
+        width: 90% !important;
         height: 50px !important;
         display: flex !important;
         align-items: flex-end;
@@ -3037,7 +3049,7 @@ margin-left: -2%;
 
         position: absolute;
 
-        top: 50px;
+        bottom: 50px;
         left: 80%;
 
         transform: translateX(-50%);

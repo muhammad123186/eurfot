@@ -2276,6 +2276,18 @@ margin-left: -2%;
         zoom: 97.5%;
     }
 
+
+    html, body {
+    overflow-x: hidden !important;
+    max-width: 200vw;
+}
+
+.page-layout,
+.main-content {
+    max-width: 1980vw;
+    
+}
+
     .team-of-week-shortcut-wrapper{
 
         margin-left: 5%;
@@ -2379,7 +2391,7 @@ margin-left: -2%;
 
     .page-layout{
         zoom: 105%;
-        margin-top: -7%;
+        margin-top: -15%;
         
     }
 
@@ -2967,9 +2979,7 @@ margin-left: -2%;
 ========================= */
 @media (max-width: 1000px) {
 
-    /* ==============================
-       تخطيط الصفحة
-       ============================== */
+    
 
     .page-layout {
         height: auto !important;
@@ -2977,17 +2987,15 @@ margin-left: -2%;
     }
 
 
-    /* ==============================
-       سايدبار الهاتف
-       ============================== */
+    
 
     @media (max-width: 1000px) {
 
     .mobile-sidebar {
         position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
-        top: var(--header-height, 50px); /* غيّرها لارتفاع الهيدر الفعلي */
-        left: 1.5%;
-        width: 24% !important;
+        top: var(--header-height, 840px); /* غيّرها لارتفاع الهيدر الفعلي */
+        left: 5.5%;
+        width: 90% !important;
         height: 50px !important;
         display: flex !important;
         align-items: flex-end;
@@ -3098,7 +3106,7 @@ margin-left: -2%;
 
         position: absolute;
 
-        top: 50px;
+        bottom: 50px;
         left: 80%;
 
         transform: translateX(-50%);

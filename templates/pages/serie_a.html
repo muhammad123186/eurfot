@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
+<body class="body">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 
 
 <div class="site-header">
@@ -185,8 +184,6 @@
 
 
 
-       
-               
         <div class="country-leagues">
 
             {% for league in country.leagues %}
@@ -249,9 +246,7 @@
 
             src="{{ competition.logo|default:'' }}" class="logo-comp">
 
-            <h2 class="name">الدوري الإيطالي</h2>
-
-
+            <h2 class="name">الدوري الايطالي</h2>
 
    
 
@@ -277,7 +272,7 @@
 
 
 
-        <a href="{% url 'competition' 'SA' %}" class="tab-matches">
+        <a href="{% url 'competition' code %}" class="tab-matches">
 
             Matches
 
@@ -285,7 +280,7 @@
 
 
 
-        <a href="{% url 'competition_standings' 'SA' %}" class="tab-standings">
+        <a href="{% url 'competition_standings' code %}" class="tab-standings">
 
             Standings
 
@@ -329,9 +324,9 @@
 
 
 
-                <div class="img-pre">JUV</div>
+                <div class="img-pre">FCB</div>
 
-                <img src="https://media.api-sports.io/football/teams/496.png" class="img-pr">
+                <img src="https://media.api-sports.io/football/teams/529.png" class="img-pr">
 
                    
 
@@ -349,9 +344,9 @@
 
                
 
-                <img src="https://media.api-sports.io/football/teams/505.png" class="img-p">
+                <img src="https://media.api-sports.io/football/teams/541.png" class="img-p">
 
-                <div class="img-pred">INT</div>
+                <div class="img-pred">RMA</div>
 
                    
 
@@ -641,7 +636,7 @@
 
 
 
-  {% if league.type == "cup" or league.type == "supercup" %}
+{% if league.type == "cup" or league.type == "supercup" %}
     <a href="{% url 'cup_competition' league.code %}">
 {% else %}
     <a href="{% url 'competition' league.code %}">
@@ -686,7 +681,7 @@
 </div>
 
 
-
+</body>
 
 
 <style>
@@ -696,17 +691,11 @@
 
 
 body {
-
-   
-
-    background: linear-gradient(-45deg,rgba(0, 132, 255, 0.993));
-
+    margin: 0;
+    padding: 0;
+    min-height: 180vh;
     overflow-x: hidden;
-
-
-
-
-
+    background: rgb(0, 119, 255);
 }
 
 
@@ -1199,13 +1188,17 @@ body {
 
     text-decoration:none;
 
+    margin-left: 7%;
+
+    margin-top: 7%;
+
 }
 
 
 
 .tab-standings {
 
-    background:rgb(255,0,0);
+    background:#222;
 
     color:white;
 
@@ -1214,6 +1207,8 @@ body {
     border-radius:7px;
 
     text-decoration:none;
+
+    margin-top: 7%;
 
 }
 
@@ -1221,7 +1216,7 @@ body {
 
 .tab-statistics {
 
-    background:rgb(4,0,255);
+    background:#222;
 
     color:white;
 
@@ -1230,6 +1225,8 @@ body {
     border-radius:7px;
 
     text-decoration:none;
+
+    margin-top: 7%;
 
 }
 
@@ -1237,7 +1234,7 @@ body {
 
 .tab-news {
 
-    background:rgb(5, 150, 0);
+    background:#222;
 
     color:white;
 
@@ -1247,7 +1244,10 @@ body {
 
     text-decoration:none;
 
+    margin-top: 7%;
+
 }
+
 
 
 
@@ -1665,7 +1665,7 @@ body {
 
     width: 102%;
 
-    height: 8%;
+    height: 5%;
 
     box-sizing: border-box;
 
@@ -2259,21 +2259,30 @@ margin-left: -2%;
 
 
 .name{
-    font-size: 23px;
+    font-size: 22px;
 }
 
 
 
 @media (max-width:1000px) {
+
+
     body{
-        padding-bottom: 60px;   /* مساحة لا يغطيها الشريط */
-        background-color: #24003c5d;
         zoom: 97.5%;
     }
 
-    
 
+    html, body {
+    overflow-x: hidden !important;
+    max-width: 200vw;
+}
+
+.page-layout,
+.main-content {
+    max-width: 1980vw;
     
+}
+
     .team-of-week-shortcut-wrapper{
 
         margin-left: 5%;
@@ -2368,7 +2377,7 @@ margin-left: -2%;
 
     .page-layout{
 
-        margin-left:14%;
+        margin-left:15%;
         height: auto !important;
         min-height: 0 !important;
         flex-direction: column;
@@ -2377,7 +2386,7 @@ margin-left: -2%;
 
     .page-layout{
         zoom: 105%;
-        margin-top: -7%;
+        margin-top: -15%;
         
     }
 
@@ -2423,7 +2432,7 @@ margin-left: -2%;
         font-size: 16px;
         cursor: pointer;
         flex-shrink: 0;
-        margin-top: -10%;
+        margin-top: -11%;
         margin-left: 92%;
     }
 
@@ -2441,13 +2450,13 @@ margin-left: -2%;
 
 
 
-
 .name{
     font-size: 16px;
 }
 
 
 }
+
 
 
 @media (max-width: 1000px) {
@@ -2527,7 +2536,9 @@ margin-left: -2%;
 
         padding: 13%;
 
-        height: 5%;
+        height: 6%;
+
+        margin-top: 10%;
 
     }
 
@@ -2824,7 +2835,7 @@ margin-left: -2%;
 
         width: 10%;
 
-        margin-left: 2%;
+        margin-left: 5%;
 
 
 
@@ -2904,9 +2915,9 @@ margin-left: -2%;
 
         width: 104%;
 
-        height: 5%;
+        height: 3.5%;
 
-        margin-top: -2%;
+        margin-top: -1%;
 
 
 
@@ -2963,9 +2974,7 @@ margin-left: -2%;
 ========================= */
 @media (max-width: 1000px) {
 
-    /* ==============================
-       تخطيط الصفحة
-       ============================== */
+    
 
     .page-layout {
         height: auto !important;
@@ -2973,29 +2982,15 @@ margin-left: -2%;
     }
 
 
-    @media (max-width: 1000px) {
-
-    /* ==============================
-       تخطيط الصفحة
-       ============================== */
-
-    .page-layout {
-        height: auto !important;
-        min-height: 0 !important;
-    }
-
-
-    /* ==============================
-       سايدبار الهاتف
-       ============================== */
+    
 
     @media (max-width: 1000px) {
 
     .mobile-sidebar {
         position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
-        top: var(--header-height, 44px); /* غيّرها لارتفاع الهيدر الفعلي */
-        left: 1.5%;
-        width: 24% !important;
+        top: var(--header-height, 840px); /* غيّرها لارتفاع الهيدر الفعلي */
+        left: 5.5%;
+        width: 90% !important;
         height: 50px !important;
         display: flex !important;
         align-items: flex-end;
@@ -3106,8 +3101,8 @@ margin-left: -2%;
 
         position: absolute;
 
-        top: 50px;
-        left: 75%;
+        bottom: 50px;
+        left: 80%;
 
         transform: translateX(-50%);
 
@@ -3196,11 +3191,6 @@ margin-left: -2%;
     gap: 0.1%;
 }
 
-
-
-
-
-}
 
 </style>
 
