@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{{ player_stats|json_script:"player-stats-data" }}
+<body class="body">
 
 
 <div class="site-header">
@@ -1399,7 +1399,7 @@ function openPlayerStats(playerId, playerName) {
 
 </div>
 
-
+</body>
 <style>
 
 
@@ -3529,19 +3529,17 @@ body{
 
 @media (max-width: 1000px) {
 
-    .page-layot{
-        zoom: 100%;
+    .site-header{
+        display: none;
     }
 
-
-    .match-container {
-        zoom: 165%;
+    .match-container{
+        zoom: 55%;
     }
-
 
     .match-card{
         width: 100%;
-        margin-left: -1.5%;
+        margin-left: -4%;
     }
 
 
@@ -3580,6 +3578,11 @@ body{
     }
 
 
+    #overview{
+        margin-left: -3%;
+    }
+
+
     .site-header{
         width: 107%;
     }
@@ -3595,15 +3598,16 @@ body{
     }
 
 
-
+    
     
 
 .pitch {
     flex-direction: column;
     height: 640px;
     width: 105%;
-    zoom: 170%;
+    zoom: 160%;
     font-weight: 500;
+    margin-left: -5%;
 }
 
 /* الخط النصفي يصير أفقي بدل عمودي */
@@ -3780,7 +3784,7 @@ body{
     
     #statistics{
         width: 100%;
-        margin-left: -1%;
+        margin-left: -5%;
     }
     
 
@@ -3988,7 +3992,7 @@ body{
 
 
     .match-tabs{
-        margin-left: 10%;
+        margin-left: 1%;
     }
     
 
@@ -4007,6 +4011,12 @@ body{
 
     .h2h-competition{
         text-align:center;
+    }
+
+
+    #h2h{
+        margin-left: -4%;
+        width: 98%;
     }
 
 
