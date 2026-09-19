@@ -48,7 +48,7 @@ CACHE_TTL = 60 * 60 * 24
 
 
 # ================= SPECIFIC CACHE TTLs (حسب طلب التحديث) =================
-MATCHES_CACHE_TTL = 60                  # جدول مباريات الدوريات والكؤوس - دقيقة واحدة
+MATCHES_CACHE_TTL = 90                  # جدول مباريات الدوريات والكؤوس - دقيقة واحدة
 TEAM_DETAIL_CACHE_TTL = 60 * 45         # صفحة تفاصيل الفريق - 45 دقيقة
 PLAYER_DETAIL_CACHE_TTL = 60 * 60       # صفحة تفاصيل اللاعب - ساعة واحدة
 STANDINGS_CACHE_TTL = 60 * 10           # جدول الترتيب لكل البطولات - 10 دقائق
@@ -5315,7 +5315,7 @@ def get_today_matches():
             "matches": matches,
         })
 
-    cache.set(cache_key, grouped, 100)
+    cache.set(cache_key, grouped, MATCHES_CACHE_TTL)
 
     return grouped
 
