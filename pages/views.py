@@ -1274,7 +1274,7 @@ def match_detail(request, id):
     live_cache_key = f"match_live_v3_{id}"
     lineups_cache_key = f"match_lineups_v3_{id}"
     events_cache_key = f"match_events_v3_{id}"
-    stats_cache_key = f"match_stats_v3_{id}"
+    stats_cache_key = f"match_stats_v4_{id}"
 
     # ================= CORE (Overview + Comparison + H2H) =================
 
