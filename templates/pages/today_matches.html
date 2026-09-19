@@ -123,15 +123,66 @@
                 </div>
 
                 <div class="score-board">
-                    <div class="score-status">
-                        {{ game.status }}
-                    </div>
-                    <div class="score-value">
-                        <span>{{ game.score.fullTime.home}}</span>
-                        <b>-</b>
-                        <span>{{ game.score.fullTime.away}}</span>
-                    </div>
-                </div>
+
+
+
+                <div class="score-status">
+
+    {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+
+        {{ game.elapsed }}'
+
+    {% elif game.status == "HT" %}
+
+        Half Time
+
+    {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+
+        FULL TIME
+
+    {% elif game.status == "NS" %}
+
+        {{ game.utcDate|date:"H:i" }}
+
+    {% elif game.status == "PST" %}
+
+        Postponed
+
+    {% elif game.status == "CANC" %}
+
+        Cancelled
+
+    {% else %}
+
+        {{ game.status }}
+
+    {% endif %}
+
+</div>
+
+
+
+                <div class="score-value">
+
+    {% if game.status == "NS" %}
+
+        <span>VS</span>
+
+    {% else %}
+
+        <span>{{ game.score.fullTime.home }}</span>
+        <b>-</b>
+        <span>{{ game.score.fullTime.away }}</span>
+
+    {% endif %}
+
+</div>
+
+
+
+            </div>
+
+
 
                 <div class="team away">
                     <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">

@@ -25,6 +25,26 @@ from django.conf import settings
 import time
 
 
+
+from zoneinfo import ZoneInfo
+
+MECCA_TZ = ZoneInfo("Asia/Riyadh")  # نفس توقيت مكة (UTC+3، بدون توقيت صيفي)
+
+
+def to_mecca_time(iso_date_string):
+    """
+    يحول تاريخ ISO من الـ API (UTC) إلى توقيت مكة كـ datetime object
+    """
+    if not iso_date_string:
+        return None
+
+    try:
+        dt = datetime.fromisoformat(iso_date_string.replace("Z", "+00:00"))
+        return dt.astimezone(MECCA_TZ)
+    except (ValueError, TypeError):
+        return None
+
+
 # ================= CACHE DURATION =================
 # مدة موحدة افتراضية لبقية الكاش بالمشروع: 24 ساعة بالثواني
 CACHE_TTL = 60 * 60 * 24
@@ -1109,7 +1129,7 @@ def get_matches(code, matchday):
             "status": f["fixture"]["status"]["short"],
             "elapsed": f["fixture"]["status"].get("elapsed"),
 
-            "utcDate": f["fixture"]["date"],
+            "utcDate": to_mecca_time(f["fixture"]["date"]),
         })
 
     competition = {
@@ -1304,9 +1324,7 @@ def match_detail(request, id):
             },
             "status": f["fixture"]["status"]["short"],
             "elapsed": f["fixture"]["status"].get("elapsed"),
-            "utcDate": datetime.fromisoformat(
-                f["fixture"]["date"].replace("Z", "+00:00")
-            ),
+            "utcDate": to_mecca_time(f["fixture"]["date"]),
             "competition": {
                 "name": f["league"]["name"],
                 "logo": f["league"]["logo"]
@@ -2391,6 +2409,9 @@ def team_detail(request, id):
     scheduled_matches = upcoming_matches[:5]
 
     next_match = scheduled_matches[0] if scheduled_matches else None
+
+    if next_match:
+        next_match["local_date"] = to_mecca_time(next_match["fixture"]["date"])
 
     form = []
     wins = 0
@@ -5165,7 +5186,7 @@ def get_cup_rounds(code):
 
             "status": f["fixture"]["status"]["short"],
 
-            "utcDate": f["fixture"]["date"],
+            "utcDate": to_mecca_time(f["fixture"]["date"]),
         })
 
     ordered_rounds = [
@@ -5262,7 +5283,6 @@ def get_today_matches():
         for f in fixtures:
 
             matches.append({
-
                 "id": f["fixture"]["id"],
 
                 "homeTeam": {
@@ -5279,13 +5299,14 @@ def get_today_matches():
 
                 "score": {
                     "fullTime": {
-                        "home": f["goals"]["home"],
-                        "away": f["goals"]["away"],
+                    "home": f["goals"]["home"],
+                    "away": f["goals"]["away"],
                     }
                 },
 
                 "status": f["fixture"]["status"]["short"],
-                "utcDate": f["fixture"]["date"],
+                "elapsed": f["fixture"]["status"].get("elapsed"),
+                "utcDate": to_mecca_time(f["fixture"]["date"]),
 
             })
 
@@ -5296,7 +5317,7 @@ def get_today_matches():
             "matches": matches,
         })
 
-    cache.set(cache_key, grouped, 60 * 120)
+    cache.set(cache_key, grouped, 60 * 100)
 
     return grouped
 
