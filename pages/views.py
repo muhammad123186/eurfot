@@ -34,10 +34,10 @@ MECCA_TZ = ZoneInfo("Asia/Riyadh")
 def to_mecca_time(iso_date_string):
     if not iso_date_string:
         return None
-
     try:
         dt = datetime.fromisoformat(iso_date_string.replace("Z", "+00:00"))
-        return dt.astimezone(MECCA_TZ)
+        mecca_dt = dt.astimezone(MECCA_TZ)
+        return mecca_dt.replace(tzinfo=None)  # نشيل معلومة المنطقة الزمنية حتى ما يعيد Django تحويلها
     except (ValueError, TypeError):
         return None
 
@@ -1069,7 +1069,7 @@ def matches(request, matchday=None):
 # ================= GET MATCHES (جدول المباريات - دقيقة واحدة) =================
 def get_matches(code, matchday):
 
-    cache_key = f"matches_v2_{code}_{SEASON}_{matchday}"
+    cache_key = f"matches_v3_{code}_{SEASON}_{matchday}"
 
     cached = cache.get(cache_key)
 
@@ -5238,7 +5238,7 @@ def get_today_matches():
 
     today_str = date_cls.today().isoformat()
 
-    cache_key = f"today_matches_{today_str}"
+    cache_key = f"today_matches_v4_{today_str}"
 
     cached = cache.get(cache_key)
 
@@ -5280,6 +5280,7 @@ def get_today_matches():
         for f in fixtures:
 
             matches.append({
+
                 "id": f["fixture"]["id"],
 
                 "homeTeam": {
@@ -5296,8 +5297,8 @@ def get_today_matches():
 
                 "score": {
                     "fullTime": {
-                    "home": f["goals"]["home"],
-                    "away": f["goals"]["away"],
+                        "home": f["goals"]["home"],
+                        "away": f["goals"]["away"],
                     }
                 },
 
