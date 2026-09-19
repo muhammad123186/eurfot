@@ -115,14 +115,25 @@
 
             <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
 
-                <div class="team home">
-                    <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" class="team-name">
-                        <img src="{{ game.homeTeam.crest }}">
-                        <span>{{ game.homeTeam.name }}</span>
-                    </a>
-                </div>
+                 <div class="team home">
 
-                <div class="score-board">
+
+
+                <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+
+                    <img src="{{ game.homeTeam.crest }}">
+
+                    <span>{{ game.homeTeam.name }}</span>
+
+                </a>
+
+
+
+            </div>
+
+
+
+                        <div class="score-board">
 
 
 
@@ -184,25 +195,50 @@
 
 
 
-                <div class="team away">
-                    <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">
-                        <span>{{ game.awayTeam.name }}</span>
-                        <img src="{{ game.awayTeam.crest }}">
-                    </a>
-                </div>
+            <div class="team away">
+
+
+                <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+
+                    <span>{{ game.awayTeam.name }}</span>
+
+                    <img src="{{ game.awayTeam.crest }}">
+
+                </a>
+
+
 
             </div>
 
-            {% endfor %}
+
 
         </div>
 
+
+
         {% empty %}
 
-        <h3 style="color:white;">لا توجد مباريات اليوم</h3>
+
+
+        <h3 style="color:white;">
+
+            لا توجد مباريات
+
+        </h3>
+
+
 
         {% endfor %}
 
+
+
+
+
+
+
+    </div>
+
+                
     </div>
 
 </div>

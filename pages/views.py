@@ -5231,9 +5231,6 @@ def cup_competition(request, code):
 from datetime import date as date_cls
 
 
-from datetime import date as date_cls
-
-
 def get_today_matches():
 
     today_str = date_cls.today().isoformat()
