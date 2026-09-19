@@ -1250,8 +1250,8 @@ def match_detail(request, id):
     EVENTS_CACHE_TTL = 60 * 2           # أثناء المباراة - دقيقتين
     STATS_CACHE_TTL = 60 * 2            # أثناء المباراة - دقيقتين
     HALFTIME_CACHE_TTL = 60 * 15        # بين الشوطين - 15 دقيقة
-    FINISHED_CACHE_TTL = 60 * 60 * 24   # بعد المباراة - 24 ساعة
-    STATIC_CACHE_TTL = 60 * 60 * 24 * 7 # البيانات الثابتة - أسبوع
+    FINISHED_CACHE_TTL = 360   # بعد المباراة - 24 ساعة
+    STATIC_CACHE_TTL = 360 # البيانات الثابتة - أسبوع
     NOT_STARTED_CACHE_TTL = 60          # المباراة لم تبدأ - دقيقة واحدة
 
     def get_match_ttl(status):
