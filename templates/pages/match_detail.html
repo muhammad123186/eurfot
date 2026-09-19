@@ -573,7 +573,7 @@ No matches available
 <div class="mini-match-wrapper">
 
 
-{% if match.teams.home.id == game.home_id %}
+{% if match.teams.home.id == game.away_id %}
 
     {% if match.goals.home > match.goals.away %}
         <span class="result-badge win">W</span>
@@ -594,7 +594,6 @@ No matches available
     {% endif %}
 
 {% endif %}
-
 
 <div class="mini-match">
 
