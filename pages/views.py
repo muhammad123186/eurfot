@@ -28,13 +28,10 @@ import time
 
 from zoneinfo import ZoneInfo
 
-MECCA_TZ = ZoneInfo("Asia/Riyadh")  # نفس توقيت مكة (UTC+3، بدون توقيت صيفي)
+MECCA_TZ = ZoneInfo("Asia/Riyadh")
 
 
 def to_mecca_time(iso_date_string):
-    """
-    يحول تاريخ ISO من الـ API (UTC) إلى توقيت مكة كـ datetime object
-    """
     if not iso_date_string:
         return None
 
