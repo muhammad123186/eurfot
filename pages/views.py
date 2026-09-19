@@ -1249,7 +1249,7 @@ def match_detail(request, id):
     LINEUPS_CACHE_TTL = 60 * 15         # Lineups - 15 دقيقة
     EVENTS_CACHE_TTL = 60 * 2           # أثناء المباراة - دقيقتين
     STATS_CACHE_TTL = 60 * 2            # أثناء المباراة - دقيقتين
-    HALFTIME_CACHE_TTL = 60 * 15        # بين الشوطين - 15 دقيقة
+    HALFTIME_CACHE_TTL = 60 * 10       
     FINISHED_CACHE_TTL = 360   # بعد المباراة - 24 ساعة
     STATIC_CACHE_TTL = 360 # البيانات الثابتة - أسبوع
     NOT_STARTED_CACHE_TTL = 60          # المباراة لم تبدأ - دقيقة واحدة
@@ -2110,6 +2110,8 @@ def match_detail(request, id):
                 for stat_type in preferred_order
                 if stat_type in available_types
             ]
+
+            print("AVAILABLE STAT TYPES:", available_types)
 
             remaining_types = [
                 s.get("type")
