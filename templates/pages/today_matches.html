@@ -177,7 +177,7 @@
 
     {% if game.status == "NS" %}
 
-        <span>VS</span>
+        <span class="vs">VS</span>
 
     {% else %}
 
@@ -755,7 +755,7 @@ body{
 
     .mobile-sidebar {
         position: fixed !important;
-        top: var(--header-height, 91.5%);
+        bottom: 0;
         left: 4%;
         width: 87% !important;
         height: 50px !important;
@@ -883,7 +883,21 @@ body{
 }
 
 
-    
+.score-board{
+    width: 19%;
+}
+
+
+
+.signup-btn{
+    width: 20%;
+    margin-left: 10%;
+}
+
+
+.mobile-search-btn{
+    margin-left: 4%;
+}
 
 }
 
