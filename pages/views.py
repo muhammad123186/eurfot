@@ -2387,6 +2387,11 @@ def team_detail(request, id):
         {}
     )
 
+    season_fixtures = [
+        f for f in season_fixtures
+        if (f.get("league", {}).get("name") or "").strip().lower() != "friendlies"
+    ]
+
     season_fixtures.sort(
         key=lambda f: f["fixture"]["date"]
     )
@@ -3048,6 +3053,11 @@ def get_team_stats_full(team_id, season=SEASON):
 
     fixtures = data.get("response", [])
 
+    # ===== استبعاد المباريات الودية =====
+    fixtures = [
+        f for f in fixtures
+        if (f.get("league", {}).get("name") or "").strip().lower() != "friendlies"
+    ]
     team_statistics = {
 
         "played": 0,

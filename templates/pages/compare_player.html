@@ -121,6 +121,9 @@
 }
 
 
+
+
+
 /* =========================
    PLAYER SIDE
 ========================= */
@@ -483,6 +486,15 @@
 }
 
 
+
+.cmp-middles{
+    display: flex;
+    width: 20%;
+    margin-left: 40%;
+    margin-top: -3%;
+}
+
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -584,16 +596,7 @@
         width: 100%;
     }
 
-    .cmp-photo-box{
-        width: 130px;
-        height: 130px;
-    }
-
-
-    .cmp-top{
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
+    
 
 
 
@@ -606,28 +609,27 @@
         display: none;
     }
 
-
-    .search-box{
-        display: none;
-    }
-
-
     .cmp-middle{
-        display: none;
+        margin-top: -40%;
+        
     }
 
 
-    .cmp-row{
-        grid-template-columns: 1fr 1fr 1fr;
+    .cmp-top{
+    display:grid;
+    grid-template-columns:1fr 150px 1fr;
+    align-items:start;
+    gap:-23px;
+    position:relative;
+    margin-top: 7%;
     }
 
-    .cmp-player-value-title{
-        grid-template-columns: 1fr 1fr 1fr;
-    }
 
 
     .cmp-photo-box{
-        width: 50%;
+        width: 60%;
+        height: 50%;
+        margin-top: 50%;
     }
 
 
@@ -635,17 +637,9 @@
         margin-top: 10%;
     }
 
-
-
     
-
-
+    
 }
-
-
-
-
-
 
 </style>
 
