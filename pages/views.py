@@ -42,6 +42,15 @@ def to_mecca_time(iso_date_string):
         return None
 
 
+
+
+def is_friendly_stat(stat):
+    league = stat.get("league", {}) or {}
+    league_type = (league.get("type") or "").strip().lower()
+    league_name = (league.get("name") or "").strip().lower()
+    return league_type == "friendlies" or "friendlies" in league_name
+
+
 # ================= CACHE DURATION =================
 # مدة موحدة افتراضية لبقية الكاش بالمشروع: 24 ساعة بالثواني
 CACHE_TTL = 90
@@ -4169,7 +4178,10 @@ def player_detail(request, id):
 
     player_info = player_data["player"]
 
-    statistics = player_data.get("statistics", [])
+    statistics = [
+        s for s in player_data.get("statistics", [])
+        if not is_friendly_stat(s)
+    ]
 
     competition_stats = []
 
@@ -4653,20 +4665,10 @@ def get_player_full(player_id, season=SEASON):
 
     player_info = entry.get("player", {})
 
-    statistics_list = entry.get("statistics", [])
-
-    for stat in statistics_list:
-
-        league = stat.get("league", {}) or {}
-
-        league_type = (league.get("type") or "").strip().lower()
-
-        league_name = (league.get("name") or "").strip().lower()
-
-        if league_type == "friendlies" or "friendlies" in league_name:
-            continue
-
-        games = stat.get("games", {}) or {}
+    statistics_list = [
+        s for s in entry.get("statistics", [])
+        if not is_friendly_stat(s)
+    ]
 
     first_stat = statistics_list[0] if statistics_list else {}
 
