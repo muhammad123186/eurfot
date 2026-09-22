@@ -193,7 +193,7 @@ Round {{ forloop.counter }}
             <div class="team away">
                 <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();">
                     <span class="team-away">{{ game.awayTeam.name }}</span>
-                    <img src="{{ game.awayTeam.crest }}">
+                    <img src="{{ game.awayTeam.crest }}" class="away-img">
                 </a>
             </div>
 
@@ -606,11 +606,27 @@ box-shadow:0 0 15px var(--cup-color);
 
 }
 
-.team { width: 40%; display: flex; align-items: center; }
-.team a { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-.team img { width: 35px; height: 35px; object-fit: contain; }
-.home { justify-content: flex-start; }
-.away { justify-content: flex-end; }
+.team { width: 40%; display: flex; align-items: center; min-width: 0; }
+.team a { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; min-width: 0; flex: 1; }
+.team img { width: 35px; height: 35px; object-fit: contain; flex-shrink: 0; }
+
+
+
+.team-home,
+.team-away{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.home .team-home{
+    text-align: left;
+}
+
+.away .team-away{
+    text-align: right;
+}
 
 
 .score-board { width: 70px; height: 58px; background: #111; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #333; }
@@ -709,10 +725,51 @@ box-shadow:0 0 15px var(--cup-color);
 }
 
 
+
+
+
+.signup-btn{
+    
+    width:13%;
+
+    height:15%;
+
+    display:flex;
+
+    background: black;
+
+    white-space:nowrap;
+
+    color: white;
+
+    padding: 3% 5%;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-right: 3%;
+
+    transition: 0.25s;
+
+    box-shadow:0 15px 30px rgba(0,0,0,.7);
+
+    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
+
+    border:2px solid rgba(255, 0, 0, 0.774);
+
+    margin-left: -8%;
+}
+
+
 @media (max-width:1000px) {
 
     body{
-        zoom: 420%;
+        zoom: 90%;
     }
 
     .sidebar{
@@ -720,7 +777,7 @@ box-shadow:0 0 15px var(--cup-color);
     }
 
     .page-layout{
-        margin-left: 11%;
+        margin-left: 7%;
         height: auto !important;
         min-height: 0 !important;
         flex-direction: column;
@@ -860,16 +917,15 @@ box-shadow:0 0 15px var(--cup-color);
     }
 
 
+    .team-home,
+    .team-away{
+        font-size: 12px;
+        max-width: 90px;
+     }
 
-    .team img{
-        width: 24px;
-        height: 24px;
-    }
+    
 
-    .team a{
-        font-size: 13px;
-    }
-
+   
     .score-board{
         width: 56px;
         height: 55px;
@@ -885,38 +941,45 @@ box-shadow:0 0 15px var(--cup-color);
         margin-top: 6px;
     }
 
-    .team-home{
-        font-size: 12px;
-    }
+    
 
 
-    .team-away{
-        font-size: 12px;
-    }
+   
+
+     html, body {
+    overflow-x: hidden !important;
+    max-width: 200vw;
+}
+
+.page-layout,
+.main-content {
+    max-width: 1980vw;
+    
+}
     
 
 }
 
 
 @media (max-width: 1000px) {
-
     .mobile-sidebar {
-        position: fixed !important;
-        top: var(--header-height, 800px);
-        left: 15;
-        width: 92% !important;
-        height: 55px !important;
+        position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
+        top: var(--header-height, 95%); /* غيّرها لارتفاع الهيدر الفعلي */
+        left: 5.5%;
+        width: 86% !important;
+        height: 50px !important;
         display: flex !important;
         align-items: flex-end;
         justify-content: center;
         background: #090909;
-        border-top: 2px solid red;
-        z-index: 999;
+        z-index: 999; /* أعلى من كل شيء تحته */
         padding: 0 !important;
+        border-top: none;
         margin: 0 !important;
-        box-sizing: border-box;
+    
     }
 
+    /* لازم تعوّض المساحة اللي أخذها السايدبار الثابت */
     .main-content {
         flex: none !important;
         height: auto !important;
@@ -924,85 +987,180 @@ box-shadow:0 0 15px var(--cup-color);
         margin-top: calc(var(--header-height, 60px) + 55px) !important;
     }
 
+
+    /* ==============================
+       كل دولة
+       ============================== */
+
     .mobile-country {
+
         position: relative;
+
         width: 20%;
         height: 50px;
+
         flex-shrink: 0;
     }
 
+
+    /* ==============================
+       زر الدولة
+       ============================== */
+
     .mobile-country-btn {
+
         position: absolute;
+
         bottom: 0;
         left: 50%;
+
         transform: translateX(-50%);
+
         width: 45px;
         height: 50px;
+
         display: flex;
+
         align-items: center;
         justify-content: center;
+
         gap: 3px;
+
         padding: 0;
         margin: 0;
+
         background: #090909;
+
         border: none;
+
         color: white;
+
         cursor: pointer;
+
         z-index: 100;
     }
 
+
+    /* ==============================
+       العلم
+       ============================== */
+
     .mobile-country-btn img {
+
         width: 23px;
         height: 16px;
+
         object-fit: cover;
+
         border-radius: 2px;
     }
 
+
+    /* ==============================
+       السهم
+       ============================== */
+
     .mobile-arrow {
+
         font-size: 8px;
         color: white;
     }
 
+
+    /* ==============================
+       قائمة البطولات
+       ============================== */
+
     .mobile-country-leagues {
+
         display: none;
+
         position: absolute;
+
         bottom: 50px;
-        top: auto;
-        left: 85%;
+        left: 80%;
+
         transform: translateX(-50%);
+
         width: 145%;
+
         background: #222;
+
         border: 1px solid red;
+
         border-radius: 7px 7px 0 0;
+
         padding: 4px;
+
         z-index: 101;
+
         box-sizing: border-box;
     }
 
+
+    /* ==============================
+       عند الضغط تظهر البطولات
+       ============================== */
+
     .mobile-country.active .mobile-country-leagues {
+
         display: block;
     }
 
+
+    /* ==============================
+       كل بطولة
+       ============================== */
+
     .mobile-country-leagues a {
+
         display: flex;
+
         align-items: center;
+
         gap: 6px;
+
         width: 100%;
+
         padding: 5px 4px;
+
         color: white;
+
         text-decoration: none;
+
         font-size: 9px;
+
         white-space: nowrap;
+
         box-sizing: border-box;
     }
 
+
+    /* ==============================
+       شعار البطولة
+       ============================== */
+
     .mobile-country-leagues a img {
+
         width: 18px;
         height: 18px;
+
         object-fit: contain;
+
         flex-shrink: 0;
     }
 
+
+    /* ==============================
+       إخفاء رقم الماتش ويك
+       ============================== */
+
+    .matchweek-number {
+
+        display: none;
+    }
+
+    
 }
 
 </style>

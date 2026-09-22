@@ -727,15 +727,48 @@ body{
 
 }
 
+.club-card{
 
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    justify-content:flex-start;
+
+    max-width:100%;
+    overflow:hidden;
+
+}
+
+.club-card a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    font-size:15px;
+
+    transition:.25s;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:140px;
+    display:inline-block;
+
+}
 
 
 
 
 @media (max-width:1000px){
 
-     .standings-page{
-       zoom:51%;
+      .standings-page{
+       zoom:58%;
     }
 
     
@@ -785,14 +818,15 @@ body{
 
 
     .badge-gold{
-        transform:translatex(-35px);
+        transform:translatex(-12px);
     }
 
 
 
     .goals-tit{
-        transform:translatex(-35px);
+        transform:translatex(-12px);
     }
+
 
     .hero{
         padding:20px 30px;
@@ -810,6 +844,7 @@ body{
     .club-card a{
         font-size:18px;
         font-weight:500;
+        max-width: 110px;
     }
 
 
@@ -840,7 +875,7 @@ body{
 
     .top4-card{
         width: 90%;
-        margin-left: 18%;
+        margin-left: 12%;
     }
 
 
@@ -855,7 +890,7 @@ body{
     }
 
     .relegation-card{
-        margin-left: 30%;
+        margin-left: 18%;
         width: 80%;
     }
 
@@ -865,13 +900,11 @@ body{
     }
 
 
-    .premium-table{
-        width: 112%;
-    }
+
+
 
 
 }   
-
 </style>
 
 {% endblock %}

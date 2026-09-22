@@ -710,10 +710,50 @@ box-shadow:0 0 15px var(--cup-color);
 }
 
 
+
+
+.signup-btn{
+    
+    width:13%;
+
+    height:15%;
+
+    display:flex;
+
+    background: black;
+
+    white-space:nowrap;
+
+    color: white;
+
+    padding: 3% 5%;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-right: 3%;
+
+    transition: 0.25s;
+
+    box-shadow:0 15px 30px rgba(0,0,0,.7);
+
+    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
+
+    border:2px solid rgba(255, 0, 0, 0.774);
+
+    margin-left: -8%;
+}
+
+
 @media (max-width:1000px) {
 
     body{
-        zoom: 160%;
+        zoom: 79%;
     }
 
     .sidebar{
@@ -721,7 +761,7 @@ box-shadow:0 0 15px var(--cup-color);
     }
 
     .page-layout{
-        margin-left: 1%;
+        margin-left: 4%;
         height: auto !important;
         min-height: 0 !important;
         flex-direction: column;
@@ -738,8 +778,8 @@ box-shadow:0 0 15px var(--cup-color);
     /* ===== HEADER ===== */
 
     .site-header{
-        width: 180%;
-        height: 3%;
+        width: 96%;
+        height: 2%;
         margin-top: -2%;
     }
 
@@ -770,12 +810,12 @@ box-shadow:0 0 15px var(--cup-color);
     }
 
     .signup-btn{
-        width: 292%;
-        font-size: 10px;
+        width: 392%;
+        font-size: 15px;
         text-indent: -1%;
         border-radius: 5px;
-        transform: translateX(-100%);
         padding: 5%;
+        margin-top: 5%;
     }
 
     .search-box{
@@ -895,6 +935,18 @@ box-shadow:0 0 15px var(--cup-color);
     .team-away{
         font-size: 12px;
     }
+
+
+    tml, body {
+    overflow-x: hidden !important;
+    max-width: 200vw;
+}
+
+.page-layout,
+.main-content {
+    max-width: 1980vw;
+    
+}
     
 
 }
@@ -903,22 +955,23 @@ box-shadow:0 0 15px var(--cup-color);
 @media (max-width: 1000px) {
 
     .mobile-sidebar {
-        position: fixed !important;
-        top: var(--header-height, 89%);
-        left: 5%;
-        width: 85% !important;
+        position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
+        top: var(--header-height, 96%); /* غيّرها لارتفاع الهيدر الفعلي */
+        left: 4.2%;
+        width: 89% !important;
         height: 50px !important;
         display: flex !important;
         align-items: flex-end;
         justify-content: center;
-        background: #222;
-        border-top: none;
-        z-index: 999;
+        background: #090909;
+        z-index: 999; /* أعلى من كل شيء تحته */
         padding: 0 !important;
+        border-top: none;
         margin: 0 !important;
-        box-sizing: border-box;
+    
     }
 
+    /* لازم تعوّض المساحة اللي أخذها السايدبار الثابت */
     .main-content {
         flex: none !important;
         height: auto !important;
@@ -926,84 +979,179 @@ box-shadow:0 0 15px var(--cup-color);
         margin-top: calc(var(--header-height, 60px) + 55px) !important;
     }
 
+
+    /* ==============================
+       كل دولة
+       ============================== */
+
     .mobile-country {
+
         position: relative;
+
         width: 20%;
-        height: 170px;
+        height: 50px;
+
         flex-shrink: 0;
     }
 
+
+    /* ==============================
+       زر الدولة
+       ============================== */
+
     .mobile-country-btn {
+
         position: absolute;
+
         bottom: 0;
         left: 50%;
+
         transform: translateX(-50%);
+
         width: 45px;
         height: 50px;
+
         display: flex;
+
         align-items: center;
         justify-content: center;
+
         gap: 3px;
+
         padding: 0;
         margin: 0;
-        background: #222;
+
+        background: #090909;
+
         border: none;
+
         color: white;
+
         cursor: pointer;
+
         z-index: 100;
     }
 
+
+    /* ==============================
+       العلم
+       ============================== */
+
     .mobile-country-btn img {
+
         width: 23px;
         height: 16px;
+
         object-fit: cover;
+
         border-radius: 2px;
     }
 
+
+    /* ==============================
+       السهم
+       ============================== */
+
     .mobile-arrow {
+
         font-size: 8px;
         color: white;
     }
 
+
+    /* ==============================
+       قائمة البطولات
+       ============================== */
+
     .mobile-country-leagues {
+
         display: none;
+
         position: absolute;
+
         bottom: 50px;
-        top: auto;
-        left: 82%;
+        left: 80%;
+
         transform: translateX(-50%);
-        width: 136%;
+
+        width: 145%;
+
         background: #222;
+
         border: 1px solid red;
+
         border-radius: 7px 7px 0 0;
+
         padding: 4px;
+
         z-index: 101;
+
         box-sizing: border-box;
     }
 
+
+    /* ==============================
+       عند الضغط تظهر البطولات
+       ============================== */
+
     .mobile-country.active .mobile-country-leagues {
+
         display: block;
     }
 
+
+    /* ==============================
+       كل بطولة
+       ============================== */
+
     .mobile-country-leagues a {
+
         display: flex;
+
         align-items: center;
+
         gap: 6px;
+
         width: 100%;
+
         padding: 5px 4px;
+
         color: white;
+
         text-decoration: none;
+
         font-size: 9px;
+
         white-space: nowrap;
+
         box-sizing: border-box;
     }
 
+
+    /* ==============================
+       شعار البطولة
+       ============================== */
+
     .mobile-country-leagues a img {
+
         width: 18px;
         height: 18px;
+
         object-fit: contain;
+
         flex-shrink: 0;
     }
+
+
+    /* ==============================
+       إخفاء رقم الماتش ويك
+       ============================== */
+
+    .matchweek-number {
+
+        display: none;
+    }
+
 
 }
 
