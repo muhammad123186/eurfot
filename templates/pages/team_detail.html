@@ -1170,7 +1170,7 @@
 
     position:absolute;
 
-    top:20px;
+    top:5%;
 
     left:20px;
 
@@ -1675,45 +1675,59 @@ res · CSS
 }
  
 /* HOME = الشعار ثم الاسم */
+/* HOME = الشعار ثم الاسم */
 .fixture-home{
-    display:flex;
+    display:grid;
+    grid-template-columns:32px 1fr;
     align-items:center;
-    justify-content:center;
     gap:10px;
     font-weight:700;
+    min-width:0;
 }
- 
+
 .fixture-home img{
     width:32px;
     height:32px;
     object-fit:contain;
     flex-shrink:0;
+    justify-self:start;
 }
- 
-/* SCORE */
-.fixture-score{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:26px;
-    font-weight:600;
+
+.fixture-home span{
+    text-align:left;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
 }
- 
+
+
 /* AWAY = الاسم ثم الشعار */
 .fixture-away{
-    display:flex;
+    display:grid;
+    grid-template-columns:1fr 32px;
     align-items:center;
-    justify-content:center;
     gap:10px;
     font-weight:700;
+    min-width:0;
 }
- 
+
 .fixture-away img{
     width:32px;
     height:32px;
     object-fit:contain;
     flex-shrink:0;
+    justify-self:end;
 }
+
+.fixture-away span{
+    text-align:right;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
+}
+
  
 /* DATE */
 .fixture-date{
@@ -1733,16 +1747,6 @@ res · CSS
     border-radius:16px;
     text-align:center;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2365,18 +2369,20 @@ res · CSS
 
 
 .team-logo{
-     width:100; 
-     margin-bottom:2px;
-     margin-left: 45%;
-     margin-top: 5%;
+    width:12%;
+    display:block;
+    margin:5% auto 2px auto;
 }
 
 
 
 .team-name{
-    margin-left: 45%;
-    font-size: 20px;
-    font-weight: 600;
+    display:block;
+    text-align:center;
+    margin:0;
+    font-size: 19px;
+    font-weight: 400;
+    margin-top: 2%;
     
 }
 
@@ -2395,7 +2401,6 @@ res · CSS
 
 
 
-
     .club-overview{
         zoom: 110%;
     }
@@ -2404,7 +2409,7 @@ res · CSS
 
     .compare-team-btn{
         margin-left: 77%;
-        margin-top: 5%;
+        margin-top: -2%;
     }
 
 
@@ -2414,7 +2419,7 @@ res · CSS
 
 
 
-     .fixture-card{
+    .fixture-card{
         grid-template-columns:40px 1fr 70px 1fr 70px;
         font-size:13px;
         zoom: 150%;
@@ -2422,14 +2427,36 @@ res · CSS
  
     .fixture-home,
     .fixture-away{
-        gap:6px;
+        gap:20%;
         font-size:13px;
+        min-width:0;
+    }
+
+    .fixture-home{
+        grid-template-columns:24px 1fr;
+    }
+
+    .fixture-away{
+        grid-template-columns:1fr 24px;
+    }
+
+    .fixture-home span,
+    .fixture-away span{
+        max-width:70px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        display:inline-block;
     }
  
-    .fixture-home img,
+    .fixture-home img{
+        margin-left: 50%;
+        width:30px;
+        height:30px;
+    }
     .fixture-away img{
-        width:24px;
-        height:24px;
+        width:30px;
+        height:30px;
     }
  
     .fixture-league img{
@@ -2439,6 +2466,7 @@ res · CSS
  
     .fixture-score{
         font-size:18px;
+        margin-left: 8%;
     }
 
 
@@ -2522,6 +2550,11 @@ res · CSS
 
 .away .team-name span{
     text-align:right;
+}
+
+
+#standings{
+    margin-left: 1%;
 }
 
 
