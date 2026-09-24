@@ -46,7 +46,7 @@
             <img class="league-logo" src="{{ competition.logo }}">
 
             <div>
-                <h2>ترتيب الدوري الالماني</h2>
+                <h2>ترتيب الدوري الانجليزي</h2>
                 <p>Season {{ season }}</p>
             </div>
 
@@ -543,7 +543,7 @@ body{
 
 .badge-gold{
 
-    color:#ff0000;
+    color:red;
 
 }
 
@@ -727,40 +727,7 @@ body{
 
 }
 
-.club-card{
 
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    justify-content:flex-start;
-
-    max-width:100%;
-    overflow:hidden;
-
-}
-
-.club-card a{
-
-    color:white;
-
-    text-decoration:none;
-
-    font-weight:800;
-
-    font-size:15px;
-
-    transition:.25s;
-
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    max-width:140px;
-    display:inline-block;
-
-}
 
 
 
@@ -773,19 +740,19 @@ body{
 
     
     .rank-title{
-        transform:translatex(5px);
+        transform:translatex(5%);
     }
 
     .player-title{
-        transform:translatex(5px);
+        transform:translatex(-10%);
     }
 
     .apps-title{
-        transform:translatex(-3px);
+        transform:translatex(-10%);
     }
 
     .goals-title{
-        transform:translatex(-3px);
+        transform:translatex(-10%);
     }
 
 
@@ -808,23 +775,29 @@ body{
 
     
     .apps-titl{
-        transform:translatex(-5.5px);
+        transform:translatex(-11%);
+        font-weight: 400;
+        font-size: 19px;
     }
 
 
     .goals-diff{
-        transform:translatex(-4px);
+        transform:translatex(-10%);
+        font-size: 19px;
+        font-weight: 500;
     }
 
 
     .badge-gold{
-        transform:translatex(-12px);
+        transform:translatex(-26%);
+        font-size: 19px;
+        font-weight: 500;
     }
 
 
 
     .goals-tit{
-        transform:translatex(-12px);
+        transform:translatex(-26%);
     }
 
 
@@ -841,10 +814,23 @@ body{
     }
 
 
+        .club-card{
+        min-width:0;
+    }
+
+    .club-card img{
+        flex-shrink:0;
+    }
+
     .club-card a{
         font-size:18px;
         font-weight:500;
-        max-width: 115px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        max-width:100px;
+        display:inline-block;
+        min-width:0;
     }
 
 
@@ -875,7 +861,7 @@ body{
 
     .top4-card{
         width: 90%;
-        margin-left: 12%;
+        margin-left: 13%;
     }
 
 
@@ -890,7 +876,7 @@ body{
     }
 
     .relegation-card{
-        margin-left: 18%;
+        margin-left: 21%;
         width: 80%;
     }
 
@@ -898,10 +884,6 @@ body{
     .site-header{
         display: none;
     }
-
-
-
-
 
 
 }   
