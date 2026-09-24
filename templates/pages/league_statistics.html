@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black);">
 
@@ -1432,210 +1431,73 @@
 
 
 
-/* =====================================================
-                RESPONSIVE
-===================================================== */
-
-@media(max-width:1200px){
-
-.quick-grid{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-}
-
-@media(max-width:800px){
-
-.hero{
-
-flex-direction:column;
-gap:20px;
-
-}
-
-.quick-grid{
-
-grid-template-columns:1fr;
-
-}
-
-.club-grid{
-
-grid-template-columns:1fr;
-
-}
-
-}
-
-
-
 @media (max-width: 1000px) {
-
-    .statistics-page {
-        zoom: 160%;
+    body{
+        zoom: 60%;
     }
 
-
-    .quick-grid {
-        grid-template-columns: repeat(2, 1fr);
-        width: 120%;
-        margin-left: -7%;
-        margin-top: -2%;
-        height: 34%;
-        gap: 6px !important;   
-        
-
-     
+    .quick-grid{
+        grid-template-columns:repeat(2,280px);
     }
 
-
-    .quick-title {
-        font-size: 14px;
+    .badge.gold{
         font-weight: 400;
+        font-size: 21px;
     }
 
-    .quick-number {
-        font-size: 24px;
-        font-weight: 500;
-        margin-top: -1%;
-    }
-
-    .quick-photo {
-        width: 20%;
-        height: 20%;
-    }
-
-    .quick-team img {
-        width: 20px;
-    }
-
-    .quick-card {
-        font-size: 16px;
-        width: 70%;
-        padding: 4px;
-        margin-left: 18%;
-    }
-
-    .club-big-logo {
-        width: 24%;
-        height: 24%;
-    }
-
-    .tabs {
-        width: 120%;
-        margin-left: -3%;
-        margin-top: -3%;
-    }
-
-    .apper {
-        margin-left: 20%;
+    .apper{
         font-size: 21px;
         font-weight: 400;
+        margin-left: 30%;
     }
 
-    .badge.gold {
-        font-size: 21px;
-        font-weight: 400;
-    }
-
-    .badge.blue {
-        font-size: 21px;
-        font-weight: 400;
-    }
-
-
-    .badge.red {
-        font-size: 21px;
-        font-weight: 400;
-    }
-
-
-    .badge.yellow {
-        font-size: 21px;
-        font-weight: 400;
-    }
-
-
-    .badge.green {
-        font-size: 21px;
-        font-weight: 400;
-    }
-
-    .quick-name {
-        font-size: 18px;
-        font-weight: 400;
-    }
-
-    .quick-photo {
-        width: 21%;
-        height: 25%;
-    }
-
-
-    .appera {
-        margin-left: 20%;
+    .appera{
         font-size: 22px;
         font-weight: 400;
+        margin-left: 30%;
     }
 
 
-    .place{
-        margin-right: 15%;
-    }
-
-
-    .hero{
-        width:107%;
-        margin-left: -4%;
-        margin-top: -7%;
-        font-size: 15px;
-    }
-
-
-    .premium-table th {
-        font-size: 13px;
-    }
-
-
-    .premium-table td {
-        font-size: 20px;
+    .badge.blue{
         font-weight: 400;
+        font-size: 22px;
     }
 
-    .premium-table{
-        width: 110%;
-        margin-left: -1%;
+
+    .badge.red{
+        font-weight: 400;
+        font-size: 22px;
+        margin-left: -5%;
+    }
+
+
+    .badge.green{
+        font-weight: 400;
+        font-size: 22px;
+        margin-left: 5%;
     }
 
 
     .tab-btn{
-        font-size: 15px;
-        padding: 12px 2px;
-        width: 14%;
-        text-indent: -3px;
+        font-size: 18px;
+        font-weight: 400;
     }
 
 
-    
+    .tabs{
+        gap: 4px;
+    }
 
 
-
-
-    
-
-    
-
-
-    
-
-
-    
-
-   
-
+    .quick-title{
+        font-size: 16px;
+    }
 }
+/* =====================================================
+                RESPONSIVE
+===================================================== */
+
+
 
 </style>
 
