@@ -61,6 +61,8 @@
 
         </form>
 
+        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+
 
 
     </div>
@@ -72,7 +74,7 @@
 
 
 <!-- زر البحث للهاتف بس -->
-        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+       
 
     </div>
 
@@ -2292,14 +2294,22 @@ margin-left: -2%;
 
 
 
+
 @media (max-width: 1000px) {
+
+
+    html, body{
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    }
 
     /* ---------- HEADER ---------- */
 
     .site-header{
         width: 100%;
         height: auto;
-        padding: 10px 15px;
+        padding: 9px 15px;
         margin: 0;
         display: flex;
         align-items: center;
@@ -2319,17 +2329,17 @@ margin-left: -2%;
     .header-right{
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 2px;
     }
 
     .signup-btn,
     .profile-btn{
         width: auto;
         height: auto;
-        padding: 8px 14px;
+        padding: 8px 10px;
         font-size: 12px;
         transform: none;
-        margin-left: -30%;
+        margin-left: 10%;
     }
 
     .search-box{
@@ -2370,7 +2380,7 @@ margin-left: -2%;
     .competition-logo{
         margin: 15px 0;
         text-align: center;
-        margin-top: 10%;
+        margin-top: 5%;
     }
 
     .logo-comp{
@@ -2379,6 +2389,8 @@ margin-left: -2%;
 
     .name{
         margin-top: 3%;
+        font-size: 17px;
+        font-weight: 600;
     }
 
 
@@ -2406,14 +2418,24 @@ margin-left: -2%;
     
     .tab-matches,
     .tab-standings,
-    .tab-statistics,
+    .tab-statistics{
+        font-size: 12px;
+        padding: 8px 16px;
+        margin-top: 10%;
+        margin-left: 1%;
+        text-indent: -7px;
+        width: 8%;
+
+    }
+
+
     .tab-news{
         font-size: 12px;
         padding: 8px 16px;
         margin-top: 10%;
         margin-left: 1%;
-        text-indent: 0;
-        width: auto;
+        text-indent: -5px;
+        width: 5%;
     }
 
 
@@ -2439,57 +2461,83 @@ margin-left: -2%;
     .team-pred{
         width: 115px;
         height: 70px;
-        bottom: 115px;
         margin-left: 35%;
-        
+        bottom: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 6px;
+        box-sizing: border-box;
     }
 
-    .pre-res{
-        position: static;
-        text-align: center;
-        font-size: 11px;
-        margin-left: -56%;
-        margin-top: -120px;
-    }
+    .img-pre{
+    margin-top:33%;
+}
 
-    .xi{
-        margin-top: -166px;
-        font-size: 13px;
-        margin-left: -73%;
-    }
+.img-pr{
+    width: 27%;
+    margin-top: -5%;
+    margin-left: -30%;
+}
+
+.img-pred{
+    margin-top:33%;
+    margin-left:-30%;
+}
+
+.img-p{
+    width: 27%;
+    margin-top: -5%;
+}
+    
+.pre-res{
+    margin-bottom: 250px;
+    font-size: 13px;
+    font-weight: 400;
+}
 
 
-    .img-pred{
-        margin-left: -30%;
-    }
 
-    .img-pr{
-        margin-left: -29%;
-    }
-
+.xi{
+    margin-top: -43%;
+    font-size: 15px;
+    font-weight: 400;
+    margin-left: -73%;
+}
 
     /* ---------- MATCHWEEK NAV ---------- */
 
-    .matchweek{
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 15px 0;
-        gap: 8px;
-    }
+   /* ---------- MATCHWEEK NAV ---------- */
 
-    .p-matchweek,
-    .n-matchweek{
-        width: auto;
-        margin: 0;
-        font-size: 12px;
-    }
+.matchweek{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
 
-    .matchweek-number{
-        display: none;
-    }
+    position: relative;
+    z-index: 1000;
+    bottom: 10px;
+}
 
+.p-matchweek,
+.n-matchweek{
+    width: auto;
+    margin: 0;
+    font-size: 11px;
+
+    position: relative;
+    z-index: 1001;
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.matchweek-number{
+    font-size: 17px;
+    font-weight: 600;
+}
 
     /* ---------- MATCH CARD ---------- */
 
@@ -2504,6 +2552,7 @@ margin-left: -2%;
         justify-content: space-between;
         gap: 8px;
         box-sizing: border-box;
+        margin-top: 1%;
     }
 
     .team{
@@ -2559,41 +2608,41 @@ margin-left: -2%;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 60px;
+        width: 55px;
         height: 50px;
         flex-shrink: 0;
         border-radius: 8px;
+        bottom: 4px;
     }
 
     .score-status{
-        font-size: 9px;
+        font-size: 8px;
         white-space: nowrap;
         margin: 0 0 3px 0;
     }
 
     .score-value{
-        font-size: 15px;
+        font-size: 16px;
         margin: 0;
+        font-weight: 600;
     }
 
 
     /* ---------- MOBILE SEARCH BUTTON ---------- */
 
     .mobile-search-btn{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        background: black;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        font-size: 14px;
-        cursor: pointer;
-        flex-shrink: 0;
-        margin-top: -12.5%;
-        margin-left: 92%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
     }
 
 
@@ -2622,7 +2671,7 @@ margin-left: -2%;
     }
 
     .mobile-country-btn{
-        width: 5px;
+        width: 45px;
         height: 45px;
         display: flex;
         flex-direction: column;
