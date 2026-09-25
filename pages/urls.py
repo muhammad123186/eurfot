@@ -3,12 +3,23 @@ from .import views
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
-from .sitemaps import StaticViewSitemap
+from .sitemaps import (
+    StaticViewSitemap,
+    CompetitionSitemap,
+    MatchSitemap,
+    TeamSitemap,
+    PlayerSitemap,
+    NewsArticleSitemap
+)
 
 sitemaps = {
     'static': StaticViewSitemap,
+    'competitions': CompetitionSitemap,
+    'matches': MatchSitemap,
+    'teams': TeamSitemap,
+    'players': PlayerSitemap,
+    'news': NewsArticleSitemap,
 }
-
 
 
 urlpatterns = [
