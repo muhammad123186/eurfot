@@ -194,6 +194,7 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy_view, name='privacy_policy'),
     path('about-us/', views.about_us_view, name='about_us'),
     path('contact-us/', views.contact_us_view, name='contact_us'),
+    path('google6bddb656cf72235a.html', TemplateView.as_view(template_name='google6bddb656cf72235a.html')),
 
 
 ]
