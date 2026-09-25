@@ -6,15 +6,18 @@ from django.contrib.sitemaps.views import sitemap
 from .sitemaps import (
     StaticViewSitemap,
     CompetitionSitemap,
+    CupCompetitionSitemap,
     MatchSitemap,
     TeamSitemap,
     PlayerSitemap,
     NewsArticleSitemap
 )
 
+# تجميع خرائط الموقع في قاموس واحد
 sitemaps = {
     'static': StaticViewSitemap,
     'competitions': CompetitionSitemap,
+    'cups': CupCompetitionSitemap,
     'matches': MatchSitemap,
     'teams': TeamSitemap,
     'players': PlayerSitemap,
