@@ -753,109 +753,93 @@ body{
     }
    
 
-    .mobile-sidebar {
-        position: fixed !important;
+    .mobile-sidebar{
+        position: fixed;
         bottom: 0;
-        left: 4%;
-        width: 87% !important;
-        height: 50px !important;
-        display: flex !important;
-        align-items: flex-end;
-        justify-content: center;
-        background: black;
-        border-top: none;
-        z-index: 999;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-sizing: border-box;
-    }
-
-    .main-content {
-        flex: none !important;
-        height: auto !important;
-        min-height: 0 !important;
-        margin-top: calc(var(--header-height, 60px) + 55px) !important;
-    }
-
-    .mobile-country {
-        position: relative;
-        width: 20%;
-        height: 170px;
-        flex-shrink: 0;
-    }
-
-    .mobile-country-btn {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 45px;
-        height: 50px;
+        left: 0;
+        width: 100%;
+        height: 55px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 14px;
+        background: #090909;
+        z-index: 999;
+        box-sizing: border-box;
+    }
+
+    .mobile-country{
+        position: relative;
+        flex-shrink: 0;
+        width: 45px;
+        height: 45px;
+    }
+
+    .mobile-country-btn{
+        width: 45px;
+        height: 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
         padding: 0;
         margin: 0;
-        background: black;
+        background: transparent;
         border: none;
         color: white;
         cursor: pointer;
-        z-index: 100;
     }
 
-    .mobile-country-btn img {
-        width: 23px;
-        height: 16px;
+    .mobile-country-btn img{
+        width: 22px;
+        height: 15px;
         object-fit: cover;
         border-radius: 2px;
     }
 
-    .mobile-arrow {
+    .mobile-arrow{
         font-size: 8px;
         color: white;
     }
 
-    .mobile-country-leagues {
+    .mobile-country-leagues{
         display: none;
         position: absolute;
-        bottom: 50px;
-        top: auto;
-        left: 82%;
+        bottom: 55px;
+        left: 55%;
         transform: translateX(-50%);
-        width: 136%;
+        width: 120px;
         background: #222;
         border: 1px solid red;
-        border-radius: 7px 7px 0 0;
-        padding: 4px;
-        z-index: 101;
+        border-radius: 8px 8px 0 0;
+        padding: 6px;
+        z-index: 1000;
         box-sizing: border-box;
     }
 
-    .mobile-country.active .mobile-country-leagues {
+    .mobile-country.active .mobile-country-leagues{
         display: block;
     }
 
-    .mobile-country-leagues a {
+    .mobile-country-leagues a{
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         width: 100%;
-        padding: 5px 4px;
+        padding: 6px;
         color: white;
         text-decoration: none;
-        font-size: 9px;
-        white-space: nowrap;
+        font-size: 11px;
         box-sizing: border-box;
     }
 
-    .mobile-country-leagues a img {
+    .mobile-country-leagues a img{
         width: 18px;
         height: 18px;
         object-fit: contain;
         flex-shrink: 0;
     }
-
 
     .site-header{
         height: 20px;
