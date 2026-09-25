@@ -189,6 +189,15 @@ urlpatterns = [
     # مسار خريطة الموقع الشاملة
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
+
+
+    path('privacy-policy/', views.privacy_policy_view, name='privacy_policy'),
+    path('about-us/', views.about_us_view, name='about_us'),
+    path('contact-us/', views.contact_us_view, name='contact_us'),
+
+
 ]
+
+
 
 

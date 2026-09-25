@@ -29,4 +29,15 @@
     {% endblock content %}
 
 </body>
+
+
+
+<footer style="text-align: center; padding: 20px; color: #aaa; border-top: 1px solid #333; margin-top: 1000px;">
+    <p>&copy; 2026 جميع الحقوق محفوظة لمنصة Eurfot</p>
+    <div style="margin-top: 10px;">
+        <a href="{% url 'privacy_policy' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">سياسة الخصوصية</a>
+        <a href="{% url 'about_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">من نحن</a>
+        <a href="{% url 'contact_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">اتصل بنا</a>
+    </div>
+</footer>
 </html>

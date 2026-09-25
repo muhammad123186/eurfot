@@ -5346,3 +5346,20 @@ def today_matches_view(request):
         "pages/today_matches.html",
         context
     )
+
+
+
+
+
+
+
+from django.shortcuts import render
+
+def privacy_policy_view(request):
+    return render(request, 'pages/privacy_policy.html')
+
+def about_us_view(request):
+    return render(request, 'pages/about_us.html')
+
+def contact_us_view(request):
+    return render(request, 'pages/contact_us.html')
