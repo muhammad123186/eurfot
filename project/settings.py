@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    'pages.middleware.BlockScannersMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
