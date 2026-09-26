@@ -26,6 +26,58 @@ import time
 
 
 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count
+from datetime import timedelta
+from django.utils import timezone
+from .models import PageVisit
+
+
+@staff_member_required
+def visit_stats(request):
+
+    now = timezone.now()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_24h = now - timedelta(hours=24)
+    last_7days = now - timedelta(days=7)
+
+    total_today = PageVisit.objects.filter(visited_at__gte=today_start).count()
+    total_24h = PageVisit.objects.filter(visited_at__gte=last_24h).count()
+    total_7days = PageVisit.objects.filter(visited_at__gte=last_7days).count()
+
+    unique_ips_today = (
+        PageVisit.objects
+        .filter(visited_at__gte=today_start)
+        .values("ip_address")
+        .distinct()
+        .count()
+    )
+
+    top_pages = (
+        PageVisit.objects
+        .filter(visited_at__gte=last_7days)
+        .values("path")
+        .annotate(count=Count("id"))
+        .order_by("-count")[:15]
+    )
+
+    recent_visits = (
+        PageVisit.objects
+        .order_by("-visited_at")[:50]
+    )
+
+    context = {
+        "total_today": total_today,
+        "total_24h": total_24h,
+        "total_7days": total_7days,
+        "unique_ips_today": unique_ips_today,
+        "top_pages": top_pages,
+        "recent_visits": recent_visits,
+    }
+
+    return render(request, "pages/visit_stats.html", context)
+
+
 from zoneinfo import ZoneInfo
 
 MECCA_TZ = ZoneInfo("Asia/Riyadh")

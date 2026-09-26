@@ -273,6 +273,30 @@ class Player(models.Model):
 
 
 
+class PageVisit(models.Model):
+
+    path = models.CharField(max_length=500)
+    method = models.CharField(max_length=10)
+
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=500, blank=True)
+
+    status_code = models.IntegerField(default=200)
+
+    visited_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["visited_at"]),
+            models.Index(fields=["path"]),
+        ]
+
+    def __str__(self):
+        return f"{self.path} - {self.visited_at}"
+
+
+
+
 
 
 

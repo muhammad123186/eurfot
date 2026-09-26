@@ -209,6 +209,7 @@ urlpatterns = [
     path('about-us/', views.about_us_view, name='about_us'),
     path('contact-us/', views.contact_us_view, name='contact_us'),
     path('google6bddb656cf72235a.html', TemplateView.as_view(template_name='google6bddb656cf72235a.html')),
+    path("stats-dashboard-x9k2/", views.visit_stats, name="visit_stats"),
 
 
 ]
