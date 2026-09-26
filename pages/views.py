@@ -62,7 +62,7 @@ TEAM_DETAIL_CACHE_TTL = 60 * 45         # صفحة تفاصيل الفريق - 4
 PLAYER_DETAIL_CACHE_TTL = 60 * 60       # صفحة تفاصيل اللاعب - ساعة واحدة
 STANDINGS_CACHE_TTL = 60 * 10           # جدول الترتيب لكل البطولات - 10 دقائق
 LEAGUE_STATS_CACHE_TTL = 60 * 30        # صفحة إحصائيات كل بطولة - نصف ساعة
-
+TODAY_MATCHES_CACHE_TTL = 60 * 2
 
 # ================= API =================
 
@@ -5326,7 +5326,7 @@ def get_today_matches():
             "matches": matches,
         })
 
-    cache.set(cache_key, grouped, MATCHES_CACHE_TTL)
+    cache.set(cache_key, grouped, TODAY_MATCHES_CACHE_TTL)
 
     return grouped
 
