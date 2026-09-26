@@ -750,10 +750,12 @@ box-shadow:0 0 15px var(--cup-color);
 }
 
 
-@media (max-width:1000px) {
+@media (max-width: 1000px) {
 
-    body{
-        zoom: 79%;
+    html, body{
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
     }
 
     .sidebar{
@@ -761,61 +763,68 @@ box-shadow:0 0 15px var(--cup-color);
     }
 
     .page-layout{
-        margin-left: 1%;
-        height: auto !important;
-        min-height: 0 !important;
+        display: flex;
         flex-direction: column;
-        zoom: 100%;
-        margin-top: -29%;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+        padding: 0 0 70px 0;
+        box-sizing: border-box;
     }
 
     .main-content{
         display: flex;
         flex-direction: column;
-        align-items: left;
+        align-items: center;
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
     }
 
     /* ===== HEADER ===== */
 
     .site-header{
-        width: 96%;
-        height: 2%;
-        margin-top: -2%;
+        width: 100%;
+        height: auto;
+        padding: 10px 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
     }
 
     .header-right{
         display: flex;
         align-items: center;
-        gap: 18px;
-        flex-wrap: nowrap;
+        gap: 8px;
     }
 
     .logo-box{
-        width: 50%;
-        font-size: 10px;
-        margin-left: -1%;
+        width: auto;
+        margin: 0;
     }
 
     .logo-box h1{
-        font-size: 25px;
+        font-size: 22px;
     }
 
     .profile-btn{
         flex-shrink: 0;
-        flex-grow: 0;
-        width: auto !important;
-        height: auto !important;
-        padding: 6px 10px !important;
-        margin-left: 8%;
+        width: auto;
+        height: auto;
+        padding: 6px 10px;
+        margin: 0;
     }
 
     .signup-btn{
-        width: 392%;
-        font-size: 15px;
-        text-indent: -1%;
+        width: auto;
+        font-size: 12px;
+        padding: 8px 12px;
+        margin: 0;
         border-radius: 5px;
-        padding: 5%;
-        margin-top: 5%;
     }
 
     .search-box{
@@ -826,335 +835,262 @@ box-shadow:0 0 15px var(--cup-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 38px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         background: black;
         color: white;
         border: none;
         border-radius: 50%;
-        font-size: 16px;
+        font-size: 14px;
         cursor: pointer;
         flex-shrink: 0;
-        margin-top: -2%;
-        margin-left: 12%;
     }
 
     /* ===== COMPETITION LOGO ===== */
 
     .main-content > div:first-child{
-        margin-top: 2% !important;
+        margin: 15px 0;
+        text-align: center;
+    }
+
+    .competition-logo{
+        width: 90px;
+        height: auto;
     }
 
     /* ===== TABS ===== */
 
     .tabs-row{
-        margin: 3% 0 0 -5%;
+        width: 100%;
+        margin: 10px 0;
+        display: flex;
+        justify-content: center;
     }
 
     .tabs{
-        margin-left: -2%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
     }
 
     .tabs a{
         font-size: 12px;
-        padding: 10px 30px;
-        margin-top: 1%;
+        padding: 8px 16px;
+        margin: 0;
     }
 
     /* ===== ROUNDS NAV ===== */
 
     .matchweek{
+        width: 100%;
         max-width: 100%;
-        padding: 0 5%;
+        padding: 0;
+        margin: 15px 0;
         gap: 6px;
-        margin-left: -5%;
-        margin-top: 10%;
-    }
-
-    .competition-logo{
-        margin-left: -5%;
-        width: 90%;
-        height: 70%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .matchweek a{
         font-size: 12px;
-        padding: 5px 10px;
-        margin-left: -1%;
+        padding: 6px 12px;
+        margin: 0;
     }
 
     .round-title{
-        margin-top: 20px;
+        margin: 15px 0;
         font-size: 15px;
-        margin-left: -8%;
     }
-
-
-    
 
     /* ===== MATCH CARD ===== */
 
     .match-card{
-        width: 83%;
-        height: 70px;
-        margin-left: -8%;
-        padding: 0 12px;
+        width: 90%;
+        height: auto;
+        min-height: 60px;
+        margin: 6px 0;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        box-sizing: border-box;
     }
 
-
-
-    .team img{
-        width: 34px;
-        height: 34px;
+    .team{
+        width: auto;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
     }
 
     .team a{
-        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .team img{
+        width: 26px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+
+    .team-home,
+    .team-away{
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .away{
+        justify-content: flex-end;
+    }
+
+    .away a{
+        justify-content: flex-end;
+    }
+
+    .away .team-away{
+        text-align: right;
     }
 
     .score-board{
-        width: 56px;
-        height: 55px;
+        width: 60px;
+        height: 52px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
     .score-status{
-        font-size: 10px;
-        margin-top: -14px;
+        font-size: 9px;
+        white-space: nowrap;
+        margin: 0 0 3px 0;
     }
 
     .score-value{
-        font-size: 18px;
-        margin-top: 6px;
+        font-size: 16px;
+        margin:0;
+        gap: 4px;
     }
 
-    .team-home{
-        font-size: 12px;
-    }
-
-
-    .team-away{
-        font-size: 12px;
-    }
-
-
-    tml, body {
-    overflow-x: hidden !important;
-    max-width: 200vw;
 }
 
-.page-layout,
-.main-content {
-    max-width: 1980vw;
-    
-}
-    
-
-}
 
 
 @media (max-width: 1000px) {
 
     .mobile-sidebar {
-        position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
-        top: var(--header-height, 96%); /* غيّرها لارتفاع الهيدر الفعلي */
-        left: 4.2%;
-        width: 89% !important;
-        height: 50px !important;
-        display: flex !important;
-        align-items: flex-end;
-        justify-content: center;
-        background: #090909;
-        z-index: 999; /* أعلى من كل شيء تحته */
-        padding: 0 !important;
-        border-top: none;
-        margin: 0 !important;
-    
-    }
-
-    /* لازم تعوّض المساحة اللي أخذها السايدبار الثابت */
-    .main-content {
-        flex: none !important;
-        height: auto !important;
-        min-height: 0 !important;
-        margin-top: calc(var(--header-height, 60px) + 55px) !important;
-    }
-
-
-    /* ==============================
-       كل دولة
-       ============================== */
-
-    .mobile-country {
-
-        position: relative;
-
-        width: 20%;
-        height: 50px;
-
-        flex-shrink: 0;
-    }
-
-
-    /* ==============================
-       زر الدولة
-       ============================== */
-
-    .mobile-country-btn {
-
-        position: absolute;
-
+        position: fixed;
         bottom: 0;
-        left: 50%;
-
-        transform: translateX(-50%);
-
-        width: 45px;
-        height: 50px;
-
+        left: 0;
+        width: 100%;
+        height: 55px;
         display: flex;
-
         align-items: center;
         justify-content: center;
-
-        gap: 3px;
-
-        padding: 0;
-        margin: 0;
-
+        gap: 14px;
         background: #090909;
-
-        border: none;
-
-        color: white;
-
-        cursor: pointer;
-
-        z-index: 100;
+        z-index: 999;
+        box-sizing: border-box;
     }
 
+    .main-content {
+        padding-bottom: 70px;
+    }
 
-    /* ==============================
-       العلم
-       ============================== */
+    .mobile-country {
+        position: relative;
+        flex-shrink: 0;
+        width: 45px;
+        height: 45px;
+    }
+
+    .mobile-country-btn {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
 
     .mobile-country-btn img {
-
-        width: 23px;
-        height: 16px;
-
+        width: 22px;
+        height: 15px;
         object-fit: cover;
-
         border-radius: 2px;
     }
 
-
-    /* ==============================
-       السهم
-       ============================== */
-
     .mobile-arrow {
-
         font-size: 8px;
         color: white;
     }
 
-
-    /* ==============================
-       قائمة البطولات
-       ============================== */
-
     .mobile-country-leagues {
-
         display: none;
-
         position: absolute;
-
-        bottom: 50px;
-        left: 80%;
-
+        bottom: 55px;
+        left: 50%;
         transform: translateX(-50%);
-
-        width: 160%;
-
+        width: 160px;
         background: #222;
-
         border: 1px solid red;
-
-        border-radius: 7px 7px 0 0;
-
-        padding: 4px;
-
-        z-index: 101;
-
+        border-radius: 8px 8px 0 0;
+        padding: 6px;
+        z-index: 1000;
         box-sizing: border-box;
     }
 
-
-    /* ==============================
-       عند الضغط تظهر البطولات
-       ============================== */
-
     .mobile-country.active .mobile-country-leagues {
-
         display: block;
     }
 
-
-    /* ==============================
-       كل بطولة
-       ============================== */
-
     .mobile-country-leagues a {
-
         display: flex;
-
         align-items: center;
-
-        gap: 6px;
-
+        gap: 8px;
         width: 100%;
-
-        padding: 5px 4px;
-
+        padding: 6px;
         color: white;
-
         text-decoration: none;
-
-        font-size: 9px;
-
-        white-space: nowrap;
-
+        font-size: 11px;
         box-sizing: border-box;
     }
 
-
-    /* ==============================
-       شعار البطولة
-       ============================== */
-
     .mobile-country-leagues a img {
-
         width: 18px;
         height: 18px;
-
         object-fit: contain;
-
         flex-shrink: 0;
     }
 
-
-    /* ==============================
-       إخفاء رقم الماتش ويك
-       ============================== */
-
     .matchweek-number {
-
         display: none;
     }
 
-
 }
 
+   
 </style>
 
 <!-- ================= SCRIPTS ================= -->

@@ -736,165 +736,183 @@ body{
 
 @media (max-width:1000px){
 
-    .standings-page{
-       zoom:85%;
-    }
-
-    .rank-title{
-        transform:translatex(5%);
-    }
-
-    .player-title{
-        transform:translatex(-10%);
-    }
-
-    .apps-title{
-        transform:translatex(-10%);
-    }
-
-    .goals-title{
-        transform:translatex(-10%);
-    }
-
-
-    .goals-diff{
-        transform:translatex(0px);
-    }
-
-
-    
-
-    .club-card a{
-        font-size:15px;
-
-    }
-
-
-    .apps-titles{
-        display:none;
-    }
-
-    
-    .apps-titl{
-        transform:translatex(-11%);
-        font-weight: 400;
-        font-size: 19px;
-    }
-
-
-    .goals-diff{
-        transform:translatex(-10%);
-        font-size: 19px;
-        font-weight: 500;
-    }
-
-
-    .badge-gold{
-        transform:translatex(-26%);
-        font-size: 19px;
-        font-weight: 500;
-    }
-
-
-
-    .goals-tit{
-        transform:translatex(-26%);
-    }
-    
-
-    .hero{
-        padding:20px 30px;
-        width:150%;
-        margin-left:-3%;
-    }
-
-
-    .club-card img{
-        width:32px;
-        height:32px;
-    }
-
-
-    .club-card{
-        min-width:0;
-    }
-
-    .club-card img{
-        flex-shrink:0;
-    }
-
-    .club-card a{
-        font-size:18px;
-        font-weight:500;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
-        max-width:100px;
-        display:inline-block;
-        min-width:0;
-    }
-
-
-    .site-header{
-        width:105%;
-    }
-
-
-    .quick-cards{
-        gap:10px;
-        margin-left: -3%;
-    }
-
-    .quick-card{
-        padding:14px;
-    }
-
-    .quick-logos img{
-        width:32px;
-        height:32px;
-    }
-
-    .leader-card .quick-logos img{
-        width:48px;
-        height:48px;
-    }
-
-
-    .top4-card{
-        width: 140%;
-        margin-left: 50%;
-    }
-
-
-    .top4-card img{
-        width: 30px;
-        height: 30px;
-    }
-
-    .leader-card{
+    html, body{
+        overflow-x: hidden;
         width: 100%;
-        margin-left: 10%;
+        max-width: 100%;
     }
 
-    .relegation-card{
-        margin-left: 88%;
-        width: 120%;
+    .standings-page{
+        width: 100%;
+        margin: 15px auto;
+        padding: 0 12px;
+        box-sizing: border-box;
     }
-
-
-    .relegation-card img{
-        width: 16%;
-        height: 15%;
-    }
-
 
     .site-header{
         display: none;
     }
 
+    /* ===== HERO ===== */
 
-}   
+    .hero{
+        width: 100%;
+        padding: 15px 18px;
+        margin: 0 0 20px 0;
+        flex-wrap: wrap;
+        gap: 12px;
+        box-sizing: border-box;
+    }
 
+    .hero-left{
+        gap: 12px;
+    }
+
+    .league-logo{
+        width: 50px;
+        height: 50px;
+    }
+
+    .hero h1{
+        font-size: 18px;
+    }
+
+    .hero p{
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .live-box{
+        padding: 8px 14px;
+        font-size: 11px;
+    }
+
+    /* ===== QUICK CARDS ===== */
+
+    .quick-cards{
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 0 0 20px 0;
+    }
+
+    .quick-card{
+        padding: 10px;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .quick-card-title{
+        font-size: 10px;
+        gap: 4px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .quick-icon{
+        font-size: 12px;
+    }
+
+    .quick-logos{
+        gap: 6px;
+    }
+
+    .quick-logos img{
+        width: 26px;
+        height: 26px;
+    }
+
+    .leader-card .quick-logos img{
+        width: 36px;
+        height: 36px;
+    }
+
+    .leader-name{
+        font-size: 11px;
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    /* ===== TABLE ===== */
+
+    .premium-table{
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .premium-table th{
+        padding: 8px 4px;
+        font-size: 10px;
+    }
+
+    .premium-table td{
+        padding: 10px 4px;
+        font-size: 13px;
+    }
+
+    .place{
+        font-size: 13px;
+    }
+
+    .apps-titles{
+        display: none;
+    }
+
+    /* ===== CLUB CARD ===== */
+
+    .club-card{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .club-card img{
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .club-card a{
+        font-size: 12px;
+        font-weight: 100;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .player-title,
+    .premium-table td:nth-child(2){
+        width: 30%;
+        max-width: 0;
+        text-align: left !important;
+    }
+
+    .badge-gold{
+        font-size: 14px;
+    }
+
+    .goals-diff{
+        font-size: 13px;
+    }
+
+    /* ===== LEGEND ===== */
+
+    .legend{
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .legend-item{
+        font-size: 11px;
+    }
+
+}
 </style>
 
 {% endblock %}
