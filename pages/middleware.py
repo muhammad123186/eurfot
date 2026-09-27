@@ -2,13 +2,13 @@ from django.http import HttpResponseForbidden
 from .models import PageVisit
 
 
+# كلمات مفتاحية لحجب البوتات المزعجة والأدوات الآلية الضارة
 BLOCKED_USER_AGENT_KEYWORDS = [
     "axios",
     "python-requests",
     "curl",
     "wget",
     "scrapy",
-    "bot",
     "spider",
     "crawler",
     "nikto",
@@ -19,6 +19,21 @@ BLOCKED_USER_AGENT_KEYWORDS = [
 ]
 
 
+# بوتات محركات البحث الشرعية - يجب السماح لها دائماً بدون حظر
+ALLOWED_BOTS = [
+    "googlebot",
+    "bingbot",
+    "applebot",
+    "duckduckbot",
+    "yandexbot",
+    "baiduspider",
+    "facebookexternalhit",
+    "twitterbot",
+    "slurp",
+]
+
+
+# مسارات مشبوهة (فحص ثغرات) يتم حظرها دائماً
 BLOCKED_PATHS = [
     "/wp-admin",
     "/wp-login",
@@ -31,13 +46,15 @@ BLOCKED_PATHS = [
 ]
 
 
-# مسارات لا تسجّل كزيارة صفحة حقيقية (ملفات ثابتة، أيقونات، إلخ)
+# مسارات لا تُسجَّل كزيارة صفحة حقيقية (ملفات ثابتة، أيقونات، إلخ)
 IGNORED_PATH_PREFIXES = [
     "/static/",
     "/media/",
     "/favicon.ico",
     "/apple-touch-icon",
     "/robots.txt",
+    "/sitemap.xml",
+    "/admin/",
 ]
 
 
@@ -57,11 +74,15 @@ class BlockScannersMiddleware:
 
         user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
 
-        # ===== حظر بناءً على الـ User-Agent =====
+        # ===== السماح دائماً لبوتات محركات البحث الشرعية أولاً =====
+        if any(allowed in user_agent for allowed in ALLOWED_BOTS):
+            return self.get_response(request)
+
+        # ===== حظر بناءً على الـ User-Agent (أدوات آلية/بوتات مزعجة) =====
         if any(keyword in user_agent for keyword in BLOCKED_USER_AGENT_KEYWORDS):
             return HttpResponseForbidden("Forbidden")
 
-        # ===== حظر بناءً على المسار =====
+        # ===== حظر بناءً على المسار (فحص ثغرات شائعة) =====
         path = request.path.lower()
 
         if any(path.startswith(blocked) for blocked in BLOCKED_PATHS):
