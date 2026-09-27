@@ -37,6 +37,11 @@ ALLOWED_BOTS = [
 BLOCKED_PATHS = [
     "/wp-admin",
     "/wp-login",
+    "/wp-includes",
+    "/wp-content",
+    "/wp-json",
+    "/xmlrpc.php",
+    "/wlwmanifest.xml",
     "/cart",
     "/pricing",
     "/order",
@@ -44,7 +49,6 @@ BLOCKED_PATHS = [
     "/blog",
     "/contact",
 ]
-
 
 # مسارات لا تُسجَّل كزيارة صفحة حقيقية (ملفات ثابتة، أيقونات، إلخ)
 IGNORED_PATH_PREFIXES = [
@@ -85,7 +89,7 @@ class BlockScannersMiddleware:
         # ===== حظر بناءً على المسار (فحص ثغرات شائعة) =====
         path = request.path.lower()
 
-        if any(path.startswith(blocked) for blocked in BLOCKED_PATHS):
+        if any(blocked in path for blocked in BLOCKED_PATHS):
             return HttpResponseForbidden("Forbidden")
 
         response = self.get_response(request)
