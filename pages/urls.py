@@ -1,6 +1,8 @@
 from django.urls import path
 from .import views
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
+from django.templatetags.static import static
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import (
@@ -26,6 +28,12 @@ sitemaps = {
 
 
 urlpatterns = [
+
+
+    path('favicon.ico', RedirectView.as_view(
+    url='/static/image/android-chrome-512x512.png',
+    permanent=True
+    )),
 
 
 
