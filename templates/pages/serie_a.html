@@ -501,21 +501,14 @@
 
 
 
-            <div class="team home">
+           <div class="team home">
 
+    <div class="team-name">
+        <img src="{{ game.homeTeam.crest }}">
+        <span>{{ game.homeTeam.name }}</span>
+    </div>
 
-
-                <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" class="team-name">
-
-                    <img src="{{ game.homeTeam.crest }}">
-
-                    <span>{{ game.homeTeam.name }}</span>
-
-                </a>
-
-
-
-            </div>
+</div>
 
 
 
@@ -581,21 +574,12 @@
 
             <div class="team away">
 
+    <div class="team-name">
+        <span>{{ game.awayTeam.name }}</span>
+        <img src="{{ game.awayTeam.crest }}">
+    </div>
 
-
-                <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">
-
-                    <span>{{ game.awayTeam.name }}</span>
-
-                    <img src="{{ game.awayTeam.crest }}">
-
-                </a>
-
-
-
-            </div>
-
-
+</div>
 
         </div>
 

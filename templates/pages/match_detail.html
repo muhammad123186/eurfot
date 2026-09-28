@@ -76,177 +76,72 @@ border:2px solid rgba(0, 140, 255, 0.8);
 
 
 <!-- ================= MATCH CARD ================= -->
-
-
 <div class="match-card">
 
+    <div class="match-header">
+        <img src="{{ game.competition.logo }}" class="competition-logo" alt="">
+    </div>
 
+    <div class="teams">
 
-<div class="match-header">
+        <!-- HOME -->
+        <div class="team">
 
+            <img src="{{ game.home_logo }}" alt="{{ game.home_name }}">
 
-<img 
-src="{{ game.competition.logo }}"
-class="competition-logo"
->
+            <h3>
+                <a href="{% url 'team_detail' game.home_id %}" class="team-name-link">{{ game.home_name }}</a>
+            </h3>
 
-
-</div>
-
-
-
-
-
-<div class="teams">
-
-
-
-<div class="team">
-
-
-<img 
-src="{{ game.home_logo }}"
-alt="{{ game.home_name }}"
->
-
-
-<h3>
-{{ game.home_name }}
-</h3>
-
-
-{% if home_scorers %}
-<div class="scorers-list">
-    {% for scorer in home_scorers %}
-        <div class="scorer-line">
-            <span class="goal-icon">⚽</span>
-            <span>
-                {{ scorer.player }}
-                {% for g in scorer.goals %}
-                    {{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %}{% if not forloop.last %}, {% endif %}
+            {% if home_scorers %}
+            <div class="scorers-list">
+                {% for scorer in home_scorers %}
+                    <div class="scorer-line">
+                        ⚽ {{ scorer.player }}
+                        {% for g in scorer.goals %}{{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %} {% endfor %}
+                    </div>
                 {% endfor %}
-            </span>
+            </div>
+            {% endif %}
+
         </div>
-    {% endfor %}
-</div>
-{% endif %}
 
+        <!-- SCORE -->
+        <div class="score">
 
-</div>
+            {% if game.score.fullTime.home is not None %}
+                <h1>{{ game.score.fullTime.home }} - {{ game.score.fullTime.away }}</h1>
+            {% else %}
+                <h1>VS</h1>
+            {% endif %}
 
+            <div class="status">{{ game.status }}</div>
 
+        </div>
 
+        <!-- AWAY -->
+        <div class="team">
 
+            <img src="{{ game.away_logo }}" alt="{{ game.away_name }}">
 
+            <h3>
+                <a href="{% url 'team_detail' game.away_id %}" class="team-name-link">{{ game.away_name }}</a>
+            </h3>
 
-<div class="score">
-
-
-
-{% if game.score.fullTime.home is not None %}
-
-
-
-<h1>
-
-{{ game.score.fullTime.home }}
--
-{{ game.score.fullTime.away }}
-
-</h1>
-
-
-
-{% else %}
-
-
-
-<h1>
-
-VS
-
-</h1>
-
-
-
-{% endif %}
-
-
-
-
-
-<div class="status">
-    {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
-        {{ game.status }} - {{ game.elapsed }}'
-    {% elif game.status == "HT" %}
-        Half Time
-    {% elif game.status == "FT" %}
-        FT
-    {% elif game.status == "NS" %}
-        Not Started
-    {% else %}
-        {{ game.status }}
-    {% endif %}
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div class="team">
-
-
-<img 
-src="{{ game.away_logo }}"
-alt="{{ game.away_name }}"
->
-
-
-
-<h3>
-
-{{ game.away_name }}
-
-</h3>
-
-
-{% if away_scorers %}
-<div class="scorers-list">
-    {% for scorer in away_scorers %}
-        <div class="scorer-line">
-            <span class="goal-icon">⚽</span>
-            <span>
-                {{ scorer.player }}
-                {% for g in scorer.goals %}
-                    {{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %}{% if not forloop.last %}, {% endif %}
+            {% if away_scorers %}
+            <div class="scorers-list">
+                {% for scorer in away_scorers %}
+                    <div class="scorer-line">
+                        ⚽ {{ scorer.player }}
+                        {% for g in scorer.goals %}{{ g.minute }}'{% if g.extra %}+{{ g.extra }}{% endif %} {% endfor %}
+                    </div>
                 {% endfor %}
-            </span>
+            </div>
+            {% endif %}
+
         </div>
-    {% endfor %}
-</div>
-{% endif %}
 
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
+    </div>
 <!-- ================= INFO ================= -->
 
 
@@ -1518,302 +1413,6 @@ body{
 
 /* ================= COMPETITION ================= */
 
-
-.competition-logo{
-
-    width:55px;
-
-    height:55px;
-
-    object-fit:contain;
-
-}
-
-
-
-
-
-
-
-/* ================= MATCH CARD ================= */
-
-
-.match-card{
-
-
-    background: linear-gradient(-45deg,black,black,black,black,black,rgb(255, 0, 0));
-
-    color:white;
-
-
-    border-radius:25px 25px 0 0;
-
-
-    padding:35px;
-
-
-    overflow:hidden;
-
-
-    box-shadow:
-
-
-
-}
-
-
-
-
-
-.match-header{
-
-
-    text-align:center;
-
-
-    margin-bottom:25px;
-
-
-}
-
-
-
-
-
-
-
-
-
-
-/* ================= TEAMS ================= */
-
-
-.teams{
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:flex-start;
-
-
-    gap:70px;
-
-
-    margin:30px 0;
-
-
-}
-
-
-
-
-
-.team{
-
-
-    width:220px;
-
-
-    text-align:center;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-
-
-}
-
-
-
-
-
-.team img{
-
-
-    width:110px;
-
-
-    height:110px;
-
-
-    object-fit:contain;
-
-
-    filter:
-
-    drop-shadow(
-
-    0 10px 15px rgba(0,0,0,.5)
-
-    );
-
-
-}
-
-
-
-
-
-
-.team h3{
-
-
-    margin-top:15px;
-
-
-    font-size:24px;
-
-
-    color:white;
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================= SCORE ================= */
-
-
-.score{
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    align-items:center;
-
-    margin-top: 30px;
-
-
-}
-
-
-
-
-
-.score h1{
-
-
-    min-width:130px;
-
-
-    height:80px;
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
-    margin:0;
-
- 
-
-    background:
-
-    linear-gradient(
-
-    145deg,
-
-    #222
-
-    );
-
-
-
-    border-radius:20px;
-
-
-
-    font-size:42px;
-
-
-
-    font-weight:800;
-
-
-
-    color:white;
-
-
-
-    box-shadow:
-
-    0 10px 25px rgba(0,0,0,.5);
-
-
-
-}
-
-
-
-
-
-
-.status{
-
-
-    margin-top:15px;
-
-
-    padding:8px 22px;
-
-
-    border-radius:30px;
-
-
-    background:rgba(255, 0, 0, 0.678);
-
-
-    color:white;
-
-
-    font-size:13px;
-
-
-    font-weight:bold;
-
-
-}
-
-
-
-.scorers-list{
-    margin-top:10px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-}
-
-.scorer-line{
-    display:inline-flex;
-    align-items:center;
-    justify-content:flex-start;
-    gap:6px;
-    font-size:13px;
-    color:#ccc;
-    white-space:nowrap;
-}
-
 .goal-icon{
     width:16px;
     flex-shrink:0;
@@ -1821,94 +1420,137 @@ body{
 }
 
 
+.match-card{
+    background: linear-gradient(-45deg, black, black, black, black, black, rgb(255,0,0));
+    color: white;
+    border-radius: 25px 25px 0 0;
+    padding: 35px;
+    overflow: hidden;
+}
 
-/* ================= MATCH INFO ================= */
+.match-header{
+    text-align: center;
+    margin-bottom: 25px;
+}
 
+.competition-logo{
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.teams{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 70px;
+    margin: 30px 0;
+}
+
+.team{
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.team img{
+    display: block;
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    margin: 0 auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,.5));
+}
+
+.team h3{
+    margin: 15px 0 0 0;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.team-name-link{
+    color: white;
+    text-decoration: none;
+    transition: .25s;
+}
+
+.team-name-link:hover{
+    color: #ff4444;
+    text-decoration: underline;
+}
+
+.score{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.score h1{
+    min-width: 130px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background: black;
+    border-radius: 20px;
+    font-size: 42px;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,.5);
+}
+
+.status{
+    margin-top: 15px;
+    padding: 8px 22px;
+    border-radius: 30px;
+    background: #111;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.scorers-list{
+    margin: 10px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.scorer-line{
+    font-size: 13px;
+    color: #ccc;
+    white-space: nowrap;
+}
 
 .match-info{
-
-
-    display:grid;
-
-
-    grid-template-columns:repeat(3,1fr);
-
-
-    gap:15px;
-
-
-    margin-top:45px;
-
-
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 45px;
 }
-
-
-
-
 
 .info-card{
-
-
-    background:
-
-    linear-gradient(
-
-    145deg,
-
-    #1c1c1c,
-
-    #080808
-
-    );
-
-
-    padding:18px;
-
-
-    border-radius:18px;
-
-
-    text-align:center;
-
-
-    color:white;
-
-
-    box-shadow:
-
-    0 8px 20px rgba(0,0,0,.5);
-
-
+    background: linear-gradient(145deg, #1c1c1c, #080808);
+    padding: 18px;
+    border-radius: 18px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,.5);
 }
-
-
-
-
 
 .info-card span{
-
-
-    font-size:28px;
-
-
-    display:block;
-
-
-    margin-bottom:8px;
-
-
+    font-size: 28px;
+    display: block;
+    margin-bottom: 8px;
 }
 
-
-
-
-
 .info-card strong{
-
-
-    font-size:14px;
-
-
+    font-size: 14px;
 }
 
 
@@ -3593,7 +3235,7 @@ body{
 
 
     #overview{
-        margin-left: 1%;
+        margin-right: 15%;
     }
 
 
