@@ -330,7 +330,15 @@
 
             <!-- Score -->
             <div class="fixture-score">
+                {% if game.status == "NS" %}
+
+        <span>VS</span>
+
+    {% else %}
+
                 {{ game.goals.home }} - {{ game.goals.away }}
+
+                {% endif %}
             </div>
 
             <!-- Away -->
