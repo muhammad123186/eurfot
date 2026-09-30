@@ -5187,6 +5187,24 @@ def team_statistics(request, id):
     )
 
 
+
+
+def get_current_round_index(rounds):
+
+    if not rounds:
+        return 1
+
+    for i, round_data in enumerate(rounds, start=1):
+
+        for match in round_data["matches"]:
+            if match["status"] not in ("FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO"):
+                return i
+
+    return len(rounds)
+
+
+
+
 # ================= CUP MATCHES (BY ROUND - جدول مباريات الكؤوس - دقيقة واحدة) =================
 def get_cup_rounds(code):
 
@@ -5278,6 +5296,8 @@ def cup_competition(request, code):
 
     rounds = get_cup_rounds(code)
 
+    current_round_index = get_current_round_index(rounds)
+
     context = {
 
         "competition": competition,
@@ -5286,6 +5306,7 @@ def cup_competition(request, code):
         "code": code,
         "cup_code": code,
         "rounds": rounds,
+        "current_round_index": current_round_index,
     }
 
     template_name = LEAGUES[code].get("template", "pages/cup_competition.html")
