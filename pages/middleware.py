@@ -16,6 +16,7 @@ BLOCKED_USER_AGENT_KEYWORDS = [
     "nmap",
     "masscan",
     "go-http-client",
+    "shapbot",
 ]
 
 
