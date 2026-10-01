@@ -269,6 +269,9 @@ LEAGUES = {
         "id": 2,
         "code": "UCL",
         "name": "UEFA Champions League",
+        "name_ar": "دوري أبطال اوروبا",
+        "standings_name": "UEFA Champions League Standings",
+        "standings_name_ar": "ترتيب دوري أبطال اوروبا",
         "logo": "https://media.api-sports.io/football/leagues/2.png",
         "country": "Europe",
         "type": "cup",
@@ -282,6 +285,9 @@ LEAGUES = {
         "id": 3,
         "code": "UEL",
         "name": "UEFA Europa League",
+        "name_ar": "الدوري الاوروبي",
+        "standings_name": "UEFA Europa League Standings",
+        "standings_name_ar": "ترتيب الدوري الأوروبي",
         "logo": "https://media.api-sports.io/football/leagues/3.png",
         "country": "Europe",
         "type": "cup",
@@ -295,6 +301,9 @@ LEAGUES = {
         "id": 848,
         "code": "UECL",
         "name": "UEFA Europa Conference League",
+        "name_ar": "دوري المؤتمر الاوروبي",
+        "standings_name": "UEFA Europa Conference League Standings",
+        "standings_name_ar": "ترتيب دوري المؤتمر الاوروبي",
         "logo": "https://media.api-sports.io/football/leagues/848.png",
         "country": "Europe",
         "type": "cup",
@@ -5271,9 +5280,18 @@ def get_cup_rounds(code):
             "utcDate": to_mecca_time(f["fixture"]["date"]),
         })
 
+    # ===== استبعاد الأدوار التمهيدية (قبل دور المجموعات/الدوري) =====
+    EXCLUDED_ROUND_KEYWORDS = [
+        "qualifying",
+        "preliminary",
+        "play-offs",
+        "playoff",
+    ]
+
     ordered_rounds = [
         {"round": name, "matches": matches}
         for name, matches in rounds.items()
+        if not any(keyword in name.lower() for keyword in EXCLUDED_ROUND_KEYWORDS)
     ]
 
     cache.set(cache_key, ordered_rounds, MATCHES_CACHE_TTL)

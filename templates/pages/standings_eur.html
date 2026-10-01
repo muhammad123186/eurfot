@@ -43,14 +43,17 @@
 
         <div class="hero-left">
 
-            <img class="league-logo" src="{{ competition.logo }}">
+    <img class="league-logo" src="{{ competition.logo }}">
 
-            <div>
-                <h1>{{ competition.name }}</h1>
-                <p>Season {{ season }}</p>
-            </div>
+    <div>
+        <h1 class="competition-title">
+            {{ competition.standings_name_ar|default:competition.name_ar|default:competition.name }}
+            <span class="competition-title-en">{{ competition.standings_name|default:competition.name }}</span>
+        </h1>
+        <p>Season {{ season }}</p>
+    </div>
 
-        </div>
+</div>
 
         <div class="hero-right">
 
@@ -214,6 +217,19 @@
 
 
 <style>
+
+
+.competition-title{
+    line-height: 1.4;
+}
+
+.competition-title-en{
+    display: block;
+    font-size: 13px;
+    color: #999;
+    font-weight: 400;
+    margin-top: 3px;
+}
 
 .site-header{
     width:100%;

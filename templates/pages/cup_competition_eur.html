@@ -134,9 +134,12 @@
 
         <!-- COMPETITION LOGO & TITLE -->
         <div style="text-align:center; margin:20px;">
-            <img src="{{ competition.logo|default:'' }}" class="competition-logo">
-            
-        </div>
+    <img src="{{ competition.logo|default:'' }}" class="competition-logo">
+    <h1 class="competition-title">
+        {{ competition.name_ar|default:competition.name }}
+        <span class="competition-title-en">{{ competition.name }}</span>
+    </h1>
+</div>
 
         <!-- TABS (ديناميكية مع ثيم البطولة) -->
         <div class="tabs-row">
@@ -334,7 +337,21 @@ body{
 <style>
 
 
+.competition-title{
+    color: white;
+    font-size: 22px;
+    margin-top: 10px;
+    font-weight: 700;
+    line-height: 1.4;
+}
 
+.competition-title-en{
+    display: block;
+    font-size: 13px;
+    color: #999;
+    font-weight: 400;
+    margin-top: 3px;
+}
 
 
 .site-header{
@@ -1121,6 +1138,15 @@ box-shadow:0 0 15px var(--cup-color);
 
     .matchweek-number {
         display: none;
+    }
+
+
+    .competition-title {
+        color: white;
+        font-size: 20px;
+        margin-top: 10px;
+        font-weight: 700;
+        line-height: 1.4; 
     }
 
 }
