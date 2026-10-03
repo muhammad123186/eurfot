@@ -26,8 +26,10 @@
             <button type="submit">🔍</button>
         </form>
 
-        <!-- زر البحث للهاتف بس -->
         <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+
+        <!-- زر البحث للهاتف بس -->
+        
 
     </div>
 
@@ -626,6 +628,16 @@ box-shadow:0 0 15px var(--cup-color);
 
 .away .team-away{
     text-align: right;
+    margin-left: 180px;
+}
+
+
+.away-img{
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-left: 10px;
 }
 
 
@@ -772,6 +784,26 @@ box-shadow:0 0 15px var(--cup-color);
         zoom: 90%;
     }
 
+
+    .search-box{
+        display: none !important;
+    }
+
+    .mobile-search-btn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
     .sidebar{
         display: none;
     }
@@ -781,8 +813,7 @@ box-shadow:0 0 15px var(--cup-color);
         height: auto !important;
         min-height: 0 !important;
         flex-direction: column;
-        zoom: 102%;
-        margin-top: -29%;
+        zoom: 100%;
     }
 
     .main-content{
@@ -794,7 +825,7 @@ box-shadow:0 0 15px var(--cup-color);
     /* ===== HEADER ===== */
 
     .site-header{
-        width: 152%;
+        width: 90%;
         height: 3%;
         margin-top: -2%;
     }
@@ -837,24 +868,6 @@ box-shadow:0 0 15px var(--cup-color);
     .search-box{
         display: none !important;
     }
-
-    .mobile-search-btn{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 32px;
-        background: black;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        font-size: 16px;
-        cursor: pointer;
-        flex-shrink: 0;
-        margin-top: -10%;
-        margin-left: 12%;
-    }
-
     /* ===== COMPETITION LOGO ===== */
 
     .main-content > div:first-child{
@@ -910,7 +923,7 @@ box-shadow:0 0 15px var(--cup-color);
     /* ===== MATCH CARD ===== */
 
     .match-card{
-        width: 97%;
+        width: 310px;
         height: 60px;
         margin-left: -22px;
         padding: 0 12px;
@@ -923,7 +936,19 @@ box-shadow:0 0 15px var(--cup-color);
         max-width: 90px;
      }
 
-    
+    .away-img{
+        width: 25px;
+        height: 25px;
+        object-fit: contain;
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+
+
+    .away .team-away{
+    text-align: right;
+    margin-left: 35px;
+    }
 
    
     .score-board{
@@ -963,205 +988,113 @@ box-shadow:0 0 15px var(--cup-color);
 
 @media (max-width: 1000px) {
     .mobile-sidebar {
-        position: fixed !important;   /* ثابت دائمًا تحت الهيدر */
-        top: var(--header-height, 95%); /* غيّرها لارتفاع الهيدر الفعلي */
-        left: 5.5%;
-        width: 90% !important;
-        height: 50px !important;
-        display: flex !important;
-        align-items: flex-end;
-        justify-content: center;
-        background: #090909;
-        z-index: 999; /* أعلى من كل شيء تحته */
-        padding: 0 !important;
-        border-top: none;
-        margin: 0 !important;
-    
-    }
-
-    /* لازم تعوّض المساحة اللي أخذها السايدبار الثابت */
-    .main-content {
-        flex: none !important;
-        height: auto !important;
-        min-height: 0 !important;
-        margin-top: calc(var(--header-height, 60px) + 55px) !important;
-    }
-
-
-    /* ==============================
-       كل دولة
-       ============================== */
-
-    .mobile-country {
-
-        position: relative;
-
-        width: 20%;
-        height: 50px;
-
-        flex-shrink: 0;
-    }
-
-
-    /* ==============================
-       زر الدولة
-       ============================== */
-
-    .mobile-country-btn {
-
-        position: absolute;
-
+        position: fixed;
         bottom: 0;
-        left: 50%;
-
-        transform: translateX(-50%);
-
-        width: 45px;
-        height: 50px;
-
+        left: 0;
+        width: 100%;
+        height: 55px;
         display: flex;
-
         align-items: center;
         justify-content: center;
-
-        gap: 3px;
-
-        padding: 0;
-        margin: 0;
-
+        gap: 14px;
         background: #090909;
-
-        border: none;
-
-        color: white;
-
-        cursor: pointer;
-
-        z-index: 100;
+        z-index: 999;
+        box-sizing: border-box;
     }
 
+    .main-content {
+        padding-bottom: 70px;
+    }
 
-    /* ==============================
-       العلم
-       ============================== */
+    .mobile-country {
+        position: relative;
+        flex-shrink: 0;
+        width: 45px;
+        height: 45px;
+    }
+
+    .mobile-country-btn {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
 
     .mobile-country-btn img {
-
-        width: 23px;
-        height: 16px;
-
+        width: 22px;
+        height: 15px;
         object-fit: cover;
-
         border-radius: 2px;
     }
 
-
-    /* ==============================
-       السهم
-       ============================== */
-
     .mobile-arrow {
-
         font-size: 8px;
         color: white;
     }
 
-
-    /* ==============================
-       قائمة البطولات
-       ============================== */
-
     .mobile-country-leagues {
-
         display: none;
-
         position: absolute;
-
-        bottom: 50px;
-        left: 80%;
-
+        bottom: 55px;
+        left: 50%;
         transform: translateX(-50%);
-
-        width: 160%;
-
+        width: 120px;
         background: #222;
-
         border: 1px solid red;
-
-        border-radius: 7px 7px 0 0;
-
-        padding: 4px;
-
-        z-index: 101;
-
+        border-radius: 8px 8px 0 0;
+        padding: 6px;
+        z-index: 1000;
         box-sizing: border-box;
     }
 
-
-    /* ==============================
-       عند الضغط تظهر البطولات
-       ============================== */
-
     .mobile-country.active .mobile-country-leagues {
-
         display: block;
     }
 
-
-    /* ==============================
-       كل بطولة
-       ============================== */
-
     .mobile-country-leagues a {
-
         display: flex;
-
         align-items: center;
-
-        gap: 6px;
-
+        gap: 8px;
         width: 100%;
-
-        padding: 5px 4px;
-
+        padding: 6px;
         color: white;
-
         text-decoration: none;
-
-        font-size: 9px;
-
-        white-space: nowrap;
-
+        font-size: 11px;
         box-sizing: border-box;
     }
 
-
-    /* ==============================
-       شعار البطولة
-       ============================== */
-
     .mobile-country-leagues a img {
-
         width: 18px;
         height: 18px;
-
         object-fit: contain;
-
         flex-shrink: 0;
     }
 
-
-    /* ==============================
-       إخفاء رقم الماتش ويك
-       ============================== */
-
     .matchweek-number {
-
         display: none;
     }
 
+
+    .competition-title {
+        color: white;
+        font-size: 20px;
+        margin-top: 10px;
+        font-weight: 700;
+        line-height: 1.4; 
+    }
     
 }
+    
+
 
 </style>
 

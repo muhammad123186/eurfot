@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="player-page">
-
-
-
-```html
 <div class="player-card-wrapper">
 
 
@@ -1496,7 +1492,9 @@ style="width:{{ goalkeeper_stats.penalty_saved|default:0 }}%;">
 
     font-family:Arial,sans-serif;
 
-    color:white;
+    color:black;
+
+    background:#111;
 
 }
 
@@ -1803,7 +1801,7 @@ style="width:{{ goalkeeper_stats.penalty_saved|default:0 }}%;">
 
     text-align:center;
 
-    border:1px solid #333;
+    border:1px solid #ff0000;
 
     transition:.3s;
 
@@ -2597,7 +2595,7 @@ background:linear-gradient(90deg,#9c27b0,#673ab7);
 
         border-radius: 12px;
 
-        border: 1px solid #222;
+        border:1px solid white;
 
         text-align: center;
     
