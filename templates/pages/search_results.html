@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width:900px;margin:auto;padding:20px;font-family:Arial;">
+
+    <h2 style="color:white;">
+        نتائج البحث عن: "{{ query }}"
+    </h2>
+
+    {% if results or player_results %}
+
+        {% if results %}
+
+            <h3 class="search-section-title">
+                🏟️ Teams
+            </h3>
+
+            <div class="search-results-list">
+
+                {% for item in results %}
+
+                    <a href="{% url 'team_detail' item.id %}" class="search-result-card">
+
+                        <img src="{{ item.logo }}" width="45">
+
+                        <div class="search-result-info">
+
+                            <span class="search-result-name">
+                                {{ item.name }}
+                            </span>
+
+                            <span class="search-result-league">
+                                {{ item.league_name }}
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if player_results %}
+
+            <h3 class="search-section-title">
+                Players
+            </h3>
+
+            <div class="search-results-list">
+
+                {% for item in player_results %}
+
+                    <a href="{% url 'player_detail' item.id %}" class="search-result-card">
+
+                        <img src="{{ item.photo }}" width="45">
+
+                        <div class="search-result-info">
+
+                            <span class="search-result-name">
+                                {{ item.name }}
+                            </span>
+
+                            <span class="search-result-league">
+                                {{ item.team_name|default:"Player" }}
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% else %}
+
+        <p style="color:#aaa;">
+            {% if query %}
+                لا توجد نتائج مطابقة لـ "{{ query }}"
+            {% else %}
+                اكتب اسم فريق أو لاعب للبحث عنه
+            {% endif %}
+        </p>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= CSS ================= -->
+
+<style>
+
+.search-section-title{
+    color:white;
+    font-size:18px;
+    margin:25px 0 10px;
+    border-bottom:1px solid #222;
+    padding-bottom:8px;
+}
+
+.search-results-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:10px;
+}
+
+.search-result-card{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    background:#111;
+    border-radius:12px;
+    padding:15px 20px;
+    text-decoration:none;
+    transition:0.25s;
+}
+
+.search-result-card:hover{
+    background:#1e1e1e;
+    transform:scale(1.01);
+}
+
+.search-result-info{
+    display:flex;
+    flex-direction:column;
+}
+
+.search-result-name{
+    color:white;
+    font-weight:bold;
+    font-size:16px;
+}
+
+.search-result-league{
+    color:#888;
+    font-size:13px;
+    margin-top:3px;
+}
+
+
+@media (max-width:1000px){
+    .search-results-list{
+        zoom: 100%;
+    }
+}
+
+</style>
+
+{% endblock %}

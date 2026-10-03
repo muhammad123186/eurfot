@@ -3590,6 +3590,7 @@ def search_teams(request):
     query = request.GET.get("q", "").strip()
 
     results = []
+    player_results = []
 
     if query:
 
@@ -3612,6 +3613,8 @@ def search_teams(request):
                         "league_code": league_code,
                     })
 
+        player_results = search_players(query)
+
     return render(
 
         request,
@@ -3623,6 +3626,7 @@ def search_teams(request):
             "query": query,
 
             "results": results,
+            "player_results": player_results,
 
             "competitions": LEAGUES,
 
@@ -3630,6 +3634,84 @@ def search_teams(request):
 
     )
 
+
+def search_players(query):
+
+    if len(query) < 3:
+        return []
+
+    cache_key = f"player_search_{query.lower()}_{SEASON}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    url = "https://v3.football.api-sports.io/players"
+
+    results = []
+    seen_ids = set()
+
+    # الدوريات الخمسة الكبرى (عدّل القائمة لو تبي تضيف/تحذف)
+    BIG_LEAGUES = ["PL", "PD", "SA", "BL1", "FL1"]
+
+    for code in BIG_LEAGUES:
+
+        league_info = LEAGUES.get(code)
+
+        if not league_info or "id" not in league_info:
+            continue
+
+        params = {
+            "search": query,
+            "league": league_info["id"],
+            "season": SEASON,
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=15)
+            data = response.json()
+        except requests.RequestException:
+            continue
+
+        players_data = data.get("response", [])
+
+        for p in players_data:
+
+            player = p.get("player", {})
+            player_id = player.get("id")
+
+            if not player_id or player_id in seen_ids:
+                continue
+
+            seen_ids.add(player_id)
+
+            stats_list = p.get("statistics", [])
+
+            team_name = ""
+            team_logo = ""
+
+            if stats_list:
+                team_info = stats_list[0].get("team", {})
+                team_name = clean_team_name(team_info.get("name", ""))
+                team_logo = team_info.get("logo", "")
+
+            results.append({
+                "id": player_id,
+                "name": player.get("name"),
+                "photo": player.get("photo"),
+                "team_name": team_name,
+                "team_logo": team_logo,
+            })
+
+        if len(results) >= 15:
+            break
+
+    results = results[:15]
+
+    cache.set(cache_key, results, 60 * 60 * 6)
+
+    return results
 
 def signup(request):
 
