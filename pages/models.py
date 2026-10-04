@@ -135,6 +135,12 @@ class NewsArticle(models.Model):
         help_text="مثلاً PL, PD, SA... اتركه فاضي لو الخبر عام"
     )
 
+    team_id = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text="رقم الفريق من API (مثلاً 33 لمانشستر يونايتد). اتركه فاضي لو الخبر عام أو خاص بالدوري فقط"
+    )
+
     image = models.ImageField(
         upload_to="news_images/",
         blank=True,
@@ -152,7 +158,6 @@ class NewsArticle(models.Model):
 
     def __str__(self):
         return self.title
-
 
 
 

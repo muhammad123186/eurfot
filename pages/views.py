@@ -3929,12 +3929,15 @@ def leaderboard(request):
     )
 
 
-def news_list(request, code=None):
+def news_list(request, code=None, team_id=None):
 
     articles = NewsArticle.objects.all()
 
     if code:
         articles = articles.filter(league_code=code)
+
+    if team_id:
+        articles = articles.filter(team_id=team_id)
 
     return render(
         request,
@@ -3942,6 +3945,7 @@ def news_list(request, code=None):
         {
             "articles": articles,
             "code": code,
+            "team_id": team_id,
             "competitions": LEAGUES,
         }
     )
