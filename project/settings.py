@@ -27,7 +27,7 @@ SECRET_KEY = 'c$^w$ejrk=_rr9+lhj+6b(%l(8a3sg++=qv)kt&xp=sbk$h3l^'
 
 # SECURITY WARNING: don't run with debug turned on in producti
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
