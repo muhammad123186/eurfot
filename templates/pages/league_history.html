@@ -1,0 +1,812 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="site-header">
+
+    <div class="logo-box">
+        <h1>EUR<span>FOT</span></h1>
+    </div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="profile-btn">👤 {{ user.username }}</a>
+        {% else %}
+            <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="history-page">
+
+    <!-- ================= HERO ================= -->
+
+    <section class="history-hero">
+
+    <img class="history-logo" src="{{ competition.logo }}">
+
+    <h1>{{ competition.name }}</h1>
+
+    <p class="history-subtitle">History</p>
+
+    <form method="GET" class="history-date-form" id="historyDateForm">
+
+        <div class="history-date-wrapper">
+
+            <!-- التاريخ الحقيقي الذي سيرسله Django -->
+            <input
+                type="date"
+                name="date"
+                id="historyDateInput"
+                value="{{ selected_date|default:'' }}"
+                class="history-date-input"
+                min="2010-01-01"
+                max="{% now 'Y-m-d' %}"
+                required
+            >
+
+            <!-- النص العربي الظاهر -->
+            <span
+                class="history-date-display"
+                id="historyDateDisplay"
+            >
+                {% if selected_date %}
+                    {{ selected_date|slice:"8:10" }}/{{ selected_date|slice:"5:7" }}/{{ selected_date|slice:"0:4" }}
+                {% else %}
+                    يوم / شهر / سنة
+                {% endif %}
+            </span>
+
+            <!-- زر التقويم -->
+            <button
+                type="button"
+                class="history-calendar-btn"
+                id="historyCalendarBtn"
+                aria-label="اختيار التاريخ"
+            >
+                📅
+            </button>
+
+        </div>
+
+        <button type="submit" class="history-date-btn">
+            🔍 اعرض ذلك اليوم
+        </button>
+
+    </form>
+
+    {% if error %}
+        <p class="history-error">{{ error }}</p>
+    {% endif %}
+
+</section>
+
+
+{% if selected_date and not error %}
+        <!-- ================= SEASON INFO ================= -->
+
+        <div class="history-season-badge">
+            Season {{ season }}-{{ season|add:"1" }}
+        </div>
+
+
+        <!-- ================= MATCHES ON DATE ================= -->
+
+        <div class="history-section">
+
+            <h2 class="history-section-title">
+                مباريات يوم {{ selected_date }}
+            </h2>
+
+            {% if matches_on_date %}
+
+                <div class="history-matches-list">
+
+                    {% for game in matches_on_date %}
+
+                    <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
+
+                        <div class="team home">
+                            <div class="team-name">
+                                <img src="{{ game.home_logo }}">
+                                <span>{{ game.home_name }}</span>
+                            </div>
+                        </div>
+
+                        <div class="score-board">
+                            <div class="score-status">
+                                {% if game.round %}{{ game.status }}{% endif %}
+                            </div>
+                            <div class="score-value">
+                                {% if game.home_goals is not None %}
+                                    <span>{{ game.home_goals }}</span>
+                                    <b>-</b>
+                                    <span>{{ game.away_goals }}</span>
+                                {% else %}
+                                    <span>VS</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="team away">
+                            <div class="team-name">
+                                <span>{{ game.away_name }}</span>
+                                <img src="{{ game.away_logo }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="history-empty">
+                    لا توجد مباريات في هذا التاريخ لهذا الدوري
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= STANDINGS AT THAT SEASON ================= -->
+
+        {% if standings_at_date %}
+
+        <div class="history-section">
+
+            <h2 class="history-section-title">
+              ترتيب الدوري في هذا اليوم من موسم {{ season }}-{{ season|add:"1" }}
+            </h2>
+
+            <table class="history-standings-table">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="history-team-col">Team</th>
+                        <th>P</th>
+                        <th>W</th>
+                        <th>D</th>
+                        <th>L</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in standings_at_date %}
+
+                    <tr>
+                        <td>{{ row.rank }}</td>
+                        <td class="history-team-col">
+                            <div class="history-team-cell">
+                                <img src="{{ row.team.logo }}">
+                                <a href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
+                            </div>
+                        </td>
+                        <td>{{ row.all.played }}</td>
+                        <td>{{ row.all.win }}</td>
+                        <td>{{ row.all.draw }}</td>
+                        <td>{{ row.all.lose }}</td>
+                        <td class="history-pts">{{ row.points }}</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+
+<style>
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.profile-btn,
+.signup-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:black;
+    white-space:nowrap;
+    color:white;
+    padding:10px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:14px;
+    transition:.25s;
+    box-shadow:0 15px 30px rgba(0,0,0,.7), inset 2px 2px 10px black;
+    border:2px solid rgba(0, 140, 255, 0.8);
+}
+
+.search-box{
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.search-box button:hover{
+    background:red;
+}
+
+
+/* ================= PAGE ================= */
+
+body{
+    margin:0;
+    background:#080808;
+}
+
+.history-page{
+    max-width:900px;
+    margin:30px auto;
+    padding:0 20px 60px;
+    font-family:Arial,Helvetica,sans-serif;
+    color:white;
+    box-sizing:border-box;
+}
+
+
+/* ================= HERO ================= */
+
+.history-hero{
+    text-align:center;
+    background:linear-gradient(-45deg,black,black,black,black,black,rgb(255,0,0));
+    border-radius:25px;
+    padding:40px 25px;
+    margin-bottom:30px;
+}
+
+.history-logo{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    margin-bottom:10px;
+}
+
+.history-hero h1{
+    margin:0;
+    font-size:26px;
+}
+
+.history-subtitle{
+    color:white;
+    font-size:14px;
+    margin:8px 0 25px;
+    letter-spacing:1px;
+}
+
+.history-date-form{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.history-date-wrapper{
+    position:relative;
+    width:220px;
+    height:46px;
+}
+
+.history-date-input{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    cursor:pointer;
+    z-index:2;
+}
+
+.history-date-display{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 48px 0 15px;
+
+    box-sizing:border-box;
+
+    background:white;
+    color:#222;
+
+    border-radius:10px;
+
+    font-size:15px;
+    font-family:inherit;
+
+    direction:rtl;
+
+    pointer-events:none;
+}
+
+.history-calendar-btn{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:34px;
+    height:34px;
+
+    border:none;
+    border-radius:7px;
+
+    background:transparent;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    z-index:3;
+
+    background:#222;
+}
+
+.history-calendar-btn:hover{
+    background:rgba(0,0,0,0.08);
+}
+
+.history-date-btn{
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    font-family:inherit;
+    background:black;
+    color:white;
+    border:2px solid rgb(255, 0, 0);
+}
+
+.history-error{
+    color:#ff6b6b;
+    margin-top:15px;
+    font-size:13px;
+}
+
+
+/* ================= SEASON BADGE ================= */
+
+.history-season-badge{
+    display:block;
+    width:max-content;
+    margin:0 auto 25px;
+    padding:8px 20px;
+    border-radius:30px;
+    background:rgba(255,0,0,.1);
+    color:#ff0000;
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:1px;
+}
+
+
+/* ================= SECTION ================= */
+
+.history-section{
+    margin-bottom:40px;
+}
+
+.history-section-title{
+    font-size:19px;
+    margin-bottom:18px;
+    border-bottom:2px solid #ff0000;
+    display:inline-block;
+    padding-bottom:6px;
+}
+
+.history-empty{
+    background:#111;
+    border-radius:16px;
+    padding:30px;
+    text-align:center;
+    color:#888;
+}
+
+
+/* ================= MATCH CARD (نفس نمط الموقع) ================= */
+
+.history-matches-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.match-card{
+    width:100%;
+    background: linear-gradient(90deg,black);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    height:70px;
+    color:white;
+    box-sizing:border-box;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.match-card:hover{
+    transform:scale(1.01);
+}
+
+.team{
+    width:40%;
+    display:flex;
+    align-items:center;
+}
+
+.team-name{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.team-name img{
+    width:36px;
+    height:36px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.team-name span{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.home{
+    justify-content:flex-start;
+}
+
+.away{
+    justify-content:flex-end;
+}
+
+.away .team-name span{
+    text-align:right;
+}
+
+.score-board{
+    width:90px;
+    height:55px;
+    background: linear-gradient(145deg,#1a1a1a,#0a0a0a);
+    border-radius:14px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    border:1px solid rgba(255,255,255,.08);
+    flex-shrink:0;
+}
+
+.score-status{
+    font-size:9px;
+    color:#ff0000;
+    font-weight:900;
+    margin-bottom:4px;
+    white-space:nowrap;
+    padding:0 6px;
+    text-align:center;
+}
+
+.score-value{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:17px;
+    font-weight:700;
+    color:white;
+    margin-bottom:12px;
+}
+
+.score-value b{
+    color:#666;
+    font-weight:400;
+}
+
+
+/* ================= STANDINGS TABLE ================= */
+
+.history-standings-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#111;
+    border-radius:16px;
+    overflow:hidden;
+}
+
+.history-standings-table th{
+    background:#1a1a1a;
+    color:#999;
+    font-size:13px;
+    padding:14px 10px;
+    text-align:center;
+}
+
+.history-standings-table td{
+    padding:12px 10px;
+    text-align:center;
+    border-bottom:1px solid #1c1c1c;
+    font-size:14px;
+}
+
+.history-team-col{
+    text-align:left !important;
+}
+
+.history-team-cell{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.history-team-cell img{
+    width:26px;
+    height:26px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.history-team-cell a{
+    color:white;
+    text-decoration:none;
+    font-weight:700;
+}
+
+.history-team-cell a:hover{
+    color:#ff0000;
+}
+
+.history-pts{
+    color:#ff0000;
+    font-weight:900;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width:1000px){
+
+    html, body{
+        overflow-x:hidden;
+        width:100%;
+        max-width:100%;
+    }
+
+    .site-header{
+        padding:10px 15px;
+        height:auto;
+        box-sizing:border-box;
+    }
+
+    .logo-box h1{
+        font-size:22px;
+    }
+
+    .search-box{
+        display:none;
+    }
+
+    .history-page{
+        padding:0 12px 50px;
+    }
+
+    .history-hero{
+        padding:25px 15px;
+    }
+
+    .history-logo{
+        width:60px;
+        height:60px;
+    }
+
+    .history-hero h1{
+        font-size:19px;
+    }
+
+    .history-date-form{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .history-date-input,
+    .history-date-btn{
+        width:100%;
+        max-width:280px;
+        box-sizing:border-box;
+    }
+
+    .match-card{
+        padding:0 12px;
+        height:auto;
+        min-height:60px;
+        padding-top:8px;
+        padding-bottom:8px;
+    }
+
+    .team-name img{
+        width:26px;
+        height:26px;
+    }
+
+    .team-name span{
+        font-size:12px;
+    }
+
+    .score-board{
+        width:65px;
+        height:48px;
+    }
+
+    .score-value{
+        font-size:14px;
+    }
+
+    .history-standings-table th,
+    .history-standings-table td{
+        padding:8px 4px;
+        font-size:11px;
+    }
+
+    .history-team-cell img{
+        width:20px;
+        height:20px;
+    }
+
+    .history-team-cell a{
+        font-size:12px;
+    }
+
+}
+
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dateInput = document.getElementById("historyDateInput");
+    const dateDisplay = document.getElementById("historyDateDisplay");
+    const calendarBtn = document.getElementById("historyCalendarBtn");
+
+
+    function updateDateDisplay() {
+
+        if (!dateInput.value) {
+            dateDisplay.textContent = "يوم / شهر / سنة";
+            return;
+        }
+
+        const parts = dateInput.value.split("-");
+
+        if (parts.length === 3) {
+
+            const year = parts[0];
+            const month = parts[1];
+            const day = parts[2];
+
+            dateDisplay.textContent =
+                `${day}/${month}/${year}`;
+        }
+    }
+
+
+    /*
+     * الضغط على زر التقويم
+     */
+    calendarBtn.addEventListener("click", function () {
+
+        if (typeof dateInput.showPicker === "function") {
+
+            dateInput.showPicker();
+
+        } else {
+
+            dateInput.focus();
+            dateInput.click();
+
+        }
+    });
+
+
+    /*
+     * عندما يختار المستخدم تاريخًا من التقويم
+     */
+    dateInput.addEventListener("change", function () {
+
+        updateDateDisplay();
+
+    });
+
+
+    /*
+     * تحديث العرض عند فتح الصفحة
+     */
+    updateDateDisplay();
+
+});
+</script>
+
+{% endblock %}

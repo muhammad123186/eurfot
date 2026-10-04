@@ -5541,3 +5541,216 @@ def about_us_view(request):
 
 def contact_us_view(request):
     return render(request, 'pages/contact_us.html')
+
+
+
+
+
+
+from datetime import datetime as dt_class
+
+
+def league_history(request, code):
+
+    if code not in LEAGUES:
+        return render(request, "404.html", status=404)
+
+    league_info = LEAGUES[code]
+    league_id = league_info["id"]
+
+    selected_date = request.GET.get("date")
+
+    context = {
+        **get_common_context(),
+        "competition": league_info,
+        "code": code,
+        "selected_date": selected_date,
+        "matches_on_date": [],
+        "standings_at_date": [],
+    }
+
+    if not selected_date:
+        return render(request, "pages/league_history.html", context)
+
+    try:
+        parsed_date = dt_class.strptime(selected_date, "%Y-%m-%d")
+    except ValueError:
+        context["error"] = "صيغة التاريخ غير صحيحة"
+        return render(request, "pages/league_history.html", context)
+
+    # تحديد الموسم: إذا الشهر 7 (يوليو) أو بعده، الموسم يبدأ بنفس السنة
+    # وإلا الموسم بدأ بالسنة اللي قبلها (لأن الموسم الأوروبي يمتد لسنتين)
+    season = parsed_date.year if parsed_date.month >= 7 else parsed_date.year - 1
+
+    cache_key = f"league_history_v1_{code}_{selected_date}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        context.update(cached)
+        return render(request, "pages/league_history.html", context)
+
+    # ---- مباريات ذلك اليوم داخل هذا الدوري فقط ----
+
+    matches_on_date = []
+
+    try:
+        matches_response = requests.get(
+            "https://v3.football.api-sports.io/fixtures",
+            headers=headers,
+            params={
+                "league": league_id,
+                "season": season,
+                "date": selected_date,
+            },
+            timeout=15
+        )
+
+        matches_data = matches_response.json()
+
+        for f in matches_data.get("response", []):
+
+            matches_on_date.append({
+                "id": f["fixture"]["id"],
+                "home_name": clean_team_name(f["teams"]["home"]["name"]),
+                "away_name": clean_team_name(f["teams"]["away"]["name"]),
+                "home_logo": f["teams"]["home"]["logo"],
+                "away_logo": f["teams"]["away"]["logo"],
+                "home_goals": f["goals"]["home"],
+                "away_goals": f["goals"]["away"],
+                "status": f["fixture"]["status"]["short"],
+                "round": f["league"].get("round"),
+            })
+
+    except requests.RequestException:
+        matches_on_date = []
+
+    # ---- ترتيب الدوري في ذلك الموسم (نعرضه كسياق إضافي) ----
+
+        # ---- ترتيب الدوري في ذلك الموسم (نعرضه كسياق إضافي) ----
+
+        # ---- ترتيب الدوري محسوب فعليًا حتى ذلك التاريخ ----
+
+    standings_at_date = []
+
+    try:
+        season_fixtures_response = requests.get(
+            "https://v3.football.api-sports.io/fixtures",
+            headers=headers,
+            params={
+                "league": league_id,
+                "season": season,
+            },
+            timeout=15
+        )
+
+        season_fixtures_data = season_fixtures_response.json()
+        all_fixtures = season_fixtures_data.get("response", [])
+
+        teams_stats = {}
+
+        for f in all_fixtures:
+
+            fixture_status = f["fixture"]["status"]["short"]
+
+            if fixture_status != "FT":
+                continue
+
+            fixture_date_str = f["fixture"]["date"][:10]  # YYYY-MM-DD
+
+            try:
+                fixture_date = dt_class.strptime(fixture_date_str, "%Y-%m-%d")
+            except ValueError:
+                continue
+
+            if fixture_date > parsed_date:
+                continue  # المباراة لسه ما صارت بذلك التاريخ
+
+            home_id = f["teams"]["home"]["id"]
+            away_id = f["teams"]["away"]["id"]
+
+            home_goals = f["goals"]["home"] or 0
+            away_goals = f["goals"]["away"] or 0
+
+            for team_id, team_info in [
+                (home_id, f["teams"]["home"]),
+                (away_id, f["teams"]["away"]),
+            ]:
+                if team_id not in teams_stats:
+                    teams_stats[team_id] = {
+                        "team": {
+                            "id": team_id,
+                            "name": clean_team_name(team_info["name"]),
+                            "logo": team_info["logo"],
+                        },
+                        "played": 0,
+                        "win": 0,
+                        "draw": 0,
+                        "lose": 0,
+                        "goals_for": 0,
+                        "goals_against": 0,
+                        "points": 0,
+                    }
+
+            stats_home = teams_stats[home_id]
+            stats_away = teams_stats[away_id]
+
+            stats_home["played"] += 1
+            stats_away["played"] += 1
+
+            stats_home["goals_for"] += home_goals
+            stats_home["goals_against"] += away_goals
+
+            stats_away["goals_for"] += away_goals
+            stats_away["goals_against"] += home_goals
+
+            if home_goals > away_goals:
+                stats_home["win"] += 1
+                stats_home["points"] += 3
+                stats_away["lose"] += 1
+
+            elif home_goals < away_goals:
+                stats_away["win"] += 1
+                stats_away["points"] += 3
+                stats_home["lose"] += 1
+
+            else:
+                stats_home["draw"] += 1
+                stats_away["draw"] += 1
+                stats_home["points"] += 1
+                stats_away["points"] += 1
+
+        standings_list = list(teams_stats.values())
+
+        standings_list.sort(
+            key=lambda t: (
+                -t["points"],
+                -(t["goals_for"] - t["goals_against"]),
+                -t["goals_for"],
+            )
+        )
+
+        for index, row in enumerate(standings_list, start=1):
+            row["rank"] = index
+            row["all"] = {
+                "played": row["played"],
+                "win": row["win"],
+                "draw": row["draw"],
+                "lose": row["lose"],
+            }
+
+        standings_at_date = standings_list
+
+    except (KeyError, IndexError, TypeError, requests.RequestException):
+        standings_at_date = []
+
+    result = {
+        "matches_on_date": matches_on_date,
+        "standings_at_date": standings_at_date,
+        "season": season,
+    }
+
+    cache.set(cache_key, result, 60 * 60 * 24 * 30)  # شهر كامل، لأن التاريخ القديم ثابت ما يتغير
+
+    context.update(result)
+
+    return render(request, "pages/league_history.html", context)

@@ -305,6 +305,11 @@
         </a>
 
 
+        <a href="{% url 'league_history' code %}" class="tab-history">
+           History
+        </a>
+
+
 
     </div>
 
@@ -413,25 +418,6 @@
 <div class="xi">تشكيلتك المثالية</div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </div>
@@ -1183,13 +1169,6 @@ body {
 }
 
 
-
-
-
-
-
-
-
 .tab-matches {
 
     background:#090909;
@@ -1212,7 +1191,7 @@ body {
 
 .tab-standings {
 
-    background:#222;
+    background:black;
 
     color:white;
 
@@ -1230,7 +1209,7 @@ body {
 
 .tab-statistics {
 
-    background:#222;
+    background:black;
 
     color:white;
 
@@ -1248,7 +1227,7 @@ body {
 
 .tab-news {
 
-    background:#222;
+    background:black;
 
     color:white;
 
@@ -1263,8 +1242,20 @@ body {
 }
 
 
+.tab-history {
 
+   background:black;
 
+    color:white;
+
+    padding:10px 30px;
+
+    border-radius:7px;
+
+    text-decoration:none;
+
+    margin-top: 7%;
+}
 
 
 
@@ -1296,29 +1287,6 @@ body {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .matchweek a{
 
 
@@ -1333,19 +1301,7 @@ body {
 
 }
 
-
-
-
-
-
-
-
-
 .match-card{
-
-
-
-
 
     width:45%;
 
@@ -2420,6 +2376,15 @@ margin-left: -2%;
         margin-left: 1%;
         text-indent: -5px;
         width: 5%;
+    }
+
+    .tab-history{
+        font-size: 12px;
+        padding: 8px 16px;
+        margin-top: 15%;
+        margin-left: 1%;
+        text-indent: -12px;
+        width: 4%;
     }
 
 

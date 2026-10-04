@@ -215,6 +215,13 @@ urlpatterns = [
     path("stats-dashboard-x9k2/", views.visit_stats, name="visit_stats"),
 
 
+    path(
+    "competition/<str:code>/history/",
+    views.league_history,
+    name="league_history"
+    ),
+
+
 ]
 
 
