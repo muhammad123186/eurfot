@@ -102,11 +102,31 @@
 
         <div class="history-section">
 
-            <h2 class="history-section-title">
-                مباريات يوم {{ selected_date }}
-            </h2>
+    <div class="history-round-nav">
 
-            {% if matches_on_date %}
+        {% if prev_round_date %}
+            <a href="?date={{ prev_round_date }}" class="history-round-btn">
+                ◀ الجولة السابقة
+            </a>
+        {% else %}
+            <span class="history-round-btn disabled">◀ الجولة السابقة</span>
+        {% endif %}
+
+        <h2 class="history-section-title">
+            {% if current_round %}{{ current_round }} —{% endif %} مباريات يوم {{ selected_date }}
+        </h2>
+
+        {% if next_round_date %}
+            <a href="?date={{ next_round_date }}" class="history-round-btn">
+                الجولة التالية ▶
+            </a>
+        {% else %}
+            <span class="history-round-btn disabled">الجولة التالية ▶</span>
+        {% endif %}
+
+    </div>
+
+    {% if matches_on_date %}
 
                 <div class="history-matches-list">
 
@@ -592,13 +612,13 @@ body{
 .history-standings-table{
     width:100%;
     border-collapse:collapse;
-    background:#111;
+    background:BLACK;
     border-radius:16px;
     overflow:hidden;
 }
 
 .history-standings-table th{
-    background:#1a1a1a;
+    background:#black;
     color:#999;
     font-size:13px;
     padding:14px 10px;
@@ -644,6 +664,45 @@ body{
     font-weight:900;
 }
 
+
+.history-round-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+
+.history-round-nav .history-section-title{
+    margin:0;
+    flex:1;
+    text-align:center;
+    order:0;
+}
+
+.history-round-btn{
+    padding:10px 18px;
+    border-radius:10px;
+    background:#111;
+    border:1px solid #292929;
+    color:white;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+    transition:.2s;
+}
+
+.history-round-btn:hover{
+    background:#ff0000;
+    border-color:#ff0000;
+}
+
+.history-round-btn.disabled{
+    opacity:.3;
+    pointer-events:none;
+}
 
 /* ================= RESPONSIVE ================= */
 
@@ -737,6 +796,22 @@ body{
 
     .history-team-cell a{
         font-size:12px;
+    }
+
+    .history-round-nav{
+        flex-direction:column;
+    }
+
+    .history-round-nav .history-section-title{
+        order:-1;
+    }
+
+    .history-round-btn{
+        width:100%;
+        text-align:center;
+        box-sizing:border-box;
+        font-size:12px;
+        padding:9px;
     }
 
 }
