@@ -1167,6 +1167,11 @@ def get_matches(code, matchday):
 
     fixtures = data.get("response", [])
 
+    print("MATCHDAY:", matchday)
+    print("ROUND SENT:", params["round"])
+    print("FIXTURES COUNT:", len(fixtures))
+    print("API RESULTS:", data.get("results"))
+
     matches = []
 
     for f in fixtures:
@@ -3739,25 +3744,29 @@ def signup(request):
     )
 
 
+
+
 @login_required
 def submit_prediction(request, match_id):
 
     game = None
+    match_status = None
 
     try:
         response = requests.get(
             "https://v3.football.api-sports.io/fixtures",
             headers=headers,
             params={"id": match_id},
-            timeout=15
+            timeout=15,
         )
 
         data = response.json()
-
         fixtures = data.get("response", [])
 
         if fixtures:
             f = fixtures[0]
+
+            match_status = f["fixture"]["status"]["short"]
 
             game = {
                 "home_name": f["teams"]["home"]["name"],
@@ -3767,17 +3776,78 @@ def submit_prediction(request, match_id):
                 "competition_name": f["league"]["name"],
                 "competition_logo": f["league"]["logo"],
                 "date": f["fixture"]["date"],
+                "status": match_status,
             }
 
     except requests.RequestException:
         game = None
 
+    # الحالات التي تعني أن المباراة بدأت بالفعل
+    started_statuses = {
+        "1H",
+        "HT",
+        "2H",
+        "ET",
+        "BT",
+        "P",
+    }
+
+    # الحالات التي تعني أن المباراة انتهت أو أصبحت غير قابلة للتوقع
+    finished_statuses = {
+        "FT",
+        "AET",
+        "PEN",
+        "PST",
+        "CANC",
+        "ABD",
+        "AWD",
+        "WO",
+    }
+
+    # منع التوقع إذا كانت المباراة بدأت أو انتهت
+    locked_statuses = started_statuses | finished_statuses
+
+    if match_status in locked_statuses:
+
+        if match_status in started_statuses:
+            message = "لا يمكنك توقع نتيجة المباراة بعد أن بدأت."
+
+        else:
+            message = "لا يمكنك توقع نتيجة مباراة انتهت بالفعل."
+
+        return render(
+            request,
+            "pages/predict_error.html",
+            {
+                "message": message,
+            },
+            status=403,
+        )
+
     existing_prediction = Prediction.objects.filter(
         user=request.user,
-        match_id=match_id
+        match_id=match_id,
     ).first()
 
     if request.method == "POST":
+
+        # إعادة التحقق مرة أخرى قبل حفظ التوقع
+        # حتى لو بدأت المباراة أثناء وجود المستخدم في صفحة التوقع
+        if match_status in locked_statuses:
+
+            if match_status in started_statuses:
+                message = "لا يمكنك توقع نتيجة المباراة بعد أن بدأت."
+
+            else:
+                message = "لا يمكنك توقع نتيجة هذه المباراة بعد انتهائها"
+            return render(
+                request,
+                "pages/predict_error.html",
+                {
+                    "message": message,
+                },
+                status=403,
+            )
 
         home_score = request.POST.get("home_score")
         away_score = request.POST.get("away_score")
@@ -3796,7 +3866,7 @@ def submit_prediction(request, match_id):
                 "pages/predict_error.html",
                 {
                     "message": "الرجاء إدخال أرقام صحيحة وموجبة للنتيجة",
-                }
+                },
             )
 
         Prediction.objects.update_or_create(
@@ -3805,10 +3875,13 @@ def submit_prediction(request, match_id):
             defaults={
                 "predicted_home_score": home_score,
                 "predicted_away_score": away_score,
-            }
+            },
         )
 
-        return redirect("match_detail", id=match_id)
+        return redirect(
+            "match_detail",
+            id=match_id,
+        )
 
     return render(
         request,
@@ -3817,9 +3890,8 @@ def submit_prediction(request, match_id):
             "match_id": match_id,
             "game": game,
             "existing_prediction": existing_prediction,
-        }
+        },
     )
-
 
 
 def predictions_page(request, code, matchday=None):
@@ -4041,18 +4113,20 @@ def get_team_squad_info(team_id):
     return squad_info
 
 
+
+
+
 def get_matchday_players(code, matchday):
 
-    cache_key = f"matchday_players_{code}_{SEASON}_{matchday}"
+    cache_key = f"season_players_{code}_{SEASON}"
 
     cached = cache.get(cache_key)
 
     if cached is not None:
         return cached
 
-    competition, matches = get_matches(code, matchday)
-
     all_players = []
+    seen_player_ids = set()
 
     position_map = {
         "Goalkeeper": "حراسة",
@@ -4061,49 +4135,117 @@ def get_matchday_players(code, matchday):
         "Attacker": "هجوم",
     }
 
-    for match in matches:
+    fallback_map = {
+        "G": "حراسة",
+        "D": "دفاع",
+        "M": "وسط",
+        "F": "هجوم",
+    }
+
+    # نجلب جميع مباريات الموسم حتى الآن
+    response = requests.get(
+        "https://v3.football.api-sports.io/fixtures",
+        headers=headers,
+        params={
+            "league": LEAGUES[code]["id"],
+            "season": SEASON,
+            "status": "FT",
+        },
+        timeout=15
+    )
+
+    try:
+        data = response.json()
+    except ValueError:
+        return []
+
+    fixtures = data.get("response", [])
+
+    for fixture in fixtures:
+
+        fixture_id = fixture.get("fixture", {}).get("id")
+
+        if not fixture_id:
+            continue
 
         try:
-            response = requests.get(
+            lineup_response = requests.get(
                 "https://v3.football.api-sports.io/fixtures/lineups",
                 headers=headers,
-                params={"fixture": match["id"]},
+                params={
+                    "fixture": fixture_id
+                },
                 timeout=15
             )
 
-            data = response.json()
+            lineup_data = lineup_response.json()
 
-        except requests.RequestException:
+        except (requests.RequestException, ValueError):
             continue
 
-        for team_data in data.get("response", []):
+        for team_data in lineup_data.get("response", []):
 
-            team_name = clean_team_name(team_data["team"]["name"])
-            team_logo = team_data["team"]["logo"]
-            team_id = team_data["team"]["id"]
+            team = team_data.get("team", {})
+
+            team_name = clean_team_name(
+                team.get("name", "")
+            )
+
+            team_logo = team.get("logo")
+            team_id = team.get("id")
+
+            if not team_id:
+                continue
 
             squad_info = get_team_squad_info(team_id)
 
-            for item in team_data.get("startXI", []):
+            # الأساسيون + البدلاء
+            lineup_players = (
+                team_data.get("startXI", [])
+                + team_data.get("substitutes", [])
+            )
+
+            for item in lineup_players:
 
                 player = item.get("player", {})
+
                 player_id = player.get("id")
 
-                player_squad_info = squad_info.get(player_id, {})
+                if not player_id:
+                    continue
 
-                english_position = player_squad_info.get("position")
-                player_photo = player_squad_info.get("photo")
+                # لا نكرر اللاعب إذا شارك في أكثر من مباراة
+                if player_id in seen_player_ids:
+                    continue
+
+                player_squad_info = squad_info.get(
+                    player_id,
+                    {}
+                )
+
+                english_position = player_squad_info.get(
+                    "position"
+                )
+
+                player_photo = (
+                    player_squad_info.get("photo")
+                    or player.get("photo")
+                )
 
                 if english_position:
-                    position_group = position_map.get(english_position, "غير محدد")
+                    position_group = position_map.get(
+                        english_position,
+                        "غير محدد"
+                    )
                 else:
-                    fallback_map = {
-                        "G": "حراسة",
-                        "D": "دفاع",
-                        "M": "وسط",
-                        "F": "هجوم",
-                    }
-                    position_group = fallback_map.get(player.get("pos"), "غير محدد")
+                    position_group = fallback_map.get(
+                        player.get("pos"),
+                        "غير محدد"
+                    )
+
+                # لا نضيف لاعبًا إذا لم نستطع معرفة مركزه
+                if position_group == "غير محدد":
+                    continue
 
                 all_players.append({
                     "id": player_id,
@@ -4115,7 +4257,10 @@ def get_matchday_players(code, matchday):
                     "position_group": position_group,
                 })
 
-    cache.set(cache_key, all_players, CACHE_TTL)
+                seen_player_ids.add(player_id)
+
+    # نخزن قائمة لاعبي الموسم لفترة مناسبة
+    cache.set(cache_key, all_players, 43200)
 
     return all_players
 
@@ -4130,19 +4275,29 @@ def team_of_week_form(request, code, matchday):
             status=404
         )
 
-    eligible_players = get_matchday_players(code, matchday)
+    # التشكيلة أصبحت للموسم حتى الآن
+    # matchday موجود فقط للمحافظة على الروابط الحالية
+    season_team_key = 0
+
+    eligible_players = get_matchday_players(
+        code,
+        matchday
+    )
 
     existing_team = FanTeamOfWeek.objects.filter(
         user=request.user,
         league_code=code,
-        matchday=matchday
+        matchday=season_team_key
     ).first()
 
     existing_player_ids = set()
 
     if existing_team:
         existing_player_ids = set(
-            existing_team.players.values_list("player_id", flat=True)
+            existing_team.players.values_list(
+                "player_id",
+                flat=True
+            )
         )
 
     if request.method == "POST":
@@ -4155,28 +4310,66 @@ def team_of_week_form(request, code, matchday):
                 request,
                 "pages/predict_error.html",
                 {
-                    "message": "لازم تختار ١١ لاعب بالضبط، لا أكثر ولا أقل",
+                    "message": "يجب اختيار 11 لاعبًا بالضبط لتشكيلة الأسبوع",
                 }
             )
 
-        selected_ids = [int(pid) for pid in selected_ids]
+        try:
+            selected_ids = [
+                int(pid)
+                for pid in selected_ids
+            ]
+        except (ValueError, TypeError):
 
-        players_by_id = {p["id"]: p for p in eligible_players}
+            return render(
+                request,
+                "pages/predict_error.html",
+                {
+                    "message": "اختيار اللاعبين غير صالح",
+                }
+            )
+
+        # منع تكرار نفس اللاعب
+        if len(set(selected_ids)) != 11:
+
+            return render(
+                request,
+                "pages/predict_error.html",
+                {
+                    "message": "لا يمكن اختيار نفس اللاعب أكثر من مرة",
+                }
+            )
+
+        players_by_id = {
+            p["id"]: p
+            for p in eligible_players
+        }
+
+        # نتأكد أن كل اللاعبين المختارين شاركوا فعلًا هذا الموسم
+        if any(
+            pid not in players_by_id
+            for pid in selected_ids
+        ):
+
+            return render(
+                request,
+                "pages/predict_error.html",
+                {
+                    "message": "بعض اللاعبين المختارين غير متاحين ضمن لاعبي الموسم حتى الآن",
+                }
+            )
 
         fan_team, _ = FanTeamOfWeek.objects.get_or_create(
             user=request.user,
             league_code=code,
-            matchday=matchday
+            matchday=season_team_key
         )
 
         fan_team.players.all().delete()
 
         for pid in selected_ids:
 
-            player = players_by_id.get(pid)
-
-            if not player:
-                continue
+            player = players_by_id[pid]
 
             FanTeamPlayer.objects.create(
                 fan_team=fan_team,
@@ -4199,8 +4392,11 @@ def team_of_week_form(request, code, matchday):
         {
             "code": code,
             "matchday": matchday,
+            "season": SEASON,
             "eligible_players": eligible_players,
-            "existing_player_ids": list(existing_player_ids),
+            "existing_player_ids": list(
+            existing_player_ids
+            ),
         }
     )
 
@@ -4210,7 +4406,7 @@ def team_of_week_view(request, code, matchday, user_id):
     fan_team = get_object_or_404(
         FanTeamOfWeek,
         league_code=code,
-        matchday=matchday,
+        matchday=0,
         user=request.user
     )
 
@@ -4222,9 +4418,9 @@ def team_of_week_view(request, code, matchday, user_id):
             "players": fan_team.players.all(),
             "code": code,
             "matchday": matchday,
+            "season": SEASON,
         }
     )
-
 
 @login_required
 def profile(request):

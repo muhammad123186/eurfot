@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<body style="background: linear-gradient(90deg,rgb(255, 0, 0),black,black);">
+<body style="background: linear-gradient(90deg,black,black);">
 
 
-<div style="max-width:500px;margin:60px auto;padding:30px;background:#111;border-radius:15px;color:white;font-family:Arial;">
+<div style="max-width:500px;margin:60px auto;padding:30px;background:#222;border-radius:15px;color:white;font-family:Arial;">
 
     {% if game %}
 
@@ -12,8 +12,8 @@
 
         <div style="text-align:center;margin-bottom:20px;">
 
-            <img src="{{ game.competition_logo }}" width="30">
-            <p style="color:#888;font-size:13px;margin:5px 0;">{{ game.competition_name }}</p>
+            <img src="{{ game.competition_logo }}" width="40">
+            <p style="color:white;font-size:13px;margin:5px 0;">{{ game.competition_name }}</p>
 
         </div>
 
@@ -24,7 +24,7 @@
                 <span>{{ game.home_name }}</span>
             </div>
 
-            <b style="font-size:20px;color:#888;">VS</b>
+            <b style="font-size:20px;color:red;">VS</b>
 
             <div style="text-align:center;flex:1;">
                 <img src="{{ game.away_logo }}" width="55"><br>
@@ -43,7 +43,7 @@
 
     <!-- ================= نموذج التوقع ================= -->
 
-    <h2 style="text-align:center;">توقع نتيجة المباراة</h2>
+    <h2 style="text-align:center; font-size:19px;">توقع نتيجة المباراة</h2>
 
     <form method="POST">
 
