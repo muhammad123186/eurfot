@@ -1,104 +1,398 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import match, team, Player, NewsArticle
+from django.core.cache import cache
 
-# 1. خريطة الصفحات الثابتة والرئيسية
+from .models import NewsArticle
+from .views import (
+    LEAGUES,
+    get_matches,
+    get_current_matchday,
+    get_cup_rounds,
+    get_current_round_index,
+)
+
+
+# =========================================================
+# المنافسات
+# =========================================================
+
+MAJOR_LEAGUES = [
+    "PL",
+    "PD",
+    "SA",
+    "BL1",
+    "FL1",
+]
+
+DOMESTIC_CUPS = [
+    "FAC",
+    "ELCUP",
+    "CDR",
+    "SC",
+    "COP",
+    "DSC",
+    "DFB",
+    "DSUP",
+    "CDF",
+    "TDC",
+]
+
+EUROPEAN_CUPS = [
+    "UCL",
+    "UEL",
+    "UECL",
+]
+
+ALL_CUPS = DOMESTIC_CUPS + EUROPEAN_CUPS
+
+ALL_COMPETITIONS = MAJOR_LEAGUES + ALL_CUPS
+
+
+# =========================================================
+# الصفحات الثابتة
+# =========================================================
+
 class StaticViewSitemap(Sitemap):
+
     priority = 0.8
-    changefreq = 'daily'
+    changefreq = "daily"
 
     def items(self):
         return [
-            'matches',
-            'premier_league_home',
-            'standings',
-            'search',
-            'leaderboard',
-            'news_list',
-            'profile',
-            'signup',
-            'login',
-            'privacy_policy',
-            'about_us',
-            'contact_us',
+            "matches",
+            "premier_league_home",
+            "standings",
+            "leaderboard",
+            "news_list",
+            "privacy_policy",
+            "about_us",
+            "contact_us",
         ]
 
     def location(self, item):
         return reverse(item)
 
 
-# 2. خريطة الدوريات الأساسية
+# =========================================================
+# صفحات البطولات - الدوريات الخمسة
+# =========================================================
+
 class CompetitionSitemap(Sitemap):
+
     priority = 0.9
-    changefreq = 'daily'
+    changefreq = "daily"
 
     def items(self):
-        return ['PL', 'PD', 'SA', 'BL1', 'FL1']
+        return MAJOR_LEAGUES
 
     def location(self, item):
-        return reverse('competition', args=[item])
+        return reverse("competition", args=[item])
 
 
-# 3. خريطة الكؤوس والبطولات الأوروبية والمحلية الشاملة
+# =========================================================
+# صفحات الكؤوس والبطولات الأوروبية
+# =========================================================
+
 class CupCompetitionSitemap(Sitemap):
+
     priority = 0.9
-    changefreq = 'daily'
+    changefreq = "daily"
 
     def items(self):
-        # جميع أكواد الكؤوس والبطولات المستخرجة من القاموس لدعم الأرشفة الكاملة
-        return [
-            'FAC', 'ELCUP', 'CDR', 'SC', 'COP', 
-            'DSC', 'DFB', 'DSUP', 'CDF', 'TDC', 
-            'UCL', 'UEL', 'UECL'
-        ]
+        return ALL_CUPS
 
     def location(self, item):
-        return reverse('cup_competition', args=[item])
+        return reverse("cup_competition", args=[item])
 
 
-# 4. خريطة تفاصيل المباريات
-class MatchSitemap(Sitemap):
+# =========================================================
+# مباريات الدوريات الخمسة
+#
+# من الجولة 1
+# إلى الجولة الحالية + جولتين قادمتين
+# =========================================================
+
+class LeagueMatchSitemap(Sitemap):
+
     priority = 0.9
-    changefreq = 'hourly'
+    changefreq = "hourly"
 
     def items(self):
-        return match.objects.all()
 
-    def location(self, obj):
-        return reverse('match_detail', args=[obj.id])
+        match_ids = []
+
+        for code in MAJOR_LEAGUES:
+
+            cache_key = f"sitemap_matches_{code}"
+
+            cached_ids = cache.get(cache_key)
+
+            if cached_ids is not None:
+                match_ids.extend(cached_ids)
+                continue
+
+            code_ids = []
+
+            try:
+                current_matchday = get_current_matchday(code)
+            except Exception:
+                current_matchday = 1
+
+            # الجولة الحالية + جولتين قادمتين
+            end_matchday = current_matchday + 2
+
+            for matchday in range(1, end_matchday + 1):
+
+                if matchday < 1:
+                    continue
+
+                try:
+                    competition, matches = get_matches(
+                        code,
+                        matchday
+                    )
+
+                    code_ids.extend(
+                        match["id"]
+                        for match in matches
+                    )
+
+                except Exception:
+                    continue
+
+            # كاش لمدة 6 ساعات
+            cache.set(
+                cache_key,
+                code_ids,
+                60 * 60 * 6
+            )
+
+            match_ids.extend(code_ids)
+
+        return match_ids
+
+    def location(self, item):
+        return reverse(
+            "match_detail",
+            args=[item]
+        )
 
 
-# 5. خريطة الفرق والأندية
-class TeamSitemap(Sitemap):
-    priority = 0.7
-    changefreq = 'weekly'
+# =========================================================
+# مباريات الكؤوس والبطولات الأوروبية
+#
+# من أول دور موجود
+# إلى الدور الحالي + دورين قادمين
+# =========================================================
+
+class CupMatchSitemap(Sitemap):
+
+    priority = 0.9
+    changefreq = "hourly"
 
     def items(self):
-        return team.objects.all()
 
-    def location(self, obj):
-        return reverse('team_detail', args=[obj.id])
+        match_ids = []
+
+        for code in ALL_CUPS:
+
+            cache_key = f"sitemap_cup_matches_{code}"
+
+            cached_ids = cache.get(cache_key)
+
+            if cached_ids is not None:
+                match_ids.extend(cached_ids)
+                continue
+
+            code_ids = []
+
+            try:
+                rounds = get_cup_rounds(code)
+
+                if not rounds:
+                    continue
+
+                current_round_index = get_current_round_index(
+                    rounds
+                )
+
+                # نضمن عدم الخروج عن حدود القائمة
+                if current_round_index < 0:
+                    current_round_index = 0
+
+                # أول دور
+                # حتى الحالي + دورين قادمين
+                end_index = min(
+                    current_round_index + 3,
+                    len(rounds)
+                )
+
+                selected_rounds = rounds[:end_index]
+
+                for round_data in selected_rounds:
+
+                    matches = round_data.get(
+                        "matches",
+                        []
+                    )
+
+                    for match in matches:
+
+                        match_id = match.get("id")
+
+                        if match_id:
+                            code_ids.append(match_id)
+
+            except Exception:
+                continue
+
+            # منع التكرار
+            code_ids = list(dict.fromkeys(code_ids))
+
+            # كاش لمدة 6 ساعات
+            cache.set(
+                cache_key,
+                code_ids,
+                60 * 60 * 6
+            )
+
+            match_ids.extend(code_ids)
+
+        # منع أي تكرار بين المنافسات
+        return list(dict.fromkeys(match_ids))
+
+    def location(self, item):
+        return reverse(
+            "match_detail",
+            args=[item]
+        )
 
 
-# 6. خريطة اللاعبين
-class PlayerSitemap(Sitemap):
-    priority = 0.6
-    changefreq = 'weekly'
+# =========================================================
+# ترتيب الدوريات الخمسة
+# =========================================================
+
+class LeagueStandingsSitemap(Sitemap):
+
+    priority = 0.85
+    changefreq = "daily"
 
     def items(self):
-        return Player.objects.all()
+        return MAJOR_LEAGUES
 
-    def location(self, obj):
-        return reverse('player_detail', args=[obj.id])
+    def location(self, item):
+        return reverse(
+            "competition_standings",
+            args=[item]
+        )
 
 
-# 7. خريطة الأخبار والمقالات
-class NewsArticleSitemap(Sitemap):
+# =========================================================
+# ترتيب دوري أبطال أوروبا + الدوري الأوروبي
+# + دوري المؤتمر
+# =========================================================
+
+class EuropeanStandingsSitemap(Sitemap):
+
+    priority = 0.85
+    changefreq = "daily"
+
+    def items(self):
+        return EUROPEAN_CUPS
+
+    def location(self, item):
+        return reverse(
+            "competition_standings",
+            args=[item]
+        )
+
+
+# =========================================================
+# إحصائيات جميع المنافسات الـ 18
+# =========================================================
+
+class CompetitionStatisticsSitemap(Sitemap):
+
     priority = 0.8
-    changefreq = 'daily'
+    changefreq = "daily"
+
+    def items(self):
+        return ALL_COMPETITIONS
+
+    def location(self, item):
+        return reverse(
+            "league_statistics",
+            args=[item]
+        )
+
+
+# =========================================================
+# تاريخ الدوريات الخمسة
+# =========================================================
+
+class CompetitionHistorySitemap(Sitemap):
+
+    priority = 0.7
+    changefreq = "weekly"
+
+    def items(self):
+        return MAJOR_LEAGUES
+
+    def location(self, item):
+        return reverse(
+            "league_history",
+            args=[item]
+        )
+
+
+# =========================================================
+# أخبار الموقع
+# =========================================================
+
+class NewsArticleSitemap(Sitemap):
+
+    priority = 0.8
+    changefreq = "daily"
 
     def items(self):
         return NewsArticle.objects.all()
 
     def location(self, obj):
-        return reverse('news_detail', args=[obj.id])
+        return reverse(
+            "news_detail",
+            args=[obj.id]
+        )
+
+
+class TeamSitemap(Sitemap):
+
+    priority = 0.8
+    changefreq = "daily"
+
+    def items(self):
+
+        team_ids = []
+
+        for code in MAJOR_LEAGUES:
+
+            try:
+                table = get_standings(code)
+
+                for row in table:
+
+                    team = row.get("team", {})
+                    team_id = team.get("id")
+
+                    if team_id:
+                        team_ids.append(team_id)
+
+            except Exception:
+                continue
+
+        return list(dict.fromkeys(team_ids))
+
+    def location(self, item):
+        return reverse(
+            "team_detail",
+            args=[item]
+        )

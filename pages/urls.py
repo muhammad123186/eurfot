@@ -5,25 +5,33 @@ from django.views.generic import RedirectView
 from django.templatetags.static import static
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
-from .sitemaps import (
+from pages.sitemaps import (
     StaticViewSitemap,
     CompetitionSitemap,
     CupCompetitionSitemap,
-    MatchSitemap,
+    LeagueMatchSitemap,
+    CupMatchSitemap,
+    LeagueStandingsSitemap,
+    EuropeanStandingsSitemap,
+    CompetitionStatisticsSitemap,
+    CompetitionHistorySitemap,
     TeamSitemap,
-    PlayerSitemap,
-    NewsArticleSitemap
+    NewsArticleSitemap,
 )
 
 # تجميع خرائط الموقع في قاموس واحد
 sitemaps = {
-    'static': StaticViewSitemap,
-    'competitions': CompetitionSitemap,
-    'cups': CupCompetitionSitemap,
-    'matches': MatchSitemap,
-    'teams': TeamSitemap,
-    'players': PlayerSitemap,
-    'news': NewsArticleSitemap,
+    "static": StaticViewSitemap,
+    "competitions": CompetitionSitemap,
+    "cups": CupCompetitionSitemap,
+    "league_matches": LeagueMatchSitemap,
+    "cup_matches": CupMatchSitemap,
+    "league_standings": LeagueStandingsSitemap,
+    "european_standings": EuropeanStandingsSitemap,
+    "statistics": CompetitionStatisticsSitemap,
+    "history": CompetitionHistorySitemap,
+    "teams": TeamSitemap,
+    "news": NewsArticleSitemap,
 }
 
 
