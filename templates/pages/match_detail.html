@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}{% if game.status == "FT" %}{{ game.home_name }} {{ game.score.fullTime.home }}-{{ game.score.fullTime.away }} {{ game.away_name }} - Eurfot{% else %}{{ game.home_name }} vs {{ game.away_name }} - Eurfot{% endif %}{% endblock %}
+
 {% block content %}
 
 <body class="body">
