@@ -9,6 +9,7 @@ from .views import (
     get_current_matchday,
     get_cup_rounds,
     get_current_round_index,
+    get_standings
 )
 
 
