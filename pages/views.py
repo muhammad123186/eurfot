@@ -5616,24 +5616,22 @@ def cup_competition(request, code):
 
 
 
-from datetime import date as date_cls
+from datetime import date as date_cls, timedelta, datetime
 
 
-def get_today_matches():
+def get_today_matches(target_date=None):
 
-    today_str = date_cls.today().isoformat()
+    if target_date is None:
+        target_date = date_cls.today()
 
-    cache_key = f"today_matches_v4_{today_str}"
+    date_str = target_date.isoformat()
+
+    cache_key = f"matches_by_date_{date_str}"
 
     cached = cache.get(cache_key)
 
     if cached is not None:
         return cached
-
-    league_ids = {
-        info["id"]: code
-        for code, info in LEAGUES.items()
-    }
 
     grouped = []
 
@@ -5641,16 +5639,17 @@ def get_today_matches():
 
         league_id = info["id"]
 
-        url = "https://v3.football.api-sports.io/fixtures"
-
-        params = {
-            "league": league_id,
-            "season": SEASON,
-            "date": today_str,
-        }
-
         try:
-            response = requests.get(url, headers=headers, params=params, timeout=15)
+            response = requests.get(
+                "https://v3.football.api-sports.io/fixtures",
+                headers=headers,
+                params={
+                    "league": league_id,
+                    "season": SEASON,
+                    "date": date_str,
+                },
+                timeout=15
+            )
             data = response.json()
         except requests.RequestException:
             continue
@@ -5663,34 +5662,27 @@ def get_today_matches():
         matches = []
 
         for f in fixtures:
-
             matches.append({
-
                 "id": f["fixture"]["id"],
-
                 "homeTeam": {
                     "id": f["teams"]["home"]["id"],
                     "name": clean_team_name(f["teams"]["home"]["name"]),
                     "crest": f["teams"]["home"]["logo"],
                 },
-
                 "awayTeam": {
                     "id": f["teams"]["away"]["id"],
                     "name": clean_team_name(f["teams"]["away"]["name"]),
                     "crest": f["teams"]["away"]["logo"],
                 },
-
                 "score": {
                     "fullTime": {
                         "home": f["goals"]["home"],
                         "away": f["goals"]["away"],
                     }
                 },
-
                 "status": f["fixture"]["status"]["short"],
                 "elapsed": f["fixture"]["status"].get("elapsed"),
-                "utcDate": to_mecca_time(f["fixture"]["date"]),
-
+                "utcDate": f["fixture"]["date"],
             })
 
         grouped.append({
@@ -5707,22 +5699,25 @@ def get_today_matches():
 
 def today_matches_view(request):
 
-    grouped_matches = get_today_matches()
+    date_param = request.GET.get("date")
+
+    try:
+        target_date = datetime.strptime(date_param, "%Y-%m-%d").date() if date_param else date_cls.today()
+    except ValueError:
+        target_date = date_cls.today()
+
+    grouped_matches = get_today_matches(target_date)
 
     context = {
         **get_common_context(),
         "grouped_matches": grouped_matches,
-        "today": date_cls.today(),
+        "selected_date": target_date,
+        "prev_date": target_date - timedelta(days=1),
+        "next_date": target_date + timedelta(days=1),
+        "is_today": target_date == date_cls.today(),
     }
 
-    return render(
-        request,
-        "pages/today_matches.html",
-        context
-    )
-
-
-
+    return render(request, "pages/today_matches.html", context)
 
 
 

@@ -100,16 +100,52 @@
     <!-- ================= MAIN ================= -->
     <div class="main-content">
 
-        <h1 class="today-title">مباريات اليوم - Matchday</h1>
+        <div class="date-nav">
+
+    <a href="?date={{ prev_date|date:'Y-m-d' }}" class="date-btn">
+        ◀ الأمس
+    </a>
+
+    <h1 class="today-title">
+        {% if is_today %}مباريات اليوم{% else %}مباريات {{ selected_date|date:"d/m/Y" }}{% endif %}
+        - Matchday
+    </h1>
+
+    <a href="?date={{ next_date|date:'Y-m-d' }}" class="date-btn">
+        الغد ▶
+    </a>
+
+</div>
+
+{% if not is_today %}
+<div class="date-back">
+    <a href="{% url 'matches' %}" class="date-btn">العودة لمباريات اليوم</a>
+</div>
+{% endif %}
+
 
         {% for group in grouped_matches %}
 
         <div class="league-group">
 
             <div class="league-group-header">
-                <img src="{{ group.logo }}" alt="{{ group.name }}">
-                <span>{{ group.name }}</span>
-            </div>
+
+    <img src="{{ group.logo }}" alt="{{ group.name }}">
+    <span>{{ group.name }}</span>
+
+    <div class="league-group-actions">
+
+        <a href="{% url 'competition_standings' group.code %}" class="league-action-btn">
+            Standings
+        </a>
+
+        <a href="{% url 'league_statistics' group.code %}" class="league-action-btn">
+            Statistics
+        </a>
+
+    </div>
+
+</div>
 
             {% for game in group.matches %}
 
@@ -318,24 +354,84 @@ body{
     color:white;
 }
 
-.profile-btn,
+
 .signup-btn{
+
+    width:13%;
+
+    height:15%;
+
     display:flex;
-    align-items:center;
-    justify-content:center;
-    background:black;
+
+    background: black;
+
     white-space:nowrap;
-    color:white;
-    padding:10px 22px;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:bold;
-    font-size:14px;
-    margin-right:8px;
-    transition:.25s;
-    box-shadow:0 15px 30px rgba(0,0,0,.7), inset 2px 2px 10px black;
-    border:2px solid rgba(0, 140, 255, 0.8);
-    ;
+
+    color: white;
+
+    padding: 3% 5%;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-right: 3%;
+
+    transition: 0.25s;
+
+    box-shadow:0 15px 30px rgba(0,0,0,.7);
+
+    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
+
+    border:2px solid rgba(255, 0, 0, 0.774);
+
+    margin-left: -8%;
+
+}
+
+
+.profile-btn{
+
+width:20%;
+
+height:20%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:black;
+
+white-space:nowrap;
+
+color:white;
+
+padding:3% 3%;
+
+border-radius:8px;
+
+text-decoration:none;
+
+font-weight:bold;
+
+font-size:14px;
+
+transition:.25s;
+
+box-shadow:0 15px 30px rgba(0,0,0,.7),
+
+inset 2px 2px 10px black;
+
+border:2px solid rgba(0, 140, 255, 0.8);
+
+margin-left: -2%;
+
 }
 
 .signup-btn{
@@ -391,7 +487,7 @@ body{
 }
 
 .country-item{
-    background: #181818;
+    background: linear-gradient(90deg,#151515,#0a0a0a);
     border:1px solid rgba(255,255,255,.08);
     border-radius:8px;
     overflow:hidden;
@@ -457,7 +553,7 @@ body{
 }
 
 .league-link:hover{
-    background:#151515;
+    background:linear-gradient(90deg,#151515,#0a0a0a);
     color:white;
     border-left-color:#ff0000;
 }
@@ -500,8 +596,7 @@ body{
     align-items:center;
     gap:15px;
 
-    background: linear-gradient(90deg,#151515,#0a0a0a);
-    border-left:5px solid #ff0000;
+    background: linear-gradient(90deg,black,black,rgba(255, 0, 0, 0.534));
     border-radius:10px;
 
     padding:14px 20px;
@@ -672,17 +767,129 @@ body{
 }
 
 
+
+.date-nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+}
+
+.date-nav .today-title{
+    margin: 0;
+    font-size: 20px;
+    text-align: center;
+    flex: 1;
+}
+
+.date-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: .25s;
+}
+
+.date-btn:hover{
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+.date-back{
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+
+.league-group-actions{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.league-action-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: .25s;
+    height: 28px;
+}
+
+.league-action-btn:hover{
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+
+
 /* ================= MOBILE ================= */
 
  @media (max-width: 1000px) {
 
-    body{
-        zoom: 85%;
+    .body{
+        zoom:85%;
     }
 
     .sidebar{
         display:none;
     }
+
+    .search-box{
+        display:none;
+    }
+
+    /* ---------- HEADER ---------- */
+
+    .site-header{
+        width: 104%;
+        padding: 25px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        margin-left: -2%;
+    }
+
+
+    .logo-box h1{
+        font-size: 22px;
+    }
+
+    .header-right{
+        display: flex;
+        margin-left: 24%;
+    }
+
+    .signup-btn,
+    .profile-btn{
+        width: 50px;
+        height: auto;
+        padding: 8px 22px;
+        font-size: 12px;
+        margin-left: 10%;
+    }
+
 
     .page-layout{
         display:block;
@@ -699,20 +906,10 @@ body{
 
 
     .league-group-header{
-        background: #222;
         width: 100%;
+        margin-left: -1%;
     }
 
-    .search-box{
-        display:none !important;
-    }
-
-    .site-header{
-        width: 100%;
-        height: 2%;
-        margin-top: -1%;
-        margin-left: -3%;
-    }
 
     .mobile-search-btn{
         display:flex;
@@ -728,9 +925,7 @@ body{
         cursor:pointer;
     }
 
-    .header-right{
-        gap:12px;
-    }
+    
 
     .team span{
         font-size:12px;
@@ -745,14 +940,15 @@ body{
     .league-group{
         margin-left: -8%;
         width: 100%;
+
     }
 
 
     .match-card{
         margin-left: 6%;
     }
-   
 
+    
     .mobile-sidebar{
         position: fixed;
         bottom: 0;
@@ -848,7 +1044,6 @@ body{
 
     .team-name{
     width:100%;
-    font-size: 14px;
 }
 
 .away .team-name{
@@ -894,6 +1089,41 @@ body{
     font-size: 28px;
 
 }
+
+
+    .league-group-actions{
+        gap: 2px;
+    }
+
+    .league-action-btn{
+        padding: 5px 8px;
+        font-size: 13px;
+        background: black;
+        color: white;
+        border: 1px solid black;
+        height: 27px;
+        border-radius: 4px;
+        margin-left: 6%;
+    }
+
+    .date-nav{
+        gap: 6px;
+    }
+
+    .date-nav .today-title{
+        font-size: 15px;
+    }
+
+    .date-btn{
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .team img{
+        width: 35px;
+        height: 35px;
+    }
+
 }
 
 </style>
