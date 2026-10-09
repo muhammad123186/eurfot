@@ -18,7 +18,7 @@ BLOCKED_USER_AGENT_KEYWORDS = [
     "go-http-client",
     "shapbot",
     "amazonbot",
-    "bot.html"
+    "semrushbot",
 ]
 
 
