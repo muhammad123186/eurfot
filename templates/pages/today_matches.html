@@ -153,17 +153,13 @@
 
                  <div class="team home">
 
-
-
-                <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+                <div class="team-name">
 
                     <img src="{{ game.homeTeam.crest }}">
 
                     <span>{{ game.homeTeam.name }}</span>
 
-                </a>
-
-
+                </div>
 
             </div>
 
@@ -234,13 +230,13 @@
             <div class="team away">
 
 
-                <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();" class="team-name">
+                <div class="team-name">
 
                     <span>{{ game.awayTeam.name }}</span>
 
                     <img src="{{ game.awayTeam.crest }}">
 
-                </a>
+                </div>
 
 
 
