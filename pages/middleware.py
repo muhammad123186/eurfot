@@ -17,6 +17,8 @@ BLOCKED_USER_AGENT_KEYWORDS = [
     "masscan",
     "go-http-client",
     "shapbot",
+    "amazonbot",
+    "bot.html"
 ]
 
 
