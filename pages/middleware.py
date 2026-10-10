@@ -88,15 +88,18 @@ IGNORED_PATH_PREFIXES = [
 # ==========================================
 # استخراج عنوان IP
 # ==========================================
+
 def get_client_ip(request):
-    x_forwarded_for = request.META.get(
-        "HTTP_X_FORWARDED_FOR", ""
-    )
+    remote_addr = request.META.get("REMOTE_ADDR", "")
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
 
-    if x_forwarded_for:
-        return x_forwarded_for.split(",")[0].strip()
+    print("REMOTE_ADDR:", remote_addr)
+    print("X_FORWARDED_FOR:", forwarded_for)
 
-    return request.META.get("REMOTE_ADDR", "")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return remote_addr
 
 
 # ==========================================
