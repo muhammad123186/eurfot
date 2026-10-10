@@ -20,6 +20,7 @@ BLOCKED_USER_AGENT_KEYWORDS = [
     "amazonbot",
     "semrushbot",
     "backlinksextendedbot",
+    "applebot",
 ]
 
 
