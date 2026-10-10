@@ -28,7 +28,6 @@ BLOCKED_USER_AGENT_KEYWORDS = [
 ALLOWED_BOTS = [
     "googlebot",
     "bingbot",
-    "applebot",
     "duckduckbot",
     "yandexbot",
     "baiduspider",
