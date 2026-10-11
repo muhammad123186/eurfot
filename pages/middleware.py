@@ -138,20 +138,20 @@ class BlockScannersMiddleware:
 
         # حظر عناوين IP المحددة
         if client_ip in BLOCKED_IPS:
-    return HttpResponseForbidden("Forbidden")
+            return HttpResponseForbidden("Forbidden")
 
-try:
-    client_ip_obj = ipaddress.ip_address(client_ip)
+        try:
+            client_ip_obj = ipaddress.ip_address(client_ip)
 
-    if any(
-        client_ip_obj in network
-        for network in BLOCKED_IP_NETWORKS
-    ):
-        print("BLOCKED IP NETWORK:", client_ip)
-        return HttpResponseForbidden("Forbidden")
+            if any(
+                client_ip_obj in network
+                for network in BLOCKED_IP_NETWORKS
+            ):
+                print("BLOCKED IP NETWORK:", client_ip)
+                return HttpResponseForbidden("Forbidden")
 
-except ValueError:
-    pass
+        except ValueError:
+            pass
 
         # معلومات المتصفح
         user_agent = request.META.get(
