@@ -286,6 +286,8 @@ class PageVisit(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.CharField(max_length=500, blank=True)
 
+    visitor_id = models.UUIDField(null=True, blank=True, db_index=True)
+
     status_code = models.IntegerField(default=200)
 
     visited_at = models.DateTimeField(auto_now_add=True)
@@ -298,24 +300,3 @@ class PageVisit(models.Model):
 
     def __str__(self):
         return f"{self.path} - {self.visited_at}"
-
-
-
-
-
-
-
-
- 
-
-
-          
-
-       
-
-
-     
-        
-
-
-            

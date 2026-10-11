@@ -8,7 +8,6 @@ from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import Prediction
-import requests
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Q
 from django.shortcuts import render, get_object_or_404
@@ -31,30 +30,54 @@ from django.db.models import Count
 from datetime import timedelta
 from django.utils import timezone
 from .models import PageVisit
+from django.shortcuts import render
 
 
 @staff_member_required
 def visit_stats(request):
-
     now = timezone.now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    today_start = now.replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0
+    )
+
     last_24h = now - timedelta(hours=24)
     last_7days = now - timedelta(days=7)
     last_30days = now - timedelta(days=30)
 
-    total_today = PageVisit.objects.filter(visited_at__gte=today_start).count()
-    total_24h = PageVisit.objects.filter(visited_at__gte=last_24h).count()
-    total_7days = PageVisit.objects.filter(visited_at__gte=last_7days).count()
-    total_30days = PageVisit.objects.filter(visited_at__gte=last_30days).count()
+    # إجمالي مشاهدات الصفحات
+    total_today = PageVisit.objects.filter(
+        visited_at__gte=today_start
+    ).count()
 
+    total_24h = PageVisit.objects.filter(
+        visited_at__gte=last_24h
+    ).count()
+
+    total_7days = PageVisit.objects.filter(
+        visited_at__gte=last_7days
+    ).count()
+
+    total_30days = PageVisit.objects.filter(
+        visited_at__gte=last_30days
+    ).count()
+
+    # الزوار الفريدون اليوم باستخدام معرف الزائر
     unique_ips_today = (
         PageVisit.objects
-        .filter(visited_at__gte=today_start)
-        .values("ip_address")
+        .filter(
+            visited_at__gte=today_start,
+            visitor_id__isnull=False
+        )
+        .values("visitor_id")
         .distinct()
         .count()
     )
 
+    # أكثر 15 صفحة مشاهدة خلال آخر 7 أيام
     top_pages = (
         PageVisit.objects
         .filter(visited_at__gte=last_7days)
@@ -63,6 +86,7 @@ def visit_stats(request):
         .order_by("-count")[:15]
     )
 
+    # آخر 50 زيارة
     recent_visits = (
         PageVisit.objects
         .order_by("-visited_at")[:50]
@@ -78,7 +102,12 @@ def visit_stats(request):
         "recent_visits": recent_visits,
     }
 
-    return render(request, "pages/visit_stats.html", context)
+    return render(
+        request,
+        "pages/visit_stats.html",
+        context
+    )
+    
 from zoneinfo import ZoneInfo
 
 MECCA_TZ = ZoneInfo("Asia/Riyadh")
