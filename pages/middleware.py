@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.http import HttpResponseForbidden
+import ipaddress
 
 from .models import PageVisit
 
@@ -14,6 +15,12 @@ BLOCKED_IPS = [
     "47.79.207.180",
     "47.79.206.106",
     "47.79.201.140",
+]
+
+BLOCKED_IP_NETWORKS = [
+    ipaddress.ip_network("47.79.201.0/24"),
+    ipaddress.ip_network("47.79.206.0/24"),
+    ipaddress.ip_network("47.79.207.0/24"),
 ]
 
 
@@ -131,7 +138,20 @@ class BlockScannersMiddleware:
 
         # حظر عناوين IP المحددة
         if client_ip in BLOCKED_IPS:
-            return HttpResponseForbidden("Forbidden")
+    return HttpResponseForbidden("Forbidden")
+
+try:
+    client_ip_obj = ipaddress.ip_address(client_ip)
+
+    if any(
+        client_ip_obj in network
+        for network in BLOCKED_IP_NETWORKS
+    ):
+        print("BLOCKED IP NETWORK:", client_ip)
+        return HttpResponseForbidden("Forbidden")
+
+except ValueError:
+    pass
 
         # معلومات المتصفح
         user_agent = request.META.get(
