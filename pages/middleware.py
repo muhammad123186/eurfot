@@ -1,5 +1,8 @@
+import uuid
 
+from django.conf import settings
 from django.http import HttpResponseForbidden
+
 from .models import PageVisit
 
 
@@ -15,7 +18,7 @@ BLOCKED_IPS = [
 
 
 # ==========================================
-# كلمات مفتاحية لحظر البوتات والأدوات المزعجة
+# كلمات مفتاحية لحظر الأدوات الآلية
 # ==========================================
 BLOCKED_USER_AGENT_KEYWORDS = [
     "axios",
@@ -54,7 +57,7 @@ ALLOWED_BOTS = [
 
 
 # ==========================================
-# مسارات مشبوهة يتم حظرها
+# مسارات محظورة
 # ==========================================
 BLOCKED_PATHS = [
     "/wp-admin",
@@ -74,7 +77,7 @@ BLOCKED_PATHS = [
 
 
 # ==========================================
-# مسارات لا تسجل كزيارات صفحات
+# مسارات لا تسجل كمشاهدات صفحات
 # ==========================================
 IGNORED_PATH_PREFIXES = [
     "/static/",
@@ -88,13 +91,22 @@ IGNORED_PATH_PREFIXES = [
 
 
 # ==========================================
+# إعدادات Cookie
+# ==========================================
+VISITOR_COOKIE_NAME = "eurfot_visitor_id"
+VISITOR_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2
+
+
+# ==========================================
 # استخراج عنوان IP
 # ==========================================
-
 def get_client_ip(request):
     remote_addr = request.META.get("REMOTE_ADDR", "")
-    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    forwarded_for = request.META.get(
+        "HTTP_X_FORWARDED_FOR", ""
+    )
 
+    # أبقينا التسجيل التشخيصي الحالي
     print("REMOTE_ADDR:", remote_addr)
     print("X_FORWARDED_FOR:", forwarded_for)
 
@@ -149,10 +161,33 @@ class BlockScannersMiddleware:
         ):
             return HttpResponseForbidden("Forbidden")
 
-        # معالجة الطلب بشكل طبيعي
+        # ======================================
+        # قراءة معرّف المتصفح من Cookie
+        # ======================================
+        cookie_value = request.COOKIES.get(
+            VISITOR_COOKIE_NAME
+        )
+
+        set_visitor_cookie = False
+
+        try:
+            if cookie_value:
+                visitor_id = uuid.UUID(cookie_value)
+            else:
+                raise ValueError("Missing visitor cookie")
+
+        except (ValueError, TypeError, AttributeError):
+            visitor_id = uuid.uuid4()
+            set_visitor_cookie = True
+
+        # ======================================
+        # معالجة الطلب
+        # ======================================
         response = self.get_response(request)
 
-        # تسجيل الزيارات مع المحافظة على النظام الحالي
+        # ======================================
+        # تسجيل الزيارات
+        # ======================================
         try:
             if (
                 request.method == "GET"
@@ -164,15 +199,29 @@ class BlockScannersMiddleware:
                 PageVisit.objects.create(
                     path=request.path[:500],
                     method=request.method,
-                    ip_address=client_ip[:100],
+                    ip_address=client_ip or None,
                     user_agent=request.META.get(
                         "HTTP_USER_AGENT", ""
                     )[:500],
+                    visitor_id=visitor_id,
                     status_code=response.status_code,
                 )
 
-        except Exception:
-            # لا نوقف الموقع بسبب خطأ في تسجيل الإحصائيات
-            pass
+        except Exception as e:
+            print("PageVisit tracking error:", repr(e))
+
+        # ======================================
+        # إرسال Cookie إلى المتصفح
+        # ======================================
+        if set_visitor_cookie:
+            response.set_cookie(
+                key=VISITOR_COOKIE_NAME,
+                value=str(visitor_id),
+                max_age=VISITOR_COOKIE_MAX_AGE,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+            )
 
         return response
