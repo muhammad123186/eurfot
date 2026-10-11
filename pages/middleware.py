@@ -21,6 +21,7 @@ BLOCKED_IP_NETWORKS = [
     ipaddress.ip_network("47.79.201.0/24"),
     ipaddress.ip_network("47.79.206.0/24"),
     ipaddress.ip_network("47.79.207.0/24"),
+    ipaddress.ip_network("47.79.200.0/24"),
 ]
 
 
