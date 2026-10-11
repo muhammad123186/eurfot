@@ -1,28 +1,12 @@
+
 import uuid
+from datetime import timedelta
 
 from django.conf import settings
-from django.http import HttpResponseForbidden
-import ipaddress
+from django.http import HttpResponse, HttpResponseForbidden
+from django.utils import timezone
 
 from .models import PageVisit
-
-
-# ==========================================
-# عناوين IP المحظورة
-# ==========================================
-BLOCKED_IPS = [
-    "47.79.200.147",
-    "47.79.207.180",
-    "47.79.206.106",
-    "47.79.201.140",
-]
-
-BLOCKED_IP_NETWORKS = [
-    ipaddress.ip_network("47.79.201.0/24"),
-    ipaddress.ip_network("47.79.206.0/24"),
-    ipaddress.ip_network("47.79.207.0/24"),
-    ipaddress.ip_network("47.79.200.0/24"),
-]
 
 
 # ==========================================
@@ -106,6 +90,13 @@ VISITOR_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2
 
 
 # ==========================================
+# الحد الأقصى لصفحات اللاعبين
+# ==========================================
+PLAYER_REQUEST_LIMIT = 3
+PLAYER_REQUEST_WINDOW_SECONDS = 60
+
+
+# ==========================================
 # استخراج عنوان IP
 # ==========================================
 def get_client_ip(request):
@@ -114,7 +105,7 @@ def get_client_ip(request):
         "HTTP_X_FORWARDED_FOR", ""
     )
 
-    # أبقينا التسجيل التشخيصي الحالي
+    # إبقاء التسجيل التشخيصي الحالي
     print("REMOTE_ADDR:", remote_addr)
     print("X_FORWARDED_FOR:", forwarded_for)
 
@@ -134,48 +125,36 @@ class BlockScannersMiddleware:
 
     def __call__(self, request):
 
-        # عنوان IP للطلب
         client_ip = get_client_ip(request)
+        path = request.path.lower()
 
-        # حظر عناوين IP المحددة
-        if client_ip in BLOCKED_IPS:
-            return HttpResponseForbidden("Forbidden")
-
-        try:
-            client_ip_obj = ipaddress.ip_address(client_ip)
-
-            if any(
-                client_ip_obj in network
-                for network in BLOCKED_IP_NETWORKS
-            ):
-                print("BLOCKED IP NETWORK:", client_ip)
-                return HttpResponseForbidden("Forbidden")
-
-        except ValueError:
-            pass
-
+        # ======================================
         # معلومات المتصفح
+        # ======================================
         user_agent = request.META.get(
             "HTTP_USER_AGENT", ""
         ).lower()
 
         # السماح لبوتات محركات البحث المعروفة
+        # كما كان في الكود السابق
         if any(
             allowed in user_agent
             for allowed in ALLOWED_BOTS
         ):
             return self.get_response(request)
 
+        # ======================================
         # حظر الأدوات الآلية المزعجة
+        # ======================================
         if any(
             keyword in user_agent
             for keyword in BLOCKED_USER_AGENT_KEYWORDS
         ):
             return HttpResponseForbidden("Forbidden")
 
-        # فحص المسارات المشبوهة
-        path = request.path.lower()
-
+        # ======================================
+        # فحص المسارات المحظورة
+        # ======================================
         if any(
             blocked in path
             for blocked in BLOCKED_PATHS
@@ -183,7 +162,7 @@ class BlockScannersMiddleware:
             return HttpResponseForbidden("Forbidden")
 
         # ======================================
-        # قراءة معرّف المتصفح من Cookie
+        # قراءة معرّف الزائر من Cookie
         # ======================================
         cookie_value = request.COOKIES.get(
             VISITOR_COOKIE_NAME
@@ -200,6 +179,51 @@ class BlockScannersMiddleware:
         except (ValueError, TypeError, AttributeError):
             visitor_id = uuid.uuid4()
             set_visitor_cookie = True
+
+        # ======================================
+        # تحديد صفحات اللاعبين
+        # يشمل الصفحات العادية والمقارنة
+        # ======================================
+        is_player_page = (
+            request.method == "GET"
+            and path.startswith("/player/")
+        )
+
+        # ======================================
+        # تحديد 3 طلبات لكل زائر خلال 60 ثانية
+        # باستخدام قاعدة البيانات المشتركة
+        # ======================================
+        if is_player_page:
+            cutoff_time = timezone.now() - timedelta(
+                seconds=PLAYER_REQUEST_WINDOW_SECONDS
+            )
+
+            recent_player_requests = PageVisit.objects.filter(
+                visitor_id=visitor_id,
+                method="GET",
+                path__startswith="/player/",
+                visited_at__gte=cutoff_time,
+            ).count()
+
+            if recent_player_requests >= PLAYER_REQUEST_LIMIT:
+                response = HttpResponse(
+                    "تم تجاوز الحد المسموح. يرجى الانتظار قليلًا ثم المحاولة مجددًا.",
+                    status=429,
+                    content_type="text/plain; charset=utf-8",
+                )
+
+                if set_visitor_cookie:
+                    response.set_cookie(
+                        key=VISITOR_COOKIE_NAME,
+                        value=str(visitor_id),
+                        max_age=VISITOR_COOKIE_MAX_AGE,
+                        httponly=True,
+                        secure=not settings.DEBUG,
+                        samesite="Lax",
+                        path="/",
+                    )
+
+                return response
 
         # ======================================
         # معالجة الطلب
