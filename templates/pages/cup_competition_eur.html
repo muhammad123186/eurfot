@@ -181,11 +181,15 @@ Round {{ forloop.counter }}
         {% for game in round_data.matches %}
         <div class="match-card" onclick="window.location='{% url 'match_detail' game.id %}';">
             
-            <div class="team home">
-    
-        <img src="{{ game.homeTeam.crest }}">
+        <div class="team home">
+        <img
+            src="{{ game.homeTeam.crest }}"
+            alt="{{ game.homeTeam.name }}"
+            width="32"
+            height="32"
+        >
         <span class="team-home">{{ game.homeTeam.name }}</span>
-    
+
 </div>
 
             <div class="score-board">
@@ -211,11 +215,11 @@ Round {{ forloop.counter }}
             </div>
 
             <div class="team away">
-    
         <span class="team-home">{{ game.awayTeam.name }}</span>
-        <img src="{{ game.awayTeam.crest }}">
-        
-    
+        <img
+            src="{{ game.awayTeam.crest }}"
+            alt="{{ game.awayTeam.name }}"
+        >
 </div>
 
         </div>

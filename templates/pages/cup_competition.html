@@ -180,11 +180,15 @@ Round {{ forloop.counter }}
         <div class="match-card" onclick="window.location='{% url 'match_detail' game.id %}';">
             
             <div class="team home">
-                <a href="{% url 'team_detail' game.homeTeam.id %}" onclick="event.stopPropagation();">
-                    <img src="{{ game.homeTeam.crest }}">
-                    <span class="team-home">{{ game.homeTeam.name }}</span>
-                </a>
-            </div>
+        <img
+            src="{{ game.homeTeam.crest }}"
+            alt="{{ game.homeTeam.name }}"
+            width="32"
+            height="32"
+        >
+        <span class="team-home">{{ game.homeTeam.name }}</span>
+
+</div>
 
             <div class="score-board">
                 <div class="score-status">FULL TIME</div>
@@ -196,11 +200,13 @@ Round {{ forloop.counter }}
             </div>
 
             <div class="team away">
-                <a href="{% url 'team_detail' game.awayTeam.id %}" onclick="event.stopPropagation();">
-                    <span class="team-away">{{ game.awayTeam.name }}</span>
-                    <img src="{{ game.awayTeam.crest }}" class="away-img">
-                </a>
-            </div>
+
+        <span class="team-away">{{ game.awayTeam.name }}</span>
+        <img
+            src="{{ game.awayTeam.crest }}" class="away-img"
+            alt="{{ game.awayTeam.name }}"
+        >
+</div>
 
         </div>
         {% endfor %}

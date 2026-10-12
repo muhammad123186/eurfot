@@ -492,7 +492,12 @@
             <div class="team home">
 
     <div class="team-name">
-        <img src="{{ game.homeTeam.crest }}">
+        <img
+            src="{{ game.homeTeam.crest }}"
+            alt="{{ game.homeTeam.name }}"
+            width="32"
+            height="32"
+        >
         <span>{{ game.homeTeam.name }}</span>
     </div>
 
@@ -564,11 +569,16 @@
 
     <div class="team-name">
         <span>{{ game.awayTeam.name }}</span>
-        <img src="{{ game.awayTeam.crest }}">
+        <img
+            src="{{ game.awayTeam.crest }}"
+            alt="{{ game.awayTeam.name }}"
+            width="32"
+            height="32"
+        >
+        
     </div>
 
 </div>
-
 
 
         </div>

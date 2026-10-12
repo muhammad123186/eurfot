@@ -1,5 +1,8 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends "base.html" %}
+
+{% block title %}EURFOT | نتائج مباريات اليوم وترتيب البطولات{% endblock %}
+
+{% block meta_description %}تابع مباريات اليوم مباشرة عبر EURFOT، مع النتائج المباشرة ومواعيد المباريات وجداول ترتيب الدوريات وإحصائيات الفرق واللاعبين .{% endblock %}
 <body class="body">
 <div class="site-header">
 
@@ -151,18 +154,23 @@
 
             <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
 
-                 <div class="team home">
+                <div class="team home">
 
-                <div class="team-name">
+    <div class="team-name">
 
-                    <img src="{{ game.homeTeam.crest }}">
+        <img
+            src="{{ game.homeTeam.crest }}"
+            alt="{{ game.homeTeam.name }}"
+            width="32"
+            height="32"
+            loading="lazy"
+        >
 
-                    <span>{{ game.homeTeam.name }}</span>
+        <span>{{ game.homeTeam.name }}</span>
 
-                </div>
+    </div>
 
-            </div>
-
+</div>
 
 
                         <div class="score-board">
@@ -229,19 +237,23 @@
 
             <div class="team away">
 
+    <div class="team-name">
 
-                <div class="team-name">
+        <span>{{ game.awayTeam.name }}</span>
 
-                    <span>{{ game.awayTeam.name }}</span>
+        <img
+            src="{{ game.awayTeam.crest }}"
+            alt="{{ game.awayTeam.name }}"
+            width="32"
+            height="32"
+            loading="lazy"
+        >
 
-                    <img src="{{ game.awayTeam.crest }}">
+        
 
-                </div>
+    </div>
 
-
-
-            </div>
-
+</div>
 
 
         </div>
