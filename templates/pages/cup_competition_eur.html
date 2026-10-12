@@ -137,7 +137,7 @@
 
         <!-- COMPETITION LOGO & TITLE -->
         <div style="text-align:center; margin:20px;">
-    <img src="{{ competition.logo|default:'' }}" class="competition-logo">
+        <img src="{{ competition.logo|default:'' }}" class="logo-comp" alt="{{ competition.name }}">
     <h1 class="competition-title">
         {{ competition.name_ar|default:competition.name }}
         <span class="competition-title-en">{{ competition.name }}</span>
