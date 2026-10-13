@@ -44,7 +44,7 @@
 
         <div class="hero-left">
 
-            <img class="league-logo" src="{{ competition.logo }}">
+            <img class="league-logo" src="{{ competition.logo }}" alt="{{ competition.name }}">
 
             <div>
                 <h2>ترتيب الدوري الانجليزي</h2>
@@ -80,7 +80,7 @@
             <div class="quick-logos">
 
                 {% for row in live_table|slice:":1" %}
-                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
                 {% endfor %}
 
             </div>
@@ -102,7 +102,7 @@
             <div class="quick-logos">
 
                 {% for row in live_table|slice:":4" %}
-                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
                 {% endfor %}
 
             </div>
@@ -120,7 +120,7 @@
             <div class="quick-logos">
 
                 {% for row in live_table|slice:"-3:" %}
-                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}">
+                    <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
                 {% endfor %}
 
             </div>
@@ -161,7 +161,7 @@
             <td class="place">{{ forloop.counter }}</td>
                 <td>
                     <div class="club-card">
-                        <img src="{{ row.team.logo }}">
+                        <img src="{{ row.team.logo }}" alt="{{ row.team.name }}">
                         <a href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
                     </div>
                 </td>
@@ -735,8 +735,14 @@ body{
 
 @media (max-width:1000px){
 
+    html, body{
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    }
+
     .standings-page{
-       zoom:58%;
+        zoom:57%;
     }
 
     

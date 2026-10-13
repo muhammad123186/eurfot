@@ -14,7 +14,7 @@
         <div class="hero-left">
 
             <img class="league-logo"
-                 src="{{ competition.logo }}">
+                 src="{{ competition.logo }}" alt="{{ competition.name }}">
 
             <div>
 
@@ -61,13 +61,13 @@
             {% with p=top_scorers.0 %}
 
             <img class="quick-photo"
-                 src="{{ p.player_photo }}">
+                 src="{{ p.player_photo }}" alt="{{ p.player_name }}">
 
             <h3 class="quick-name">{{ p.player_name }}</h3>
 
             <div class="quick-team">
 
-                <img src="{{ p.team_logo }}">
+                <img src="{{ p.team_logo }}" alt="{{ p.team_name }}">
 
                 {{ p.team_name }}
 
@@ -98,13 +98,13 @@
             {% with p=top_assists.0 %}
 
             <img class="quick-photo"
-                 src="{{ p.player_photo }}">
+                 src="{{ p.player_photo }}" alt="{{ p.player_name }}">
 
             <h3 class="quick-name">{{ p.player_name }}</h3>
 
             <div class="quick-team">
 
-                <img src="{{ p.team_logo }}">
+                <img src="{{ p.team_logo }}" alt="{{ p.team_name }}">
 
                 {{ p.team_name }}
 
@@ -135,7 +135,7 @@
             {% with c=top_scoring_teams.0 %}
 
             <img class="club-big-logo"
-                 src="{{ c.team.logo }}">
+                 src="{{ c.team.logo }}" alt="{{ c.team.name }}">
 
             <h3 class="quick-name">
 
@@ -168,7 +168,7 @@
             {% with c=best_defense_teams.0 %}
 
             <img class="club-big-logo"
-                 src="{{ c.team.logo }}">
+                 src="{{ c.team.logo }}" alt="{{ c.team.name }}">
 
             <h3 class="quick-name">
 
@@ -285,7 +285,7 @@
 
                         <div class="player-card">
 
-                            <img src="{{ player.player_photo }}">
+                            <img src="{{ player.player_photo }}" alt="{{ player.player_name }}">
 
                             <div>
 
@@ -309,7 +309,7 @@
 
                         <div class="club-card">
 
-                            <img src="{{ player.team_logo }}">
+                            <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
                             {{ player.team_name }}
 
@@ -398,7 +398,7 @@
 
                 <div class="player-card">
 
-                    <img src="{{ player.player_photo }}">
+                    <img src="{{ player.player_photo }}" alt="{{ player.player_name }}">
 
                     <div>
 
@@ -416,7 +416,7 @@
 
                 <div class="club-card">
 
-                    <img src="{{ player.team_logo }}">
+                    <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
                     {{ player.team_name }}
 
@@ -495,7 +495,7 @@
 
                 <div class="player-card">
 
-                    <img src="{{ player.player_photo }}">
+                    <img src="{{ player.player_photo }}" alt="{{ player.player_name }}">
 
                     <div>
 
@@ -512,7 +512,7 @@
 
                 <div class="club-card">
 
-                    <img src="{{ player.team_logo }}">
+                    <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
                     {{ player.team_name }}
 
@@ -580,7 +580,7 @@
 
                 <div class="player-card">
 
-                    <img src="{{ player.player_photo }}">
+                    <img src="{{ player.player_photo }}" alt="{{ player.player_name }}">
 
                     <div>
 
@@ -598,7 +598,7 @@
 
                 <div class="club-card">
 
-                    <img src="{{ player.team_logo }}">
+                    <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
                     {{ player.team_name }}
 
@@ -665,7 +665,7 @@
 
                     <div class="club-card">
 
-                        <img src="{{ club.team.logo }}">
+                        <img src="{{ club.team.logo }}" alt="{{club.team.name}}">
 
                         {{ club.team.name }}
 
@@ -729,7 +729,7 @@
 
                     <div class="club-card">
 
-                        <img src="{{ club.team.logo }}">
+                        <img src="{{ club.team.logo }}" alt="{{ club.team.name }}">
 
                         {{ club.team.name }}
 
@@ -1433,6 +1433,13 @@
 
 
 @media (max-width: 1000px) {
+
+    html, body{
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    }
+
     body{
         zoom: 60%;
     }
