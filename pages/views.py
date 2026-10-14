@@ -2728,20 +2728,17 @@ def team_detail(request, id):
     )
 
     if squad is None:
-
         squad = []
 
         try:
-
             squad_response = requests.get(
-                "https://v3.football.api-sports.io/players/squads",
-                headers=headers,
-                params={
-                    "team": id
-                },
-                timeout=15
+            "https://v3.football.api-sports.io/players/squads",
+            headers=headers,
+            params={"team": id},
+            timeout=15
             )
-
+        
+        
             squad_json = squad_response.json()
 
             if squad_json.get("response"):
@@ -2792,6 +2789,30 @@ def team_detail(request, id):
             squad,
             CACHE_TTL
         )
+
+    
+# إزالة اللاعبين المكررين من السكواد
+        
+# إزالة السجلات المتطابقة فقط، مع الاحتفاظ باللاعبين المختلفين
+    unique_squad = []
+    seen_players = set()
+
+    for player in squad:
+        player_key = (
+            player.get("id"),
+            player.get("name"),
+            player.get("position"),
+            player.get("number"),
+        )
+
+        if player_key in seen_players:
+            continue
+
+        seen_players.add(player_key)
+        unique_squad.append(player)
+
+    squad = unique_squad
+
 
     goalkeepers = []
     defenders = []
