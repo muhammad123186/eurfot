@@ -1,4 +1,3 @@
-
 import uuid
 from datetime import timedelta
 
@@ -8,6 +7,18 @@ from django.utils import timezone
 
 from .models import PageVisit
 
+
+import ipaddress
+from django.core.cache import cache
+
+# نطاقات IP محظورة بالكامل (بوتات مثبتة)
+BLOCKED_IP_NETWORKS = [
+    ipaddress.ip_network("47.79.200.0/21"),
+]
+
+# حد طلبات الـ IP على صفحات اللاعبين
+IP_PLAYER_LIMIT = 3          # عدد الطلبات
+IP_PLAYER_WINDOW = 60         # خلال كم ثانية
 
 # ==========================================
 # كلمات مفتاحية لحظر الأدوات الآلية
@@ -100,19 +111,23 @@ PLAYER_REQUEST_WINDOW_SECONDS = 60
 # استخراج عنوان IP
 # ==========================================
 def get_client_ip(request):
-    remote_addr = request.META.get("REMOTE_ADDR", "")
-    forwarded_for = request.META.get(
-        "HTTP_X_FORWARDED_FOR", ""
-    )
+    cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
+    if cf_ip:
+        return cf_ip.strip()
 
-    # إبقاء التسجيل التشخيصي الحالي
-    print("REMOTE_ADDR:", remote_addr)
-    print("X_FORWARDED_FOR:", forwarded_for)
-
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()
 
-    return remote_addr
+    return request.META.get("REMOTE_ADDR", "")
+
+
+def is_ip_blocked(ip):
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return any(addr in net for net in BLOCKED_IP_NETWORKS)
 
 
 # ==========================================
@@ -127,6 +142,10 @@ class BlockScannersMiddleware:
 
         client_ip = get_client_ip(request)
         path = request.path.lower()
+
+                # ===== حظر النطاقات المعروفة =====
+        if is_ip_blocked(client_ip):
+            return HttpResponseForbidden("Forbidden")
 
         # ======================================
         # معلومات المتصفح
@@ -193,27 +212,21 @@ class BlockScannersMiddleware:
         # تحديد 3 طلبات لكل زائر خلال 60 ثانية
         # باستخدام قاعدة البيانات المشتركة
         # ======================================
-        if is_player_page:
-            cutoff_time = timezone.now() - timedelta(
-                seconds=PLAYER_REQUEST_WINDOW_SECONDS
-            )
+        if is_player_page and client_ip:
+            rate_key = f"player_rate_{client_ip}"
+            count = cache.get(rate_key, 0)
 
-            recent_player_requests = PageVisit.objects.filter(
-                visitor_id=visitor_id,
-                method="GET",
-                path__startswith="/player/",
-                visited_at__gte=cutoff_time,
-            ).count()
-
-            if recent_player_requests >= PLAYER_REQUEST_LIMIT:
-                response = HttpResponse(
-                    "تم تجاوز الحد المسموح. يرجى الانتظار قليلًا ثم المحاولة مجددًا.",
+            if count >= IP_PLAYER_LIMIT:
+                return HttpResponse(
+                    "تم تجاوز الحد المسموح. يرجى الانتظار قليلًا.",
                     status=429,
                     content_type="text/plain; charset=utf-8",
                 )
 
-                if set_visitor_cookie:
-                    response.set_cookie(
+            cache.set(rate_key, count + 1, IP_PLAYER_WINDOW)
+
+            if set_visitor_cookie:
+                response.set_cookie(
                         key=VISITOR_COOKIE_NAME,
                         value=str(visitor_id),
                         max_age=VISITOR_COOKIE_MAX_AGE,

@@ -5676,8 +5676,8 @@ def get_today_matches(target_date=None):
 
     date_str = target_date.isoformat()
 
-    cache_key = f"matches_by_date_{date_str}"
-
+    cache_key = f"matches_by_date_v2_{date_str}"
+    
     cached = cache.get(cache_key)
 
     if cached is not None:
@@ -5739,6 +5739,7 @@ def get_today_matches(target_date=None):
             "code": code,
             "name": info["name"],
             "logo": info["logo"],
+            "type": info.get("type", "league"),
             "matches": matches,
         })
 

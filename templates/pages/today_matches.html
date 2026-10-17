@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}EURFOT | نتائج مباريات اليوم وترتيب البطولات{% endblock %}
+{% block title %}Eurfot | نتائج مباريات اليوم وترتيب البطولات{% endblock %}
 
 {% block meta_description %}تابع مباريات اليوم مباشرة عبر EURFOT، مع النتائج المباشرة ومواعيد المباريات وجداول ترتيب الدوريات وإحصائيات الفرق واللاعبين .{% endblock %}
 
@@ -133,25 +133,19 @@
 
         <div class="league-group">
 
-            <div class="league-group-header">
+        <div class="league-group-header">
 
-    <img src="{{ group.logo }}" alt="{{ group.name }}">
-    <span>{{ group.name }}</span>
+    <a href="{% if group.type == 'cup' or group.type == 'supercup' %}{% url 'cup_competition' group.code %}{% else %}{% url 'competition' group.code %}{% endif %}" class="league-group-link">
+        <img src="{{ group.logo }}" alt="{{ group.name }}">
+        <span>{{ group.name }}</span>
+    </a>
 
     <div class="league-group-actions">
-
-        <a href="{% url 'competition_standings' group.code %}" class="league-action-btn">
-            Standings
-        </a>
-
-        <a href="{% url 'league_statistics' group.code %}" class="league-action-btn">
-            Statistics
-        </a>
-
+        <a href="{% url 'competition_standings' group.code %}" class="league-action-btn">Standings</a>
+        <a href="{% url 'league_statistics' group.code %}" class="league-action-btn">Statistics</a>
     </div>
 
-</div>
-
+    </div>
             {% for game in group.matches %}
 
             <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
@@ -364,85 +358,31 @@ body{
     color:white;
 }
 
+.site-header .signup-btn,
+.site-header .profile-btn{
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    padding: 8px 16px !important;
+    margin: 0 !important;
+    line-height: 1.2;
+    text-indent: 0 !important;
+    transform: none !important;
+    white-space: nowrap;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #ccc;
+}
 
-.signup-btn{
-
-    width:13%;
-
-    height:15%;
-
-    display:flex;
-
-    background: black;
-
-    white-space:nowrap;
-
-    color: white;
-
-    padding: 3% 5%;
-
-    border-radius: 8px;
-
-    text-decoration: none;
-
-    font-weight: bold;
-
-    font-size: 15px;
-
-    margin-right: 3%;
-
-    transition: 0.25s;
-
-    box-shadow:0 15px 30px rgba(0,0,0,.7);
-
-    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
-
-    border:2px solid rgba(255, 0, 0, 0.774);
-
-    margin-left: -8%;
-
+.header-right{
+    gap: 10px;
 }
 
 
-.profile-btn{
-
-width:20%;
-
-height:20%;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-background:black;
-
-white-space:nowrap;
-
-color:white;
-
-padding:3% 3%;
-
-border-radius:8px;
-
-text-decoration:none;
-
-font-weight:bold;
-
-font-size:14px;
-
-transition:.25s;
-
-box-shadow:0 15px 30px rgba(0,0,0,.7),
-
-inset 2px 2px 10px black;
-
-border:2px solid rgba(0, 140, 255, 0.8);
-
-margin-left: -10%;
-
-}
 
 .signup-btn{
     border:2px solid rgba(255, 0, 0, 0.774);
@@ -851,6 +791,19 @@ margin-left: -10%;
     border-color: #ff0000;
 }
 
+.league-group-link{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+
+.league-group-link:hover span{
+    color: red;
+}
+
 
 
 /* ================= MOBILE ================= */
@@ -865,7 +818,7 @@ margin-left: -10%;
     }
 
     .body{
-        zoom:85%;
+        zoom:82%;
     }
 
     .sidebar{
@@ -874,6 +827,12 @@ margin-left: -10%;
 
     .search-box{
         display:none;
+    }
+
+    .site-header .signup-btn,
+    .site-header .profile-btn{
+        padding: 5px 10px !important;
+        font-size: 12px !important;
     }
 
     /* ---------- HEADER ---------- */
@@ -896,15 +855,6 @@ margin-left: -10%;
     .header-right{
         display: flex;
         margin-left: 24%;
-    }
-
-    .signup-btn,
-    .profile-btn{
-        width: 50px;
-        height: auto;
-        padding: 8px 22px;
-        font-size: 12px;
-        margin-left: 10%;
     }
 
 
