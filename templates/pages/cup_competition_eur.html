@@ -12,9 +12,11 @@
 <!-- ================= HEADER ================= -->
 <div class="site-header">
 
-    <div class="logo-box">
-        <h1>EUR<span>FOT</span></h1>
-    </div>
+<div class="logo-box">
+    <h1>
+        <a href="{% url 'matches' %}" class="logo-link">EUR<span>FOT</span></a>
+    </h1>
+</div>
 
     <div class="header-right">
 
@@ -1047,7 +1049,14 @@ box-shadow:0 0 15px var(--cup-color);
 
 }
 
+.logo-link{
+    color: inherit;
+    text-decoration: none;
+}
 
+.logo-link:hover{
+    opacity: .85;
+}
 
 @media (max-width: 1000px) {
 

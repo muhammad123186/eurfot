@@ -4,11 +4,11 @@
 
 <div class="site-header">
 
-    <div class="logo-box">
-
-        <h1>EURO<span>FOR</span></h1>
-
-    </div>
+<div class="logo-box">
+    <h1>
+        <a href="{% url 'matches' %}" class="logo-link">EUR<span>FOT</span></a>
+    </h1>
+</div>
 
     <div class="header-right">
 
@@ -729,7 +729,14 @@ body{
 }
 
 
+.logo-link{
+    color: inherit;
+    text-decoration: none;
+}
 
+.logo-link:hover{
+    opacity: .85;
+}
 
 
 

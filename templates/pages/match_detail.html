@@ -15,39 +15,22 @@
 <div class="site-header">
 
     <div class="logo-box">
-
-        <h1>EUR<span>FOT</span></h1>
-
-    </div>
+    <h1>
+        <a href="{% url 'matches' %}" class="logo-link">EUR<span>FOT</span></a>
+    </h1>
+</div>
 
     <div class="header-right">
 
         {% if user.is_authenticated %}
 
-<a href="{% url 'profile' %}" 
-class="profile-btn"
-style="
-width:80px;
-height:20px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:black;
-white-space:nowrap;
-color:white;
-padding:10px 15px;
-border-radius:8px;
-text-decoration:none;
-font-weight:bold;
-font-size:14px;
-margin-right:8px;
-transition:.25s;
-box-shadow:0 15px 30px rgba(0,0,0,.7),
-inset 2px 2px 10px black;
-border:2px solid rgba(0, 140, 255, 0.8);
-">
+<a href="{% url 'profile' %}" class="profile-btn">
+
+
 
 👤 {{ user.username }}
+
+
 
 </a>
 
@@ -55,15 +38,16 @@ border:2px solid rgba(0, 140, 255, 0.8);
 {% else %}
 
         
-            <a href="{% url 'signup' %}" class="signup-btn" style="width:45px;height:20px; display:flex;background: black;white-space:nowrap;color: white;padding: 10px 22px;border-radius: 8px;text-decoration: none;font-weight: bold;font-size: 15px;margin-right: 8px;transition: 0.25s;box-shadow:0 15px 30px rgba(0,0,0,.7);box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;border:2px solid rgba(255, 0, 0, 0.774);">
-                Sign Up
-            </a>
+        <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>   
         {% endif %}
 
         <form action="{% url 'search' %}" method="GET" class="search-box">
             <input type="text" name="q" placeholder="Search">
             <button type="submit">🔍</button>
         </form>
+
+        <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
+
 
     </div>
 
@@ -1303,6 +1287,15 @@ function openPlayerStats(playerId, playerName) {
 </body>
 <style>
 
+.logo-link{
+    color: inherit;
+    text-decoration: none;
+}
+
+.logo-link:hover{
+    opacity: .85;
+}
+
 
 body{
     background: #080808;
@@ -2113,7 +2106,84 @@ body{
 
 
 
+.profile-btn{
 
+width:20%;
+
+height:20%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:black;
+
+white-space:nowrap;
+
+color:white;
+
+padding:3% 3%;
+
+border-radius:8px;
+
+text-decoration:none;
+
+font-weight:bold;
+
+font-size:14px;
+
+transition:.25s;
+
+box-shadow:0 15px 30px rgba(0,0,0,.7),
+
+inset 2px 2px 10px black;
+
+border:2px solid rgba(0, 140, 255, 0.8);
+
+margin-left: -2%;
+
+}
+
+
+.signup-btn{
+
+    width:13%;
+
+    height:15%;
+
+    display:flex;
+
+    background: black;
+
+    white-space:nowrap;
+
+    color: white;
+
+    padding: 3% 5%;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    margin-right: 3%;
+
+    transition: 0.25s;
+
+    box-shadow:0 15px 30px rgba(0,0,0,.7);
+
+    box-shadow:0 15px 30px rgba(255, 0, 0, 0.26),inset 2px 2px 10px black;
+
+    border:2px solid rgba(255, 0, 0, 0.774);
+
+    margin-left: -8%;
+
+}
 
 
 /* ===============================
@@ -3178,10 +3248,67 @@ body{
 @media (max-width: 1000px) {
 
     .site-header{
-        display: none;
+        width: 105%;
+        height: auto;
+        padding: 9px 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        margin-left: -4%;
     }
 
+    .logo-box{
+        width: auto;
+        margin: 0;
+    }
 
+    .logo-box h1{
+        font-size: 22px;
+    }
+
+    .header-right{
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .signup-btn,
+    .profile-btn{
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        font-size: 12px;
+        transform: none;
+        margin-left: 10%;
+    }
+
+    .search-box{
+        display: none !important;
+    }
+
+    .mobile-search-btn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+ 
+    html, body{
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 110%;
+    margin-left: 0.3%;
+    }
 
     .match-container{
         zoom: 55%;
@@ -3241,12 +3368,7 @@ body{
     }
 
 
-    
-
-
-    .site-header{
-        width: 107%;
-    }
+  
 
 
     #lineups{
@@ -3326,12 +3448,6 @@ body{
     font-size: 13px;
     
 }
-
-.player-name {
-    
-}
-
-
 
 
 .player-rating{
@@ -3611,13 +3727,6 @@ body{
 
 
 }
-
-
-
-
-
-
-
 
 
 
