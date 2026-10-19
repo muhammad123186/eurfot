@@ -2,6 +2,40 @@
 {% block title %}ترتيب الدوري الإنجليزي الممتاز 2026\2027 - EURFOT{% endblock %}
 {% block content %}
 
+
+{% url 'matches' as home_url %}
+{% url 'standings' as standings_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com{{ standings_url }}#webpage",
+  "url": "https://eurfot.com{{ standings_url }}",
+  "name": "ترتيب الدوري الإنجليزي الممتاز {{ season }} - EURFOT",
+  "description": "جدول ترتيب الدوري الإنجليزي الممتاز لموسم {{ season }}، يشمل النقاط والانتصارات والتعادلات والهزائم والأهداف.",
+  "inLanguage": "ar",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": "https://eurfot.com{{ home_url }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "ترتيب الدوري الإنجليزي الممتاز",
+        "item": "https://eurfot.com{{ standings_url }}"
+      }
+    ]
+  }
+}
+</script>
+
+
 <div class="site-header">
 
 <div class="logo-box">
