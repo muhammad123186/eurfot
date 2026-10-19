@@ -7,9 +7,33 @@
 {{ game.home_name }} vs {{ game.away_name }} | موعد المباراة والتفاصيل - EURFOT
 {% endif %}
 {% endblock %}
+
+{% block structured_data %}
+{% if game %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "@id": "https://eurfot.com/match/{{ game.id }}/#event",
+  "name": "{{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }}",
+  "sport": "Soccer",
+  "homeTeam": {
+    "@type": "SportsTeam",
+    "name": "{{ game.home_name|escapejs }}"
+  },
+  "awayTeam": {
+    "@type": "SportsTeam",
+    "name": "{{ game.away_name|escapejs }}"
+  }
+}
+</script>
+{% endif %}
+{% endblock structured_data %}
+
 {% block content %}
 
 <body class="body">
+
 
 
 <div class="site-header">
