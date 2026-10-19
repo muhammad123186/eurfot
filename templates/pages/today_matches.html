@@ -4,6 +4,37 @@
 
 {% block meta_description %}تابع مباريات اليوم مباشرة عبر EURFOT، مع النتائج المباشرة ومواعيد المباريات وجداول ترتيب الدوريات وإحصائيات الفرق واللاعبين .{% endblock %}
 
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://eurfot.com/#website",
+      "url": "https://eurfot.com/",
+      "name": "EURFOT",
+      "alternateName": "Eurfot",
+      "inLanguage": "ar",
+      "publisher": {
+        "@id": "https://eurfot.com/#organization"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://eurfot.com/#organization",
+      "name": "EURFOT",
+      "url": "https://eurfot.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://eurfot.com/static/image/android-chrome-512x512.png"
+      }
+    }
+  ]
+}
+</script>
+{% endblock structured_data %}
+
 {% block content %}
 <body class="body">
 <div class="site-header">
