@@ -2,7 +2,44 @@
 
 {% block title %}الدوري الفرنسي 2026 | المباريات والنتائج والترتيب - EURFOT{% endblock %}
 
+
 {% block content %}
+
+{% url 'competition' code as competition_url %}
+{% url 'matches' as home_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Thing",
+  "@id": "https://eurfot.com{{ competition_url }}#league",
+  "name": "الدوري الفرنسي",
+  "alternateName": "Ligue 1",
+  "url": "https://eurfot.com{{ competition_url }}"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "الرئيسية",
+      "item": "https://eurfot.com{{ home_url }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "الدوري الفرنسي",
+      "item": "https://eurfot.com{{ competition_url }}"
+    }
+  ]
+}
+</script>
+
 
 <body class="body">
 
