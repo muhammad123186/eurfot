@@ -1427,6 +1427,7 @@ def match_detail(request, id):
             "status": f["fixture"]["status"]["short"],
             "elapsed": f["fixture"]["status"].get("elapsed"),
             "utcDate": to_mecca_time(f["fixture"]["date"]),
+            "schema_start_date": f["fixture"]["date"],
             "competition": {
                 "name": f["league"]["name"],
                 "logo": f["league"]["logo"]
