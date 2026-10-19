@@ -1,6 +1,40 @@
 {% extends 'base.html' %}
 {% block title %}ترتيب الدوري الإسباني 2026\2027 - EURFOT{% endblock %}
 {% block content %}
+ 
+{% url 'matches' as home_url %}
+{% url 'competition_standings' code='PD' as standings_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com{{ standings_url }}#webpage",
+  "url": "https://eurfot.com{{ standings_url }}",
+  "name": "ترتيب الدوري الإسباني 2026/2027 - EURFOT",
+  "description": "جدول ترتيب الدوري الإسباني لموسم 2026/2027، يشمل النقاط والانتصارات والتعادلات والهزائم والأهداف.",
+  "inLanguage": "ar",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": "https://eurfot.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "ترتيب الدوري الإسباني",
+        "item": "https://eurfot.com{{ standings_url }}"
+      }
+    ]
+  }
+}
+</script>
+
+
 
 <div class="site-header">
 
