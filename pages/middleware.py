@@ -1,24 +1,31 @@
+
 import uuid
-from datetime import timedelta
+import ipaddress
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseForbidden
-from django.utils import timezone
 
 from .models import PageVisit
 
 
-import ipaddress
-from django.core.cache import cache
-
-# نطاقات IP محظورة بالكامل (بوتات مثبتة)
+# ==========================================
+# نطاقات IP محظورة بالكامل
+# ==========================================
 BLOCKED_IP_NETWORKS = [
     ipaddress.ip_network("47.79.200.0/21"),
 ]
 
-# حد طلبات الـ IP على صفحات اللاعبين
-IP_PLAYER_LIMIT = 3          # عدد الطلبات
-IP_PLAYER_WINDOW = 60         # خلال كم ثانية
+
+# ==========================================
+# حدود طلبات صفحات اللاعبين
+# ==========================================
+IP_PLAYER_LIMIT = 3
+IP_PLAYER_WINDOW = 60
+
+PLAYER_REQUEST_LIMIT = 3
+PLAYER_REQUEST_WINDOW_SECONDS = 60
+
 
 # ==========================================
 # كلمات مفتاحية لحظر الأدوات الآلية
@@ -45,10 +52,11 @@ BLOCKED_USER_AGENT_KEYWORDS = [
 
 
 # ==========================================
-# بوتات محركات البحث المسموح بها
+# بوتات محركات البحث وأدوات فحص Google
 # ==========================================
 ALLOWED_BOTS = [
     "googlebot",
+    "google-inspectiontool",
     "bingbot",
     "duckduckbot",
     "yandexbot",
@@ -80,7 +88,7 @@ BLOCKED_PATHS = [
 
 
 # ==========================================
-# مسارات لا تسجل كمشاهدات صفحات
+# مسارات لا تسجل كمشاهدات
 # ==========================================
 IGNORED_PATH_PREFIXES = [
     "/static/",
@@ -101,21 +109,18 @@ VISITOR_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2
 
 
 # ==========================================
-# الحد الأقصى لصفحات اللاعبين
-# ==========================================
-PLAYER_REQUEST_LIMIT = 3
-PLAYER_REQUEST_WINDOW_SECONDS = 60
-
-
-# ==========================================
 # استخراج عنوان IP
 # ==========================================
 def get_client_ip(request):
     cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
+
     if cf_ip:
         return cf_ip.strip()
 
-    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    forwarded_for = request.META.get(
+        "HTTP_X_FORWARDED_FOR", ""
+    )
+
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()
 
@@ -127,7 +132,11 @@ def is_ip_blocked(ip):
         addr = ipaddress.ip_address(ip)
     except ValueError:
         return False
-    return any(addr in net for net in BLOCKED_IP_NETWORKS)
+
+    return any(
+        addr in network
+        for network in BLOCKED_IP_NETWORKS
+    )
 
 
 # ==========================================
@@ -139,33 +148,32 @@ class BlockScannersMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
         client_ip = get_client_ip(request)
         path = request.path.lower()
 
-                # ===== حظر النطاقات المعروفة =====
-        if is_ip_blocked(client_ip):
-            return HttpResponseForbidden("Forbidden")
-
-        # ======================================
-        # معلومات المتصفح
-        # ======================================
         user_agent = request.META.get(
             "HTTP_USER_AGENT", ""
         ).lower()
 
-        # السماح لبوتات محركات البحث المعروفة
-        # كما كان في الكود السابق
-        if any(
-            allowed in user_agent
-            for allowed in ALLOWED_BOTS
-        ):
-            return self.get_response(request)
+        # ======================================
+        # حظر نطاقات IP المعروفة
+        # ======================================
+        if is_ip_blocked(client_ip):
+            return HttpResponseForbidden("Forbidden")
+
+        # ======================================
+        # تحديد البوتات المعروفة بالاسم
+        # تنبيه: User-Agent وحده لا يثبت هوية البوت
+        # ======================================
+        is_allowed_bot = any(
+            bot in user_agent
+            for bot in ALLOWED_BOTS
+        )
 
         # ======================================
         # حظر الأدوات الآلية المزعجة
         # ======================================
-        if any(
+        if not is_allowed_bot and any(
             keyword in user_agent
             for keyword in BLOCKED_USER_AGENT_KEYWORDS
         ):
@@ -181,7 +189,7 @@ class BlockScannersMiddleware:
             return HttpResponseForbidden("Forbidden")
 
         # ======================================
-        # قراءة معرّف الزائر من Cookie
+        # قراءة أو إنشاء معرّف الزائر
         # ======================================
         cookie_value = request.COOKIES.get(
             VISITOR_COOKIE_NAME
@@ -201,7 +209,6 @@ class BlockScannersMiddleware:
 
         # ======================================
         # تحديد صفحات اللاعبين
-        # يشمل الصفحات العادية والمقارنة
         # ======================================
         is_player_page = (
             request.method == "GET"
@@ -209,24 +216,26 @@ class BlockScannersMiddleware:
         )
 
         # ======================================
-        # تحديد 3 طلبات لكل زائر خلال 60 ثانية
-        # باستخدام قاعدة البيانات المشتركة
+        # تحديد معدل الطلبات حسب IP
+        # نستثني البوتات المدرجة في ALLOWED_BOTS
         # ======================================
-        if is_player_page and client_ip:
+        if (
+            is_player_page
+            and client_ip
+            and not is_allowed_bot
+        ):
             rate_key = f"player_rate_{client_ip}"
             count = cache.get(rate_key, 0)
 
             if count >= IP_PLAYER_LIMIT:
-                return HttpResponse(
+                response = HttpResponse(
                     "تم تجاوز الحد المسموح. يرجى الانتظار قليلًا.",
                     status=429,
                     content_type="text/plain; charset=utf-8",
                 )
 
-            cache.set(rate_key, count + 1, IP_PLAYER_WINDOW)
-
-            if set_visitor_cookie:
-                response.set_cookie(
+                if set_visitor_cookie:
+                    response.set_cookie(
                         key=VISITOR_COOKIE_NAME,
                         value=str(visitor_id),
                         max_age=VISITOR_COOKIE_MAX_AGE,
@@ -238,8 +247,14 @@ class BlockScannersMiddleware:
 
                 return response
 
+            cache.set(
+                rate_key,
+                count + 1,
+                IP_PLAYER_WINDOW,
+            )
+
         # ======================================
-        # معالجة الطلب
+        # معالجة الطلب أولًا
         # ======================================
         response = self.get_response(request)
 
@@ -269,7 +284,7 @@ class BlockScannersMiddleware:
             print("PageVisit tracking error:", repr(e))
 
         # ======================================
-        # إرسال Cookie إلى المتصفح
+        # إرسال Cookie بعد إنشاء الاستجابة
         # ======================================
         if set_visitor_cookie:
             response.set_cookie(
