@@ -4,6 +4,7 @@
 
 {% block structured_data %}
 {% if player %}
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -11,8 +12,30 @@
   "@id": "https://eurfot.com/player/{{ player.id }}/#person",
   "name": "{{ player.name|escapejs }}",
   "url": "https://eurfot.com/player/{{ player.id }}/"
+  {% if player.photo %}
+  ,"image": "{{ player.photo|escapejs }}"
+  {% endif %}
+  {% if player.nationality %}
+  ,"nationality": {
+    "@type": "Country",
+    "name": "{{ player.nationality|escapejs }}"
+  }
+  {% endif %}
+  {% if player.team %}
+  ,"affiliation": {
+    "@type": "SportsTeam",
+    "name": "{{ player.team.name|escapejs }}"
+    {% if player.team.logo %}
+    ,"image": "{{ player.team.logo|escapejs }}"
+    {% endif %}
+  }
+  {% endif %}
+  {% if player.position %}
+  ,"jobTitle": "{{ player.position|escapejs }}"
+  {% endif %}
 }
 </script>
+
 
 <script type="application/ld+json">
 {
