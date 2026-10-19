@@ -1,6 +1,46 @@
 {% extends 'base.html' %}
 {% block title %}{{ competition.name }} 2026 | إحصائيات اللاعبين والفرق - EURFOT{% endblock %}
 {% block content %}
+
+
+{% url 'matches' as home_url %}
+{% url 'league_statistics' code=code as statistics_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com{{ statistics_url }}#webpage",
+  "url": "https://eurfot.com{{ statistics_url }}",
+  "name": "{{ competition.name|escapejs }} {{ season|escapejs }} - إحصائيات اللاعبين والفرق | EURFOT",
+  "description": "إحصائيات {{ competition.name|escapejs }} لموسم {{ season|escapejs }}، تشمل هدافي البطولة وصانعي الأهداف والبطاقات الصفراء والحمراء وأقوى الفرق هجوميًا ودفاعيًا.",
+  "inLanguage": "ar",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "EURFOT",
+    "url": "https://eurfot.com/"
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": "https://eurfot.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "إحصائيات {{ competition.name|escapejs }}",
+        "item": "https://eurfot.com{{ statistics_url }}"
+      }
+    ]
+  }
+}
+</script>
+
+
 <body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black);">
 
 
