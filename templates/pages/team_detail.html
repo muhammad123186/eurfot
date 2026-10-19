@@ -2,7 +2,43 @@
 
 {% block title %}{{ team.name }} | المباريات والنتائج والإحصائيات - EURFOT{% endblock %}
 
+{% block structured_data %}
+{% if team %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsTeam",
+  "@id": "https://eurfot.com/team/{{ team.id }}/#team",
+  "name": "{{ team.name|escapejs }}",
+  "url": "https://eurfot.com/team/{{ team.id }}/"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "الرئيسية",
+      "item": "https://eurfot.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ team.name|escapejs }}",
+      "item": "https://eurfot.com/team/{{ team.id }}/"
+    }
+  ]
+}
+</script>
+{% endif %}
+{% endblock structured_data %}
+
 {% block content %}
+
 
 <body style="background: linear-gradient(-45deg, black, black,black,black,black,black);">
 
