@@ -2,6 +2,40 @@
 {% block title %}{{ competition.name }} 2026 | جدول الترتيب والإحصائيات - EURFOT{% endblock %}
 {% block content %}
 
+
+{% url 'matches' as home_url %}
+{% url 'competition_standings' code=code as standings_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com{{ standings_url }}#webpage",
+  "url": "https://eurfot.com{{ standings_url }}",
+  "name": "{{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }} 2026/2027 - جدول الترتيب والإحصائيات | EURFOT",
+  "description": "جدول ترتيب {{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }} لموسم 2026/2027، مع النقاط والانتصارات والتعادلات والهزائم والأهداف وترتيب الفرق.",
+  "inLanguage": "ar",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": "https://eurfot.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }}",
+        "item": "https://eurfot.com{{ standings_url }}"
+      }
+    ]
+  }
+}
+</script>
+
+
 <div class="site-header">
 
     <div class="logo-box">
