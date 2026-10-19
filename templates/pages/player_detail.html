@@ -1,6 +1,44 @@
 {% extends 'base.html' %}
+
 {% block title %}{{ player.name }} | الإحصائيات والتقييم والأداء - EURFOT{% endblock %}
+
+{% block structured_data %}
+{% if player %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://eurfot.com/player/{{ player.id }}/#person",
+  "name": "{{ player.name|escapejs }}",
+  "url": "https://eurfot.com/player/{{ player.id }}/"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "الرئيسية",
+      "item": "https://eurfot.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ player.name|escapejs }}",
+      "item": "https://eurfot.com/player/{{ player.id }}/"
+    }
+  ]
+}
+</script>
+{% endif %}
+{% endblock structured_data %}
+
 {% block content %}
+
 <div class="player-page">
 <div class="player-card-wrapper">
 
