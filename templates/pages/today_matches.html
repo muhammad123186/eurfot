@@ -166,140 +166,82 @@
 
         <div class="league-group">
 
-        <div class="league-group-header">
+            <div class="league-group-header">
 
-    <a href="{% if group.type == 'cup' or group.type == 'supercup' %}{% url 'cup_competition' group.code %}{% else %}{% url 'competition' group.code %}{% endif %}" class="league-group-link">
-        <img src="{{ group.logo }}" alt="{{ group.name }}">
-        <span>{{ group.name }}</span>
-    </a>
+                <a href="{% if group.type == 'cup' or group.type == 'supercup' %}{% url 'cup_competition' group.code %}{% else %}{% url 'competition' group.code %}{% endif %}" class="league-group-link">
+                    <img src="{{ group.logo }}" alt="{{ group.name }}">
+                    <span>{{ group.name }}</span>
+                </a>
 
-    <div class="league-group-actions">
-        <a href="{% url 'competition_standings' group.code %}" class="league-action-btn">Standings</a>
-        <a href="{% url 'league_statistics' group.code %}" class="league-action-btn">Statistics</a>
-    </div>
+                <div class="league-group-actions">
+                    <a href="{% url 'competition_standings' group.code %}" class="league-action-btn">Standings</a>
+                    <a href="{% url 'league_statistics' group.code %}" class="league-action-btn">Statistics</a>
+                </div>
 
-    </div>
+            </div>
+
             {% for game in group.matches %}
 
             <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
 
                 <div class="team home">
+                    <div class="team-name">
+                        <img src="{{ game.homeTeam.crest }}" alt="{{ game.homeTeam.name }}" width="32" height="32" loading="lazy">
+                        <span>{{ game.homeTeam.name }}</span>
+                    </div>
+                </div>
 
-    <div class="team-name">
+                <div class="score-board">
 
-        <img
-            src="{{ game.homeTeam.crest }}"
-            alt="{{ game.homeTeam.name }}"
-            width="32"
-            height="32"
-            loading="lazy"
-        >
+                    <div class="score-status">
+                        {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+                            {{ game.elapsed }}'
+                        {% elif game.status == "HT" %}
+                            Half Time
+                        {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+                            FULL TIME
+                        {% elif game.status == "NS" %}
+                            {{ game.utcDate|date:"H:i" }}
+                        {% elif game.status == "PST" %}
+                            Postponed
+                        {% elif game.status == "CANC" %}
+                            Cancelled
+                        {% else %}
+                            {{ game.status }}
+                        {% endif %}
+                    </div>
 
-        <span>{{ game.homeTeam.name }}</span>
+                    <div class="score-value">
+                        {% if game.status == "NS" %}
+                            <span class="vs">VS</span>
+                        {% else %}
+                            <span>{{ game.score.fullTime.home }}</span>
+                            <b>-</b>
+                            <span>{{ game.score.fullTime.away }}</span>
+                        {% endif %}
+                    </div>
 
-    </div>
+                </div>
 
-</div>
-
-
-                        <div class="score-board">
-
-
-
-                <div class="score-status">
-
-    {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
-
-        {{ game.elapsed }}'
-
-    {% elif game.status == "HT" %}
-
-        Half Time
-
-    {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
-
-        FULL TIME
-
-    {% elif game.status == "NS" %}
-
-        {{ game.utcDate|date:"H:i" }}
-
-    {% elif game.status == "PST" %}
-
-        Postponed
-
-    {% elif game.status == "CANC" %}
-
-        Cancelled
-
-    {% else %}
-
-        {{ game.status }}
-
-    {% endif %}
-
-</div>
-
-
-
-                <div class="score-value">
-
-    {% if game.status == "NS" %}
-
-        <span class="vs">VS</span>
-
-    {% else %}
-
-        <span>{{ game.score.fullTime.home }}</span>
-        <b>-</b>
-        <span>{{ game.score.fullTime.away }}</span>
-
-    {% endif %}
-
-</div>
-
-
+                <div class="team away">
+                    <div class="team-name">
+                        <span>{{ game.awayTeam.name }}</span>
+                        <img src="{{ game.awayTeam.crest }}" alt="{{ game.awayTeam.name }}" width="32" height="32" loading="lazy">
+                    </div>
+                </div>
 
             </div>
 
-
-
-            <div class="team away">
-
-    <div class="team-name">
-
-        <span>{{ game.awayTeam.name }}</span>
-
-        <img
-            src="{{ game.awayTeam.crest }}"
-            alt="{{ game.awayTeam.name }}"
-            width="32"
-            height="32"
-            loading="lazy"
-        >
-
-        
-
-    </div>
-
-</div>
-
+            {% endfor %}
 
         </div>
 
+        {% empty %}
 
-
-                {% empty %}
-
-        <h3 style="color:white;">
-            لا توجد مباريات
-        </h3>
+        <h3 style="color:white;">لا توجد مباريات</h3>
 
         {% endfor %}
-
-    </div>
-
-{% endfor %}
+            
 
 </div>
                 
@@ -845,8 +787,68 @@ body{
 .league-group-link:hover span{
     color: red;
 }
+/* شريط التاريخ بمستطيل بالنص */
+.date-nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 10px 14px;
+    background: black;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    box-sizing: border-box;
+}
 
+.date-nav .today-title{
+    margin: 0;
+    font-size: 16px;
+    text-align: center;
+    flex: 1;
+    color: white;
+}
 
+/* كل بطولة: بطاقة كبيرة */
+.league-group{
+    width: 100%;
+    max-width: 700px;
+    margin: 0 1px 10px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.league-group-header{
+    border-radius: 0;
+    margin-bottom: 0;
+    border-left: 4px solid white;
+    border-bottom: 1px solid black;
+}
+
+/* المباريات داخل البطاقة: بدون مربعات منفصلة */
+.league-group .match-card{
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+    border-bottom: 1px solid #1d1d1d;
+    box-sizing: border-box;
+}
+
+.league-group .match-card:last-child{
+    border-bottom: none;
+}
+
+.league-group .match-card:hover{
+    background: #181818;
+    transform: none;
+}
+
+    
 
 /* ================= MOBILE ================= */
 
@@ -862,6 +864,29 @@ body{
     .body{
         zoom:82%;
     }
+
+    .date-nav{
+        padding: 8px 10px;
+        gap: 6px;
+        
+    }
+
+    .date-nav .today-title{
+        font-size: 13px;
+    }
+
+    .league-group{
+        border-radius: 15px;
+        margin-left: -0.5%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .league-group .match-card{
+        margin-left: 6%;
+        width: 93%;
+    }
+
 
     .sidebar{
         display:none;
@@ -909,9 +934,7 @@ body{
         width:100%;
     }
 
-    .league-group{
-        width:100%;
-    }
+    
 
 
     .league-group-header{
@@ -946,17 +969,7 @@ body{
     }
 
 
-    .league-group{
-        margin-left: -8%;
-        width: 100%;
-
-    }
-
-
-    .match-card{
-        margin-left: 6%;
-    }
-
+    
     
     .mobile-sidebar{
         position: fixed;
@@ -1101,7 +1114,7 @@ body{
 
 
     .league-group-actions{
-        gap: 2px;
+        gap: 7px;
     }
 
     .league-action-btn{
@@ -1112,7 +1125,7 @@ body{
         border: 1px solid black;
         height: 27px;
         border-radius: 4px;
-        margin-left: 6%;
+        margin-left: -5%;
     }
 
     .date-nav{
