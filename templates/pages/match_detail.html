@@ -16,28 +16,32 @@
   "@context": "https://schema.org",
   "@type": "SportsEvent",
   "@id": "https://eurfot.com/match/{{ game.id }}/#event",
+  "url": "https://eurfot.com/match/{{ game.id }}/",
   "name": "{{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }}",
   "sport": "Soccer",
-  "startDate": "{{ game.schema_start_date }}",
-{% if game.status == "NS" %}
-  "eventStatus": "https://schema.org/EventScheduled",
-{% elif game.status == "PST" %}
-  "eventStatus": "https://schema.org/EventPostponed",
-{% elif game.status == "CANC" %}
-  "eventStatus": "https://schema.org/EventCancelled",
-{% endif %}
+  "startDate": "{{ game.schema_start_date|escapejs }}",
+  "description": "Match details for {{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }}, including match status, score, lineups, statistics and previous meetings.",
   "homeTeam": {
     "@type": "SportsTeam",
-    "name": "{{ game.home_name|escapejs }}"
+    "name": "{{ game.home_name|escapejs }}",
+    "url": "https://eurfot.com/team/{{ game.home_id }}/"
   },
   "awayTeam": {
     "@type": "SportsTeam",
-    "name": "{{ game.away_name|escapejs }}"
+    "name": "{{ game.away_name|escapejs }}",
+    "url": "https://eurfot.com/team/{{ game.away_id }}/"
   }{% if game.venue %},
   "location": {
     "@type": "Place",
     "name": "{{ game.venue|escapejs }}"
   }{% endif %}
+  {% if game.status == "PST" %},
+  "eventStatus": "https://schema.org/EventPostponed"
+  {% elif game.status == "CANC" %},
+  "eventStatus": "https://schema.org/EventCancelled"
+  {% elif game.status == "NS" or game.status == "TBD" %},
+  "eventStatus": "https://schema.org/EventScheduled"
+  {% endif %}
 }
 </script>
 
@@ -50,7 +54,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com/"
     },
     {
@@ -62,7 +66,6 @@
   ]
 }
 </script>
-
 {% endif %}
 {% endblock structured_data %}
 
