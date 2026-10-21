@@ -30,11 +30,19 @@
     "@type": "SportsTeam",
     "name": "{{ game.away_name|escapejs }}",
     "url": "https://eurfot.com/team/{{ game.away_id }}/"
-  }{% if game.venue %},
+  }
+  {% if game.venue %},
   "location": {
     "@type": "Place",
     "name": "{{ game.venue|escapejs }}"
-  }{% endif %}
+    {% if game.venue_city %},
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ game.venue_city|escapejs }}"
+    }
+    {% endif %}
+  }
+  {% endif %}
   {% if game.status == "PST" %},
   "eventStatus": "https://schema.org/EventPostponed"
   {% elif game.status == "CANC" %},

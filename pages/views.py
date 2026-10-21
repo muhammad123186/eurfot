@@ -1434,7 +1434,8 @@ def match_detail(request, id):
             },
             "season": f["league"]["season"],
             "round": f["league"].get("round"),
-            "venue": f["fixture"]["venue"].get("name"),
+            "venue": (f["fixture"].get("venue") or {}).get("name"),
+            "venue_city": (f["fixture"].get("venue") or {}).get("city"),
             "referee": f["fixture"].get("referee")
         }
 
