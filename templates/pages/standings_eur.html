@@ -200,7 +200,13 @@
                 <td>
                     <div class="club-card">
                         <img src="{{ row.team.logo }}" alt="{{ row.team.name }}">
-                        <a href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
+                        {% if row.team.id %}
+    <a href="{% url 'team_detail' row.team.id %}">
+        {{ row.team.name }}
+    </a>
+{% else %}
+    <span>{{ row.team.name }}</span>
+{% endif %}
                     </div>
                 </td>
 
