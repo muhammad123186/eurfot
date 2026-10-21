@@ -2396,7 +2396,7 @@ def match_detail(request, id):
 # ================= TEAM DETAIL (تفاصيل الفريق - 45 دقيقة) =================
 def team_detail(request, id):
 
-    cache_key = f"team_detail_v3_{id}"
+    cache_key = f"team_detail_v4_{id}"
 
     cached = cache.get(cache_key)
 
@@ -2493,6 +2493,43 @@ def team_detail(request, id):
     season_fixtures.sort(
         key=lambda f: f["fixture"]["date"]
     )
+
+    
+    # تحديد لون نتيجة كل مباراة بالنسبة للفريق الحالي
+    for match in season_fixtures:
+        status = match.get("fixture", {}).get("status", {}).get("short")
+
+        home_id = match.get("teams", {}).get("home", {}).get("id")
+        away_id = match.get("teams", {}).get("away", {}).get("id")
+
+        home_goals = match.get("goals", {}).get("home")
+        away_goals = match.get("goals", {}).get("away")
+
+        # اللون الافتراضي للمباريات القادمة والجارية
+        match["score_color"] = "score-live"
+
+        if (
+            status in ("FT", "AET", "PEN")
+            and home_goals is not None
+            and away_goals is not None
+        ):
+            if home_goals == away_goals:
+                match["score_color"] = "score-draw"
+
+            elif str(home_id) == str(id):
+                match["score_color"] = (
+                    "score-win"
+                    if home_goals > away_goals
+                    else "score-loss"
+                )
+
+            elif str(away_id) == str(id):
+                match["score_color"] = (
+                    "score-win"
+                    if away_goals > home_goals
+                    else "score-loss"
+                )
+
 
     from datetime import datetime, timezone
 

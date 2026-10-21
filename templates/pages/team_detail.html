@@ -344,66 +344,85 @@
 
 
     <!-- ================= SEASON FIXTURES ================= -->
-   <div id="season-fixtures" class="tab-content" style="display:none;">
 
-    <h2 class="fixtures-title">
-        
-    </h2>
+<!-- ================= SEASON FIXTURES ================= -->
+<div id="season-fixtures" class="tab-content" style="display:none;">
 
     <div class="fixtures-list">
 
-    {% for game in season_fixtures %}
+        {% for game in season_fixtures %}
 
         <div class="fixture-card">
 
-            <!-- League -->
+            <!-- League logo -->
             <div class="fixture-league">
-                <img src="{{ game.league.logo }}">
+                <img src="{{ game.league.logo }}"
+                     alt="{{ game.league.name }}"
+                     loading="lazy">
             </div>
 
-            <!-- Home -->
-            <div class="fixture-home">
-                <img src="{{ game.teams.home.logo }}" class="team-home img">
-                <span>{{ game.teams.home.name }}</span>
-            </div>
+            <!-- Home team: logo then name -->
+            
+<!-- Home: name first, logo beside the score -->
+<div class="fixture-home">
+    <span title="{{ game.teams.home.name }}">
+        {{ game.teams.home.name }}
+    </span>
+    <img src="{{ game.teams.home.logo }}"
+         alt="{{ game.teams.home.name }}"
+         loading="lazy">
+</div>
 
-            <!-- Score -->
-            <div class="fixture-score">
-                {% if game.status == "NS" %}
+<!-- Score in the center -->
 
-        <span>VS</span>
 
+<!-- Score -->
+
+<!-- Score -->
+
+<div class="fixture-score">
+    {% if game.fixture.status.short == "NS" or game.fixture.status.short == "TBD" %}
+        <span class="score-box score-upcoming">VS</span>
     {% else %}
-
+        <span class="score-box {{ game.score_color }}">
+            {% if game.goals.home != None and game.goals.away != None %}
                 {{ game.goals.home }} - {{ game.goals.away }}
+            {% else %}
+                VS
+            {% endif %}
+        </span>
+    {% endif %}
+</div>
 
-                {% endif %}
-            </div>
 
-            <!-- Away -->
-            <div class="fixture-away">
-                <span>{{ game.teams.away.name }}</span>
-                <img src="{{ game.teams.away.logo }}">
-            </div>
+<!-- Away: logo then name -->
+<div class="fixture-away">
+    <img src="{{ game.teams.away.logo }}"
+         alt="{{ game.teams.away.name }}"
+         loading="lazy">
+    <span title="{{ game.teams.away.name }}">
+        {{ game.teams.away.name }}
+    </span>
+</div>
 
-            <!-- Date -->
+            <!-- Match date -->
             <div class="fixture-date">
                 {{ game.fixture.date|slice:"0:10" }}
             </div>
 
         </div>
 
-    {% empty %}
+        {% empty %}
 
         <div class="empty-fixtures">
             No Fixtures Available
         </div>
 
-    {% endfor %}
+        {% endfor %}
 
     </div>
-
 </div>
+
     
     <!-- ================= STANDINGS ================= -->
 
@@ -1154,13 +1173,6 @@
 <!-- ================= CSS ================= -->
 
 <style>
-
-
-
-
-
-
-
 .team-tabs{
     display:flex;
     background:#1a1a1a;
@@ -1691,102 +1703,209 @@ res · CSS
     margin-bottom:30px;
 }
  
-.fixtures-list{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-}
- 
-.fixture-card{
-    display:grid;
-    grid-template-columns:60px 260px 110px 260px 120px;
-    align-items:center;
-    background:#141414;
-    border:1px solid #2b2b2b;
-    border-radius:16px;
-    color:white;
-    padding:10px 0;
-}
- 
-/* LEAGUE LOGO */
-.fixture-league{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
- 
-.fixture-league img{
-    width:34px;
-    height:34px;
-    object-fit:contain;
-}
- 
-/* HOME = الشعار ثم الاسم */
-/* HOME = الشعار ثم الاسم */
-.fixture-home{
-    display:grid;
-    grid-template-columns:32px 1fr;
-    align-items:center;
-    gap:10px;
-    font-weight:700;
-    min-width:0;
+
+/* ===============================
+   FOTMOB-STYLE FIXTURES
+================================ */
+
+.fixtures-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.fixture-home img{
-    width:32px;
-    height:32px;
-    object-fit:contain;
-    flex-shrink:0;
-    justify-self:start;
+.fixture-card {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1.3fr) 88px minmax(0, 1.3fr) 100px;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 12px;
+    background: #141414;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    color: white;
+    transition: background .2s ease, border-color .2s ease;
 }
 
-.fixture-home span{
-    text-align:left;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    min-width:0;
+.fixture-card:hover {
+    background: #1c1c1c;
+    border-color: #444;
+}
+
+/* League logo */
+.fixture-league {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fixture-league img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* Both team columns have the same structure:
+   logo first, name second */
+
+
+/* Home: name then logo, logo faces the score */
+
+/* Home team */
+.fixture-home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 30px;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.fixture-home span {
+    text-align: right;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.fixture-home img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* Away team */
+.fixture-away {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.fixture-away img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.fixture-away span {
+    text-align: left;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 
-/* AWAY = الاسم ثم الشعار */
-.fixture-away{
-    display:grid;
-    grid-template-columns:1fr 32px;
-    align-items:center;
-    gap:10px;
-    font-weight:700;
-    min-width:0;
+/* Result colors */
+.fixture-card .score-win {
+    background-color: #16a34a !important;
+    color: #fff !important;
 }
 
-.fixture-away img{
-    width:32px;
-    height:32px;
-    object-fit:contain;
-    flex-shrink:0;
-    justify-self:end;
+.fixture-card .score-loss {
+    background-color: #dc2626 !important;
+    color: #fff !important;
 }
 
-.fixture-away span{
-    text-align:right;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    min-width:0;
+.fixture-card .score-draw,
+.fixture-card .score-live,
+.fixture-card .score-upcoming {
+    background-color: #222 !important;
+    color: #fff !important;
 }
 
- 
-/* DATE */
-.fixture-date{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    text-align:right;
-    color:#aaa;
-    font-size:14px;
-    padding-right:14px;
+.fixture-card .score-box {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 62px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    box-sizing: border-box;
 }
- 
+
+
+/* Responsive */
+
+
+
+.score-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    min-height: 34px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+
+
+.score-live {
+    background: #343434;
+    border: 1px solid #777;
+}
+
+.fixture-vs {
+    color: #aaa;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* Date */
+.fixture-date {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: #aaa;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Mobile */
+@media (max-width: 1000px) {
+    .fixture-card {
+        grid-template-columns: 24px minmax(0, 1fr) 68px minmax(0, 1fr);
+        gap: 7px;
+        padding: 11px 8px;
+    }
+
+    .fixture-league img {
+        width: 21px;
+        height: 21px;
+    }
+
+
+    .score-box {
+        min-width: 62px;
+        min-height: 30px;
+        padding: 3px;
+        font-size: 13px;
+    }
+
+    .fixture-vs {
+        font-size: 12px;
+    }
+
+    .fixture-date {
+        display: none;
+    }
+}
+
 .empty-fixtures{
     background:#111;
     color:white;
@@ -2535,13 +2654,11 @@ res · CSS
     .team-stats-grid{
         display:grid;
 
-        grid-template-columns:repeat(4, 120px);
+        grid-template-columns:repeat(4,100px);
 
         row-gap: 2px;
 
         column-gap: 55px;
-
-        zoom: 100%;
     }
 
 
@@ -2557,8 +2674,8 @@ res · CSS
 
     .trophies-grid{
         display:grid;
-        grid-template-columns:repeat(2, 210px);
-        zoom: 120%;
+        grid-template-columns:repeat(2, 200px);
+        zoom: 110%;
 
     }
 
@@ -2611,10 +2728,88 @@ res · CSS
     margin-left: 1%;
 }
     
-
+.fixture-home span{
+    font-size: 12px;
+}
     
 
 }
+
+
+/* Fix: show full team names in fixture cards */
+.fixture-card .fixture-home,
+.fixture-card .fixture-away {
+    min-width: 0 !important;
+}
+
+.fixture-card .fixture-home span,
+.fixture-card .fixture-away span {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: initial !important;
+}
+
+
+.fixture-card .fixture-home span,
+.fixture-card .fixture-away span {
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+    line-height: 1.4;
+}
+
+
+
+.fixture-card .fixture-away {
+    column-gap: 1px !important;
+}
+
+.fixture-card .fixture-away span {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+
+.fixture-card .fixture-away {
+    grid-template-columns: 35px minmax(0, 1fr) !important;
+    column-gap: 0 !important;
+}
+
+.fixture-card .fixture-away span {
+    padding: 0 !important;
+    margin: 0 !important;
+    justify-self: start !important;
+    text-align: left !important;
+}
+
+
+.fixture-card {
+    position: relative;
+}
+
+.fixture-card .fixture-home,
+.fixture-card .fixture-score,
+.fixture-card .fixture-away {
+    transform: translateX(20px);
+}
+
+
+.fixture-card .fixture-home span,
+.fixture-card .fixture-away span {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+}
+
 
 
 </style>
