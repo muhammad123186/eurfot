@@ -5715,72 +5715,85 @@ def get_today_matches(target_date=None):
 
     date_str = target_date.isoformat()
 
-    cache_key = f"matches_by_date_v2_{date_str}"
-    
+    cache_key = f"matches_by_date_v3_{date_str}"
+
     cached = cache.get(cache_key)
 
     if cached is not None:
         return cached
 
-    grouped = []
+    # خريطة: league_id -> (code, info)
+    league_lookup = {
+        info["id"]: (code, info)
+        for code, info in LEAGUES.items()
+    }
 
-    for code, info in LEAGUES.items():
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/fixtures",
+            headers=headers,
+            params={"date": date_str},
+            timeout=15
+        )
+        data = response.json()
+    except requests.RequestException:
+        return []
 
-        league_id = info["id"]
+    fixtures = data.get("response", [])
 
-        try:
-            response = requests.get(
-                "https://v3.football.api-sports.io/fixtures",
-                headers=headers,
-                params={
-                    "league": league_id,
-                    "season": SEASON,
-                    "date": date_str,
-                },
-                timeout=15
-            )
-            data = response.json()
-        except requests.RequestException:
+    if not isinstance(fixtures, list):
+        return []
+
+    # تجميع المباريات حسب البطولة (فقط البطولات اللي عندنا)
+    grouped_map = {}
+
+    for f in fixtures:
+
+        league_id = f["league"]["id"]
+
+        if league_id not in league_lookup:
             continue
 
-        fixtures = data.get("response", [])
+        code, info = league_lookup[league_id]
 
-        if not isinstance(fixtures, list) or not fixtures:
-            continue
+        if code not in grouped_map:
+            grouped_map[code] = {
+                "code": code,
+                "name": info["name"],
+                "logo": info["logo"],
+                "type": info.get("type", "league"),
+                "matches": [],
+            }
 
-        matches = []
-
-        for f in fixtures:
-            matches.append({
-                "id": f["fixture"]["id"],
-                "homeTeam": {
-                    "id": f["teams"]["home"]["id"],
-                    "name": clean_team_name(f["teams"]["home"]["name"]),
-                    "crest": f["teams"]["home"]["logo"],
-                },
-                "awayTeam": {
-                    "id": f["teams"]["away"]["id"],
-                    "name": clean_team_name(f["teams"]["away"]["name"]),
-                    "crest": f["teams"]["away"]["logo"],
-                },
-                "score": {
-                    "fullTime": {
-                        "home": f["goals"]["home"],
-                        "away": f["goals"]["away"],
-                    }
-                },
-                "status": f["fixture"]["status"]["short"],
-                "elapsed": f["fixture"]["status"].get("elapsed"),
-                "utcDate": f["fixture"]["date"],
-            })
-
-        grouped.append({
-            "code": code,
-            "name": info["name"],
-            "logo": info["logo"],
-            "type": info.get("type", "league"),
-            "matches": matches,
+        grouped_map[code]["matches"].append({
+            "id": f["fixture"]["id"],
+            "homeTeam": {
+                "id": f["teams"]["home"]["id"],
+                "name": clean_team_name(f["teams"]["home"]["name"]),
+                "crest": f["teams"]["home"]["logo"],
+            },
+            "awayTeam": {
+                "id": f["teams"]["away"]["id"],
+                "name": clean_team_name(f["teams"]["away"]["name"]),
+                "crest": f["teams"]["away"]["logo"],
+            },
+            "score": {
+                "fullTime": {
+                    "home": f["goals"]["home"],
+                    "away": f["goals"]["away"],
+                }
+            },
+            "status": f["fixture"]["status"]["short"],
+            "elapsed": f["fixture"]["status"].get("elapsed"),
+            "utcDate": f["fixture"]["date"],
         })
+
+    # حافظ على ترتيب البطولات كما هو معرّف بقاموس LEAGUES
+    grouped = [
+        grouped_map[code]
+        for code in LEAGUES.keys()
+        if code in grouped_map
+    ]
 
     cache.set(cache_key, grouped, TODAY_MATCHES_CACHE_TTL)
 
