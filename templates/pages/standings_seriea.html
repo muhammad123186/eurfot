@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}ترتيب الدوري الإيطالي 2026\2027 - EURFOT{% endblock %}
+
+{% block title %}Serie A Table 2026/27 | Standings & Points - EURFOT{% endblock %}
+
+{% block meta_description %}Follow the 2026/27 Serie A table on EURFOT. Check Italian league standings, points, wins, draws, losses, goals scored, goal difference and relegation positions.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="Serie A table, Serie A standings, Italian Serie A table 2026/27, Serie A points, Italian football standings, football league table, Serie A teams">
+{% endblock %}
+
 {% block content %}
 
 
 {% url 'matches' as home_url %}
 {% url 'competition_standings' code='SA' as standings_url %}
+
 
 <script type="application/ld+json">
 {
@@ -12,22 +21,22 @@
   "@type": "WebPage",
   "@id": "https://eurfot.com{{ standings_url }}#webpage",
   "url": "https://eurfot.com{{ standings_url }}",
-  "name": "ترتيب الدوري الإيطالي 2026/2027 - EURFOT",
-  "description": "جدول ترتيب الدوري الإيطالي لموسم 2026/2027، يشمل النقاط والانتصارات والتعادلات والهزائم والأهداف.",
-  "inLanguage": "ar",
+  "name": "Serie A Table 2026/27 - EURFOT",
+  "description": "Serie A table for the 2026/27 season, including points, wins, draws, losses, goals scored and goals conceded.",
+  "inLanguage": "en",
   "breadcrumb": {
     "@type": "BreadcrumbList",
     "itemListElement": [
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "الرئيسية",
-        "item": "https://eurfot.com/"
+        "name": "Home",
+        "item": "https://eurfot.com{{ home_url }}"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "ترتيب الدوري الإيطالي",
+        "name": "Serie A Table",
         "item": "https://eurfot.com{{ standings_url }}"
       }
     ]
@@ -81,7 +90,7 @@
             <img class="league-logo" src="{{ competition.logo }}" alt="{{ competition.name }}">
 
             <div>
-                <h2>ترتيب الدوري الايطالي</h2>
+                <h2>Serie A Table</h2>
                 <p>Season {{ season }}</p>
             </div>
 

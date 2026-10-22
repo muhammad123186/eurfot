@@ -2,10 +2,22 @@
 
 {% block title %}
 {% if game.status == "FT" %}
-{{ game.home_name }} {{ game.score.fullTime.home }}-{{ game.score.fullTime.away }} {{ game.away_name }} | نتيجة المباراة - EURFOT
+{{ game.home_name }} {{ game.score.fullTime.home }}-{{ game.score.fullTime.away }} {{ game.away_name }} | Match Result - EURFOT
 {% else %}
-{{ game.home_name }} vs {{ game.away_name }} | موعد المباراة والتفاصيل - EURFOT
+{{ game.home_name }} vs {{ game.away_name }} | Match Schedule & Details - EURFOT
 {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+{% if game.status == "FT" %}
+{{ game.home_name }} vs {{ game.away_name }} match result, final score, goals, match statistics, lineups and head-to-head records on EURFOT.
+{% else %}
+Follow {{ game.home_name }} vs {{ game.away_name }} on EURFOT. Check the match date, kickoff details, lineups, statistics, events and head-to-head records.
+{% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ game.home_name }}, {{ game.away_name }}, {{ game.home_name }} vs {{ game.away_name }}, football match result, match score, match statistics, football lineups, head to head">
 {% endblock %}
 
 
@@ -20,7 +32,7 @@
   "name": "{{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }}",
   "sport": "Soccer",
   "startDate": "{{ game.schema_start_date|escapejs }}",
-  "description": "Match details for {{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }}, including match status, score, lineups, statistics and previous meetings.",
+  "description": "Follow {{ game.home_name|escapejs }} vs {{ game.away_name|escapejs }} on EURFOT for match results, scores, lineups, statistics, events and head-to-head records.",
   "homeTeam": {
     "@type": "SportsTeam",
     "name": "{{ game.home_name|escapejs }}",
@@ -52,7 +64,6 @@
   {% endif %}
 }
 </script>
-
 
 <script type="application/ld+json">
 {
@@ -712,7 +723,7 @@ No matches available
 
         {% empty %}
 
-            <p class="bench-empty">لا توجد بيانات احتياط</p>
+<p class="bench-empty">No substitute data available</p>
 
         {% endfor %}
 
@@ -734,7 +745,7 @@ No matches available
 
         {% empty %}
 
-            <p class="bench-empty">لا توجد بيانات احتياط</p>
+<p class="bench-empty">No substitute data available</p>
 
         {% endfor %}
 
@@ -789,7 +800,7 @@ No matches available
 
   {% else %}
 
-    <p class="stats-empty">لا تتوفر إحصائيات لهذه المباراة حالياً</p>
+<p class="stats-empty">Statistics are currently unavailable for this match</p>
 
   {% endif %}
 

@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}ترتيب الدوري الإسباني 2026\2027 - EURFOT{% endblock %}
+
+{% block title %}La Liga Table 2026/27 | Standings & Points - EURFOT{% endblock %}
+
+{% block meta_description %}Follow the 2026/27 La Liga table on EURFOT. Check Spanish league standings, points, wins, draws, losses, goals scored, goal difference and relegation positions.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="La Liga table, La Liga standings, Spanish La Liga table 2026/27, La Liga points, Spanish football standings, football league table, La Liga teams">
+{% endblock %}
+
 {% block content %}
  
 {% url 'matches' as home_url %}
 {% url 'competition_standings' code='PD' as standings_url %}
+
 
 <script type="application/ld+json">
 {
@@ -11,22 +20,22 @@
   "@type": "WebPage",
   "@id": "https://eurfot.com{{ standings_url }}#webpage",
   "url": "https://eurfot.com{{ standings_url }}",
-  "name": "ترتيب الدوري الإسباني 2026/2027 - EURFOT",
-  "description": "جدول ترتيب الدوري الإسباني لموسم 2026/2027، يشمل النقاط والانتصارات والتعادلات والهزائم والأهداف.",
-  "inLanguage": "ar",
+  "name": "La Liga Table 2026/27 - EURFOT",
+  "description": "La Liga table for the 2026/27 season, including points, wins, draws, losses, goals scored and goals conceded.",
+  "inLanguage": "en",
   "breadcrumb": {
     "@type": "BreadcrumbList",
     "itemListElement": [
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "الرئيسية",
-        "item": "https://eurfot.com/"
+        "name": "Home",
+        "item": "https://eurfot.com{{ home_url }}"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "ترتيب الدوري الإسباني",
+        "name": "La Liga Table",
         "item": "https://eurfot.com{{ standings_url }}"
       }
     ]
@@ -81,7 +90,7 @@
             <img class="league-logo" src="{{ competition.logo }}" alt="{{ competition.name }} ">
 
             <div>
-                <h2>ترتيب الدوري الاسباني</h2>
+                <h2>La Liga Table</h2>
                 <p>Season {{ season }}</p>
             </div>
 

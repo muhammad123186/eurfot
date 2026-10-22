@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ player.name }} | الإحصائيات والتقييم والأداء - EURFOT{% endblock %}
+
+{% block title %}{{ player.name }} | Stats, Rating & Performance - EURFOT{% endblock %}
+
+{% block meta_description %}Explore {{ player.name }}'s football statistics on EURFOT, including goals, assists, appearances, match ratings, shots, passing, defensive performance and goalkeeping records.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ player.name }}, {{ player.name }} stats, {{ player.name }} goals, {{ player.name }} assists, {{ player.name }} rating, {{ player.name }} statistics, football player stats, player performance">
+{% endblock meta_keywords %}
+
 
 {% block structured_data %}
 {% if player %}
@@ -36,6 +44,25 @@
 }
 </script>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com/player/{{ player.id }}/#webpage",
+  "url": "https://eurfot.com/player/{{ player.id }}/",
+  "name": "{{ player.name|escapejs }} | Stats, Rating & Performance - EURFOT",
+  "description": "Explore {{ player.name|escapejs }}'s football statistics, including goals, assists, appearances, ratings, passing, defensive performance and goalkeeping records.",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "EURFOT",
+    "url": "https://eurfot.com/"
+  },
+  "about": {
+    "@id": "https://eurfot.com/player/{{ player.id }}/#person"
+  }
+}
+</script>
 
 <script type="application/ld+json">
 {
@@ -45,7 +72,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com/"
     },
     {
@@ -57,8 +84,10 @@
   ]
 }
 </script>
+
 {% endif %}
 {% endblock structured_data %}
+
 
 {% block content %}
 

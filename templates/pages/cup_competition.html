@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ competition.name }} 2026 | المباريات والنتائج والمواعيد - EURFOT{% endblock %}
+
+{% block title %}{{ competition.name }} 2026/27 Fixtures, Results & Schedule | EURFOT{% endblock %}
+
+{% block meta_description %}Follow {{ competition.name }} fixtures, match results, schedules and cup competition updates on EURFOT. Explore completed matches and upcoming fixtures.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ competition.name }}, {{ competition.name }} fixtures, {{ competition.name }} results, {{ competition.name }} schedule, domestic cup competitions, football cups, football fixtures, football results">
+{% endblock %}
 
 {% block content %}
 
@@ -26,7 +33,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com{{ home_url }}"
     },
     {
@@ -249,9 +256,9 @@ Round {{ forloop.counter }}
         </div>
         {% endfor %}
 
-        {% empty %}
-        <h3 style="color:white; margin-top:30px;">لا توجد مباريات</h3>
-        {% endfor %}
+{% empty %}
+<h3 style="color:white; margin-top:30px;">No Matches Available</h3>
+{% endfor %}
 
     </div>
 </div>

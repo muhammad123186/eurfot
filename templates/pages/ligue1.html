@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}الدوري الفرنسي 2026 | المباريات والنتائج والترتيب - EURFOT{% endblock %}
+{% block title %}Ligue 1 2026/27 Fixtures, Results & Standings | EURFOT{% endblock %}
+
+{% block meta_description %}Follow Ligue 1 fixtures, live football scores, match results, league standings and team statistics on EURFOT. Explore French football schedules, results and standings.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="Ligue 1, French Ligue 1, Ligue 1 fixtures, Ligue 1 results, Ligue 1 live scores, Ligue 1 standings, Ligue 1 table, French football, Ligue 1 teams, Ligue 1 statistics">
+{% endblock %}
 
 
 {% block content %}
@@ -13,8 +19,8 @@
   "@context": "https://schema.org",
   "@type": "Thing",
   "@id": "https://eurfot.com{{ competition_url }}#league",
-  "name": "الدوري الفرنسي",
-  "alternateName": "Ligue 1",
+  "name": "Ligue 1",
+  "alternateName": "French Ligue 1",
   "url": "https://eurfot.com{{ competition_url }}"
 }
 </script>
@@ -27,13 +33,13 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com{{ home_url }}"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "الدوري الفرنسي",
+      "name": "Ligue 1",
       "item": "https://eurfot.com{{ competition_url }}"
     }
   ]
@@ -281,7 +287,7 @@
 
             <img src="{{ competition.logo|default:'' }}" class="logo-comp" alt="{{ competition.name }}">
 
-            <h2 class="name">الدوري الفرنسي</h2>
+            <h2 class="name">Ligue 1</h2>
 
    
 
@@ -402,8 +408,7 @@
 
         </div>
 
-
-    <div class="pre-res">توقع نتائج المباريات </div>
+<div class="pre-res">Match Predictions</div>
     </a>
 
 
@@ -448,26 +453,8 @@
 
     </a>
 
-    <div class="xi">تشكيلتك المثالية</div>
-
+<div class="xi">Team of the Week</div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -637,19 +624,15 @@
 
 
 
-        {% empty %}
+{% empty %}
 
+<h3 style="color:white;">
 
+    No Matches Available
 
-        <h3 style="color:white;">
+</h3>
 
-            لا توجد مباريات
-
-        </h3>
-
-
-
-        {% endfor %}
+{% endfor %}
 
 
 

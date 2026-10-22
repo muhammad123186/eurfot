@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}الدوري الإنجليزي الممتاز 2026 | المباريات والنتائج والترتيب - EURFOT{% endblock %}
 
+{% block title %}Premier League 2026/27 Fixtures, Results & Standings | EURFOT{% endblock %}
+
+{% block meta_description %}Follow Premier League fixtures, live scores, match results, league standings, team statistics and football news on EURFOT. Explore matchweeks, predictions and Premier League history.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="Premier League, English Premier League, Premier League fixtures, Premier League results, EPL standings, Premier League live scores, Premier League teams, Premier League statistics">
+{% endblock %}
 {% block content %}
 
 
@@ -11,8 +17,8 @@
   "@context": "https://schema.org",
   "@type": "Thing",
   "@id": "https://eurfot.com/competition/PL/#league",
-  "name": "الدوري الإنجليزي الممتاز",
-  "alternateName": "Premier League",
+  "name": "Premier League",
+  "alternateName": "English Premier League"
   "url": "https://eurfot.com/competition/PL/"
 }
 </script>
@@ -26,13 +32,13 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home"
       "item": "https://eurfot.com/"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "الدوري الإنجليزي الممتاز",
+      "name": "Premier League"
       "item": "https://eurfot.com/competition/PL/"
     }
   ]
@@ -259,7 +265,7 @@
 
             <img src="{{ competition.logo|default:'' }}" class="logo-comp" alt="{{ competition.name }}">
 
-            <h2 class="name">الدوري الانجليزي الممتاز</h2>
+            <h2 class="name">Premier League</h2>
 
             
 
@@ -382,7 +388,7 @@
 
         </div>
 
-<div class="pre-res">توقع نتائج المباريات </div>
+<div class="pre-res">Match Predictions</div>
 
     </a>
 
@@ -410,7 +416,7 @@
 
     </a>
 
-    <div class="xi">تشكيلتك المثالية</div>
+    <div class="xi">Team of the Week</div>
 
 </div>
 
@@ -587,9 +593,7 @@
 
 
         <h3 style="color:white;">
-
-            لا توجد مباريات
-
+            No Matches Available
         </h3>
 
 

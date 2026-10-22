@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}{{ competition.name }} 2026 | إحصائيات اللاعبين والفرق - EURFOT{% endblock %}
+{% block title %}{{ competition.name }} 2026/27 | Player & Team Statistics - EURFOT{% endblock %}
+
+{% block meta_description %}Explore {{ competition.name }} statistics for the 2026/27 season on EURFOT. View top scorers, assists, yellow cards, red cards, highest-scoring teams and the best defensive teams.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ competition.name }} statistics, {{ competition.name }} top scorers, {{ competition.name }} assists, {{ competition.name }} player stats, {{ competition.name }} team stats, football statistics, top scorers, best defense">
+{% endblock %}
+
 {% block content %}
 
 
@@ -12,10 +19,9 @@
   "@type": "WebPage",
   "@id": "https://eurfot.com{{ statistics_url }}#webpage",
   "url": "https://eurfot.com{{ statistics_url }}",
-  "name": "{{ competition.name|escapejs }} 2026 - إحصائيات اللاعبين والفرق | EURFOT",
-  "description": "إحصائيات {{ competition.name|escapejs }} لموسم 2026، تشمل هدافي البطولة وصانعي الأهداف والبطاقات الصفراء والحمراء وأقوى الفرق هجوميًا ودفاعيًا.",
-
-  "inLanguage": "ar",
+  "name": "{{ competition.name|escapejs }} 2026/27 - Player & Team Statistics | EURFOT",
+  "description": "Explore {{ competition.name|escapejs }} statistics for the 2026/27 season, including top scorers, assists, yellow cards, red cards, goals scored and defensive records.",
+  "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
     "name": "EURFOT",
@@ -27,20 +33,19 @@
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "الرئيسية",
-        "item": "https://eurfot.com/"
+        "name": "Home",
+        "item": "https://eurfot.com{{ home_url }}"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "إحصائيات {{ competition.name|escapejs }}",
+        "name": "{{ competition.name|escapejs }} Statistics",
         "item": "https://eurfot.com{{ statistics_url }}"
       }
     ]
   }
 }
 </script>
-
 
 <body style="background: linear-gradient(-45deg, black, black,black,black,black,black,black);">
 
@@ -59,7 +64,7 @@
 
             <div>
 
-                <h2>الإحصائيات</h2>
+                <h2>Statistics</h2>
 
                 <p>
                     Season {{ season }}

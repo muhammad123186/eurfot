@@ -1,53 +1,74 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     {% load static %}
 
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="description" content="{% block meta_description %}EURFOT متابعة نتائج المباريات، مواعيد المباريات، جداول ترتيب البطولات، وإحصائيات الفرق واللاعبين.{% endblock %}">
+    <!-- SEO: Meta Description -->
+    <meta name="description" content="{% block meta_description %}Follow live football scores, fixtures, match results, league standings, and team and player statistics on EURFOT.{% endblock meta_description %}">
 
-<link rel="icon" type="image/png" href="{% static 'image/android-chrome-512x512.png' %}">
+    <!-- SEO: Meta Keywords -->
+    {% block meta_keywords %}
+    <meta name="keywords" content="football, live football scores, football fixtures, match results, league standings, team statistics, player statistics, football teams, football players, EURFOT">
+    {% endblock meta_keywords %}
 
-<title>{% block title %}Eurfot متابعة مباريات اليوم وجميع البطولات والفرق{% endblock %}</title>
-    
-    <!-- Google tag (gtag.js) -->
+    <!-- SEO: Robots -->
+    {% block meta_robots %}
+    <meta name="robots" content="index, follow">
+    {% endblock meta_robots %}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'image/android-chrome-512x512.png' %}">
+
+    <!-- Page Title -->
+    <title>{% block title %}EURFOT | Live Football Scores, Fixtures and Results{% endblock title %}</title>
+
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VBKX3D6WVR"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-VBKX3D6WVR');
     </script>
 
-    <!-- Google AdSense Code -->
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8091465951449082"
-     crossorigin="anonymous"></script>
-    {% block structured_data %}{% endblock %}
-    {% block extra_head %}{% endblock %}
+        crossorigin="anonymous"></script>
+
+    <!-- Structured Data: Schema.org -->
+    {% block structured_data %}{% endblock structured_data %}
+
+    <!-- Additional Head Content -->
+    {% block extra_head %}{% endblock extra_head %}
 </head>
+
 <body>
 
     {% block content %}
     {% endblock content %}
 
-    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "602e985004534172b867aa6dc5597f0f"}'></script><!-- End Cloudflare Web Analytics -->
-    
+    <!-- Cloudflare Web Analytics -->
+    <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "602e985004534172b867aa6dc5597f0f"}'>
+    </script>
+    <!-- End Cloudflare Web Analytics -->
 
     <footer style="text-align: center; padding: 20px; color: #aaa; border-top: 1px solid #333; margin-top: 1000px;">
-    <p>&copy; 2026 جميع الحقوق محفوظة لمنصة Eurfot</p>
-    <div style="margin-top: 10px;">
-        <a href="{% url 'privacy_policy' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">سياسة الخصوصية</a>
-        <a href="{% url 'about_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">من نحن</a>
-        <a href="{% url 'contact_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">اتصل بنا</a>
-    </div>
+        <p>&copy; 2026 All rights reserved by EURFOT.</p>
+
+        <div style="margin-top: 10px;">
+            <a href="{% url 'privacy_policy' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">Privacy Policy</a>
+
+            <a href="{% url 'about_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">About Us</a>
+
+            <a href="{% url 'contact_us' %}" style="color: #00ffcc; margin: 0 15px; text-decoration: none;">Contact Us</a>
+        </div>
     </footer>
 
 </body>
-
-
-
-
 </html>

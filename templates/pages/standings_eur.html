@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}{{ competition.name }} 2026 | جدول الترتيب والإحصائيات - EURFOT{% endblock %}
+{% block title %}{{ competition.standings_name|default:competition.name }} Table 2026/27 | Standings & Points - EURFOT{% endblock %}
+
+{% block meta_description %}Follow the {{ competition.standings_name|default:competition.name }} standings for the 2026/27 season on EURFOT. Check team positions, points, wins, draws, losses, goals scored and goal difference.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ competition.standings_name|default:competition.name }} table, {{ competition.standings_name|default:competition.name }} standings, European football standings, European competition table, football points, team rankings">
+{% endblock %}
+
 {% block content %}
 
 
@@ -12,22 +19,22 @@
   "@type": "WebPage",
   "@id": "https://eurfot.com{{ standings_url }}#webpage",
   "url": "https://eurfot.com{{ standings_url }}",
-  "name": "{{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }} 2026/2027 - جدول الترتيب والإحصائيات | EURFOT",
-  "description": "جدول ترتيب {{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }} لموسم 2026/2027، مع النقاط والانتصارات والتعادلات والهزائم والأهداف وترتيب الفرق.",
-  "inLanguage": "ar",
+  "name": "{{ competition.standings_name|default:competition.name|escapejs }} Table 2026/27 - Standings & Statistics | EURFOT",
+  "description": "Follow the {{ competition.standings_name|default:competition.name|escapejs }} standings for the 2026/27 season, including team positions, points, wins, draws, losses, goals scored and goal difference.",
+  "inLanguage": "en",
   "breadcrumb": {
     "@type": "BreadcrumbList",
     "itemListElement": [
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "الرئيسية",
-        "item": "https://eurfot.com/"
+        "name": "Home",
+        "item": "https://eurfot.com{{ home_url }}"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "{{ competition.standings_name_ar|default:competition.name_ar|default:competition.name|escapejs }}",
+        "name": "{{ competition.standings_name|default:competition.name|escapejs }} Table",
         "item": "https://eurfot.com{{ standings_url }}"
       }
     ]
@@ -81,10 +88,9 @@
     <img class="league-logo" src="{{ competition.logo }}" alt="{{ competition.name }}">
 
     <div>
-        <h1 class="competition-title">
-            {{ competition.standings_name_ar|default:competition.name_ar|default:competition.name }}
-            <span class="competition-title-en">{{ competition.standings_name|default:competition.name }}</span>
-        </h1>
+<h1 class="competition-title">
+    {{ competition.standings_name|default:competition.name }}
+</h1>
         <p>Season {{ season }}</p>
     </div>
 

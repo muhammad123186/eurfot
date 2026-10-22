@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ team.name }} | المباريات والنتائج والإحصائيات - EURFOT{% endblock %}
+
+{% block title %}{{ team.name }} | Fixtures, Results, Squad & Stats - EURFOT{% endblock %}
+
+{% block meta_description %}Explore {{ team.name }} on EURFOT. Follow fixtures, match results, squad players, league standings, team statistics, top performers and club trophies.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ team.name }}, {{ team.name }} fixtures, {{ team.name }} results, {{ team.name }} squad, {{ team.name }} players, {{ team.name }} statistics, {{ team.name }} standings, football team stats">
+{% endblock meta_keywords %}
+
 
 {% block structured_data %}
 {% if team %}
@@ -10,7 +18,33 @@
   "@type": "SportsTeam",
   "@id": "https://eurfot.com/team/{{ team.id }}/#team",
   "name": "{{ team.name|escapejs }}",
-  "url": "https://eurfot.com/team/{{ team.id }}/"
+  "url": "https://eurfot.com/team/{{ team.id }}/",
+  "sport": "Soccer",
+  "description": "Explore {{ team.name|escapejs }} fixtures, results, squad, team statistics, top performers and trophies on EURFOT.",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://eurfot.com/team/{{ team.id }}/#webpage"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com/team/{{ team.id }}/#webpage",
+  "url": "https://eurfot.com/team/{{ team.id }}/",
+  "name": "{{ team.name|escapejs }} | Fixtures, Results, Squad & Stats - EURFOT",
+  "description": "Explore {{ team.name|escapejs }} fixtures, match results, squad players, standings, team statistics, top performers and trophies.",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "EURFOT",
+    "url": "https://eurfot.com/"
+  },
+  "about": {
+    "@id": "https://eurfot.com/team/{{ team.id }}/#team"
+  }
 }
 </script>
 
@@ -22,7 +56,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com/"
     },
     {
@@ -36,6 +70,7 @@
 </script>
 {% endif %}
 {% endblock structured_data %}
+
 
 {% block content %}
 
@@ -69,7 +104,7 @@
 
         <button class="tab-btn active" data-tab="overview">overview</button>
         <button class="tab-btn" data-tab="season-fixtures">Fixtures</button>
-        <button class="tab-btn" data-tab="standings">Title</button>
+        <button class="tab-btn" data-tab="standings">Standings</button>
         <button class="tab-btn" data-tab="squad">Squad</button>
         <button class="tab-btn" data-tab="team-stats">Team Statistics</button>
         <button class="tab-btn" data-tab="player-stats">Team Leaders</button>

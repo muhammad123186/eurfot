@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}الدوري الإيطالي 2026 | المباريات والنتائج والترتيب - EURFOT{% endblock %}
+{% block title %}Serie A 2026/27 Fixtures, Results & Standings | EURFOT{% endblock %}
+
+{% block meta_description %}Follow Serie A fixtures, live football scores, match results, league standings and team statistics on EURFOT. Explore Italian football schedules and results.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="Serie A, Italian Serie A, Serie A fixtures, Serie A results, Serie A live scores, Serie A standings, Serie A table, Italian football, Serie A teams, Serie A statistics">
+{% endblock %}
 
 {% block content %}
 
@@ -11,8 +17,8 @@
   "@context": "https://schema.org",
   "@type": "Thing",
   "@id": "https://eurfot.com/competition/SA/#league",
-  "name": "الدوري الإيطالي",
-  "alternateName": "Serie A",
+  "name": "Serie A",
+  "alternateName": "Italian Serie A",
   "url": "https://eurfot.com/competition/SA/"
 }
 </script>
@@ -25,13 +31,13 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com/"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "الدوري الإيطالي",
+      "name": "Serie A",
       "item": "https://eurfot.com/competition/SA/"
     }
   ]
@@ -278,7 +284,7 @@
 
             <img src="{{ competition.logo|default:'' }}" class="logo-comp" alt="{{ competition.name }}">
 
-            <h2 class="name">الدوري الايطالي</h2>
+            <h2 class="name">Serie A</h2>
 
    
 
@@ -399,7 +405,7 @@
 
         </div>
 
-    <div class="pre-res">توقع نتائج المباريات </div>
+    <div class="pre-res">Match Predictions</div>
 
     </a>
 
@@ -445,7 +451,7 @@
 
     </a>
 
-<div class="xi">تشكيلتك المثالية</div>
+<div class="xi">Team of the Week</div>
 
 </div>
 
@@ -611,19 +617,15 @@
 
 
 
-        {% empty %}
+{% empty %}
 
+<h3 style="color:white;">
 
+    No Matches Available
 
-        <h3 style="color:white;">
+</h3>
 
-            لا توجد مباريات
-
-        </h3>
-
-
-
-        {% endfor %}
+{% endfor %}
 
 
 

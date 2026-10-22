@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Eurfot | نتائج مباريات اليوم وترتيب البطولات{% endblock %}
+{% block title %}Live Football Scores & Today's Fixtures | EURFOT{% endblock %}
 
-{% block meta_description %}تابع مباريات اليوم مباشرة عبر EURFOT، مع النتائج المباشرة ومواعيد المباريات وجداول ترتيب الدوريات وإحصائيات الفرق واللاعبين .{% endblock %}
+{% block meta_description %}Follow today's football fixtures, live scores, match results, league standings and team statistics on EURFOT. Get the latest football updates in one place.{% endblock %}
 
 {% block structured_data %}
 <script type="application/ld+json">
@@ -15,7 +15,7 @@
       "url": "https://eurfot.com/",
       "name": "EURFOT",
       "alternateName": "Eurfot",
-      "inLanguage": "ar",
+      "inLanguage": "en"
       "publisher": {
         "@id": "https://eurfot.com/#organization"
       }
@@ -140,24 +140,30 @@
 
         <div class="date-nav">
 
-    <a href="?date={{ prev_date|date:'Y-m-d' }}" class="date-btn">
-        ◀ الأمس
-    </a>
+<a href="?date={{ prev_date|date:'Y-m-d' }}" class="date-btn">
+    ◀ Yesterday
+</a>
 
-    <h1 class="today-title">
-        {% if is_today %}مباريات اليوم{% else %}مباريات {{ selected_date|date:"d/m/Y" }}{% endif %}
-        - Matchday
-    </h1>
+<h1 class="today-title">
+    {% if is_today %}
+        Today's Football Matches
+    {% else %}
+        Football Matches on {{ selected_date|date:"F j, Y" }}
+    {% endif %}
+    - EURFOT
+</h1>
 
-    <a href="?date={{ next_date|date:'Y-m-d' }}" class="date-btn">
-        الغد ▶
-    </a>
+<a href="?date={{ next_date|date:'Y-m-d' }}" class="date-btn">
+    Tomorrow ▶
+</a>
 
 </div>
 
 {% if not is_today %}
 <div class="date-back">
-    <a href="{% url 'matches' %}" class="date-btn">العودة لمباريات اليوم</a>
+    <a href="{% url 'matches' %}" class="date-btn">
+        Back to Today's Matches
+    </a>
 </div>
 {% endif %}
 

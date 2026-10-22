@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ competition.name }} 2026 | المباريات والنتائج والمواعيد - EURFOT{% endblock %}
+{% block title %}{{ competition.name }} 2026/27 Fixtures, Results & Schedule | EURFOT{% endblock %}
+
+{% block meta_description %}Follow {{ competition.name }} fixtures, live scores, match results and competition updates on EURFOT. Explore upcoming matches, schedules and results.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ competition.name }}, {{ competition.name }} fixtures, {{ competition.name }} results, {{ competition.name }} live scores, European football, European competitions, football fixtures, football results">
+{% endblock %}
 
 {% block content %}
 
@@ -14,7 +20,7 @@
   "@type": "Thing",
   "@id": "https://eurfot.com{{ cup_url }}#competition",
   "name": "{{ competition.name|escapejs }}",
-  "alternateName": "{{ competition.name_ar|default:competition.name|escapejs }}",
+  "alternateName": "{{ competition.name|escapejs }}",
   "url": "https://eurfot.com{{ cup_url }}"
 }
 </script>
@@ -27,13 +33,13 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "الرئيسية",
+      "name": "Home",
       "item": "https://eurfot.com{{ home_url }}"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "{{ competition.name|default:'الكؤوس الأوروبية'|escapejs }}",
+      "name": "{{ competition.name|default:'European Competitions'|escapejs }}",
       "item": "https://eurfot.com{{ cup_url }}"
     }
   ]
@@ -177,10 +183,9 @@
         <!-- COMPETITION LOGO & TITLE -->
         <div style="text-align:center; margin:20px;">
         <img src="{{ competition.logo|default:'' }}" class="logo-comp" alt="{{ competition.name }}">
-    <h1 class="competition-title">
-        {{ competition.name_ar|default:competition.name }}
-        <span class="competition-title-en">{{ competition.name }}</span>
-    </h1>
+<h1 class="competition-title">
+    {{ competition.name }}
+</h1>
 </div>
 
         <!-- TABS (ديناميكية مع ثيم البطولة) -->
@@ -264,9 +269,9 @@ Round {{ forloop.counter }}
         </div>
         {% endfor %}
 
-        {% empty %}
-        <h3 style="color:white; margin-top:30px;">لا توجد مباريات</h3>
-        {% endfor %}
+{% empty %}
+<h3 style="color:white; margin-top:30px;">No Matches Available</h3>
+{% endfor %}
 
     </div>
 </div>
