@@ -5841,7 +5841,7 @@ def _match_importance(match, ranks):
 
 
 def get_featured_matches(grouped_matches):
-    """أهم مباراة قادمة/مباشرة من كل بطولة، مرتبة حسب الأولوية"""
+    """أهم مباراة من كل بطولة، تبقى طوال اليوم حتى بعد انتهائها"""
 
     ordered = sorted(
         enumerate(grouped_matches),
@@ -5853,39 +5853,39 @@ def get_featured_matches(grouped_matches):
         ),
     )
 
-    def collect(include_finished):
-        featured = []
+    featured = []
 
-        for _, group in ordered:
+    for _, group in ordered:
 
-            candidates = [
-                m for m in group["matches"]
-                if include_finished or m["status"] not in FEATURED_FINISHED
-            ]
+        # نستبعد المؤجلة والملغاة فقط
+        candidates = [
+            m for m in group["matches"]
+            if m["status"] not in ("PST", "CANC", "ABD", "AWD", "WO")
+        ]
 
-            if not candidates:
-                continue
+        if not candidates:
+            continue
 
-            ranks = _featured_rank_map(group["code"])
+        ranks = _featured_rank_map(group["code"])
 
-            best = min(
-                candidates,
-                key=lambda m: (
-                    _match_importance(m, ranks),
-                    m["utcDate"] or datetime.max,
-                ),
-            )
+        best = min(
+            candidates,
+            key=lambda m: (
+                _match_importance(m, ranks),
+                m["utcDate"] or datetime.max,
+            ),
+        )
 
-            featured.append({
-                **best,
-                "league": {
-                    "code": group["code"],
-                    "name": group["name"],
-                    "logo": group["logo"],
-                },
-            })
+        featured.append({
+            **best,
+            "league": {
+                "code": group["code"],
+                "name": group["name"],
+                "logo": group["logo"],
+            },
+        })
 
-        return featured
+    return featured
 
     # أولًا المباريات القادمة، وإذا ما في أي مباراة قادمة نعرض المنتهية
     return collect(False) or collect(True)

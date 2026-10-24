@@ -172,24 +172,27 @@
             <span>{{ m.homeTeam.name }}</span>
         </div>
 
-        <div class="featured-center">
-            <div class="featured-vs">VS</div>
+    <div class="featured-center">
+    {% if m.status == "NS" or m.status == "TBD" %}
+        <div class="featured-vs">VS</div>
+        <div class="featured-time">{{ m.utcDate|date:"H:i" }}</div>
 
-            {% if m.status == "NS" or m.status == "TBD" %}
-                <div class="featured-time">{{ m.utcDate|date:"H:i" }}</div>
-            {% elif m.status == "1H" or m.status == "2H" or m.status == "ET" %}
-                <div class="featured-state live">{{ m.elapsed }}'</div>
-                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
-            {% elif m.status == "HT" %}
-                <div class="featured-state live">Half Time</div>
-                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
-            {% elif m.status == "FT" or m.status == "AET" or m.status == "PEN" %}
-                <div class="featured-state">Full Time</div>
-                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
-            {% else %}
-                <div class="featured-state">{{ m.status }}</div>
-            {% endif %}
-        </div>
+    {% elif m.status == "1H" or m.status == "2H" or m.status == "ET" or m.status == "BT" or m.status == "P" or m.status == "LIVE" %}
+        <div class="featured-state live">{{ m.elapsed }}'</div>
+        <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+
+    {% elif m.status == "HT" %}
+        <div class="featured-state live">Half Time</div>
+        <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+
+    {% elif m.status == "FT" or m.status == "AET" or m.status == "PEN" %}
+        <div class="featured-state">Full Time</div>
+        <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+
+    {% else %}
+        <div class="featured-state">{{ m.status }}</div>
+    {% endif %}
+    </div>
 
         <div class="featured-team away">
             <span>{{ m.awayTeam.name }}</span>
@@ -512,16 +515,17 @@ body{
 }
 
 .site-header{
-    width:103%;
+    width: 100%;
+    box-sizing: border-box;
     height: 40px;
-    background:linear-gradient(90deg,black,black,black,black,black);
-    padding:20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:4px solid red;
-    margin-left: -1%;
-    box-shadow:0 8px 20px rgb(251, 255, 0);
+    background: black;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid red;
+    margin-left: 0;
+    box-shadow: 0 8px 20px rgb(251, 255, 0);
 }
 
 .header-right{
@@ -1511,10 +1515,11 @@ body{
 
 /* ---------- المنتصف: VS + الساعة / النتيجة ---------- */
 .featured-center{
-    width: 80px;
+    width: 90px;
     flex-shrink: 0;
     text-align: center;
-    padding-top: 10px;
+    align-self: center;
+    padding-top: 0;
 }
 
 .featured-vs{
@@ -1522,27 +1527,28 @@ body{
     font-weight: 900;
     color: white;
     letter-spacing: 2px;
+    margin: 0 0 6px;
+}
+
+.featured-state{
+    font-size: 12px;
+    font-weight: 900;
+    color: #bbb;
     margin-bottom: 6px;
-    margin-top: 20%;
+    text-transform: uppercase;
+}
+
+.featured-score{
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
 }
 
 .featured-time{
     font-size: 22px;
     font-weight: 800;
     color: white;
-}
-
-.featured-score{
-    font-size: 22px;
-    font-weight: 800;
-    color: white;
-}
-
-.featured-state{
-    font-size: 11px;
-    font-weight: 900;
-    color: #bbb;
-    margin-bottom: 4px;
 }
 
 .featured-state.live{
@@ -2042,7 +2048,62 @@ body{
     .featured-league{
         padding-right: 110px;
     }
+
+    .site-header{
+        padding: 10px 14px;
+        min-height: 56px;
+    }
+
+    .header-right{
+        margin-left: 0;
+        gap: 8px;
+    }
+
+    .search-box{
+        display: none;
+    }
 }
+
+
+/* ================= HEADER FIX ================= */
+/* ================= HEADER FIX ================= */
+html, body{
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.site-header{
+    width: 100%;
+    height: auto;
+    min-height: 70px;
+    margin: 0;
+    padding: 12px 10px 12px 30px;   /* الرقم الثاني: المسافة من الحافة اليمنى */
+    box-sizing: border-box;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid red;
+    box-shadow: 0 8px 20px rgb(251, 255, 0);
+}
+
+.header-right{
+    display: flex;
+    align-items: center;
+    margin: 0;
+    margin-left: auto;   /* يدفع المجموعة لأقصى اليمين */
+    gap: 12px;
+}
+
+.site-header .signup-btn,
+.site-header .profile-btn,
+.search-box{
+    margin: 0 !important;
+}
+
+
+
 
 
 </style>
