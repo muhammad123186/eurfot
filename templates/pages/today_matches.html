@@ -135,6 +135,208 @@
     </div>
 
 
+
+
+
+
+
+<!-- ================= FEATURED MATCHES ================= -->
+<aside class="featured-panel">
+
+    <h2 class="featured-heading">Top Matches</h2>
+
+    <div class="featured-card">
+
+        <div class="featured-nav">
+            <button type="button" class="featured-btn" id="featuredPrev" aria-label="Previous match">◀</button>
+            <span class="featured-counter" id="featuredCounter">1 / {{ featured_matches|length }}</span>
+            <button type="button" class="featured-btn" id="featuredNext" aria-label="Next match">▶</button>
+        </div>
+
+        {% for m in featured_matches %}
+        <a href="{% url 'match_detail' m.id %}" class="featured-slide{% if forloop.first %} active{% endif %}">
+
+    <div class="featured-league">
+        <img src="{{ m.league.logo }}" alt="{{ m.league.name }}">
+        <span>{{ m.league.name }}</span>
+    </div>
+
+    <div class="featured-date">
+        {% if m.utcDate %}{{ m.utcDate|date:"l, j F Y" }}{% endif %}
+    </div>
+
+    <div class="featured-teams">
+
+        <div class="featured-team home">
+            <img src="{{ m.homeTeam.crest }}" alt="{{ m.homeTeam.name }}" width="60" height="60">
+            <span>{{ m.homeTeam.name }}</span>
+        </div>
+
+        <div class="featured-center">
+            <div class="featured-vs">VS</div>
+
+            {% if m.status == "NS" or m.status == "TBD" %}
+                <div class="featured-time">{{ m.utcDate|date:"H:i" }}</div>
+            {% elif m.status == "1H" or m.status == "2H" or m.status == "ET" %}
+                <div class="featured-state live">{{ m.elapsed }}'</div>
+                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+            {% elif m.status == "HT" %}
+                <div class="featured-state live">Half Time</div>
+                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+            {% elif m.status == "FT" or m.status == "AET" or m.status == "PEN" %}
+                <div class="featured-state">Full Time</div>
+                <div class="featured-score">{{ m.score.fullTime.home }} - {{ m.score.fullTime.away }}</div>
+            {% else %}
+                <div class="featured-state">{{ m.status }}</div>
+            {% endif %}
+        </div>
+
+        <div class="featured-team away">
+            <span>{{ m.awayTeam.name }}</span>
+            <img src="{{ m.awayTeam.crest }}" alt="{{ m.awayTeam.name }}" width="60" height="60">
+        </div>
+
+    </div>
+
+</a>
+        {% endfor %}
+
+    </div>
+
+
+
+
+
+
+
+
+{% if mini_standings %}
+    <div class="mini-standings">
+
+        {% for s in mini_standings %}
+        <div class="mini-slide{% if forloop.first %} active{% endif %}">
+
+            <div class="mini-head">
+                <div class="mini-league">
+                    <img src="{{ s.logo }}" alt="{{ s.name }}" width="28" height="28">
+                    <h2 class="mini-title">{{ s.name }} Table</h2>
+                </div>
+                <button type="button" class="mini-btn" aria-label="Next league">▶</button>
+            </div>
+
+            <table class="mini-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="left">Team</th>
+                        <th>P</th>
+                        <th>GD</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in s.rows %}
+                    <tr>
+                        <td class="rank">{{ r.rank }}</td>
+                        <td class="left">
+                            <a href="{% url 'team_detail' r.team_id %}" class="mini-team">
+                                <img src="{{ r.logo }}" alt="{{ r.name }}" width="22" height="22" loading="lazy">
+                                <span>{{ r.name }}</span>
+                            </a>
+                        </td>
+                        <td>{{ r.played }}</td>
+                        <td>{% if r.gd > 0 %}+{% endif %}{{ r.gd }}</td>
+                        <td class="pts">{{ r.points }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{% url 'competition_standings' s.code %}" class="mini-full">View Full Table →</a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+    {% endif %}
+
+</aside>
+
+
+
+
+<!-- ================= LEAGUE STATS CARD ================= -->
+{% if league_stats %}
+<aside class="ls-panel">
+    <div class="ls-card">
+
+        {% for s in league_stats %}
+        <div class="ls-slide{% if forloop.first %} active{% endif %}">
+
+            <div class="ls-head">
+                <div class="ls-league">
+                    <img src="{{ s.logo }}" alt="{{ s.name }}" width="28" height="28">
+                    <h2 class="ls-title">{{ s.name }} Stats</h2>
+                </div>
+                <button type="button" class="ls-btn" aria-label="Next league">▶</button>
+            </div>
+
+            <div class="ls-row">
+
+                {% if s.scorer %}
+                <a href="{% url 'player_detail' s.scorer.id %}" class="ls-tile">
+                    <span class="ls-label">Top Scorer</span>
+                    <img class="ls-photo" src="{{ s.scorer.photo }}" alt="{{ s.scorer.name }}" width="56" height="56" loading="lazy">
+                    <span class="ls-name">{{ s.scorer.name }}</span>
+                    <span class="ls-sub">
+                        <img src="{{ s.scorer.team_logo }}" alt="{{ s.scorer.team_name }}" width="16" height="16" loading="lazy">
+                        {{ s.scorer.team_name }}
+                    </span>
+                    <span class="ls-value">{{ s.scorer.goals }}<small>Goals</small></span>
+                </a>
+                {% endif %}
+
+                {% if s.assister %}
+                <a href="{% url 'player_detail' s.assister.id %}" class="ls-tile">
+                    <span class="ls-label">Top Assists</span>
+                    <img class="ls-photo" src="{{ s.assister.photo }}" alt="{{ s.assister.name }}" width="56" height="56" loading="lazy">
+                    <span class="ls-name">{{ s.assister.name }}</span>
+                    <span class="ls-sub">
+                        <img src="{{ s.assister.team_logo }}" alt="{{ s.assister.team_name }}" width="16" height="16" loading="lazy">
+                        {{ s.assister.team_name }}
+                    </span>
+                    <span class="ls-value">{{ s.assister.assists }}<small>Assists</small></span>
+                </a>
+                {% endif %}
+
+            </div>
+
+            <div class="ls-row">
+
+                <a href="{% url 'team_detail' s.attack.team_id %}" class="ls-tile">
+                    <span class="ls-label">Best Attack</span>
+                    <img class="ls-team-logo" src="{{ s.attack.logo }}" alt="{{ s.attack.name }}" width="48" height="48" loading="lazy">
+                    <span class="ls-name">{{ s.attack.name }}</span>
+                    <span class="ls-value">{{ s.attack.value }}<small>Goals scored</small></span>
+                </a>
+
+                <a href="{% url 'team_detail' s.defense.team_id %}" class="ls-tile">
+                    <span class="ls-label">Best Defense</span>
+                    <img class="ls-team-logo" src="{{ s.defense.logo }}" alt="{{ s.defense.name }}" width="48" height="48" loading="lazy">
+                    <span class="ls-name">{{ s.defense.name }}</span>
+                    <span class="ls-value">{{ s.defense.value }}<small>Goals conceded</small></span>
+                </a>
+
+            </div>
+
+            <a href="{% url 'league_statistics' s.code %}" class="ls-full">Full {{ s.name }} Statistics →</a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</aside>
+{% endif %}
     <!-- ================= MAIN ================= -->
     <div class="main-content">
 
@@ -525,9 +727,15 @@ body{
 /* ================= LEAGUE GROUPS ================= */
 
 .league-group{
-    width:700px;
+    width: 700px;
     max-width:100%;
     margin-bottom:35px;
+}
+
+
+.league-group,
+.date-nav{
+    max-width: 760px;
 }
 
 .league-group-header{
@@ -1154,6 +1362,689 @@ body{
 
 }
 
+
+
+/* ================= FEATURED CARD ================= */
+/* ================= FEATURED CARD ================= */
+.featured-panel{
+    order: 2;                 /* يظهر يمين المباريات في الكمبيوتر */
+    width: 400px;
+    flex-shrink: 0;
+    margin-top: 20px;
+    
+}
+
+.main-content{
+    min-width: 0;
+}
+
+.featured-heading{
+    color: white;
+    font-size: 16px;
+    margin: 0px 0 10px;
+    margin-left: 38%;
+}
+
+.featured-card{
+    position: relative;
+    background: linear-gradient(180deg, #2a0000, #111 1%);
+    border: 1px solid rgb(217, 255, 0);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* ---------- أزرار التنقل ---------- */
+.featured-nav{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+}
+
+.featured-btn{
+    width: 28px;
+    height: 28px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: .25s;
+}
+
+.featured-btn:hover{
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+.featured-counter{
+    color: #bbb;
+    font-size: 12px;
+    min-width: 38px;
+    text-align: center;
+}
+
+/* ---------- الشريحة ---------- */
+.featured-slide{
+    display: none;
+    color: white;
+    text-decoration: none;
+    padding: 14px 16px 24px;
+}
+
+.featured-slide.active{
+    display: block;
+}
+
+.featured-slide:hover{
+    background: rgba(255,255,255,.03);
+}
+
+/* اسم البطولة وشعارها: أعلى يسار البطاقة */
+.featured-league{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding-right: 120px;      /* مساحة للزرين */
+    font-weight: 800;
+    font-size: 14px;
+    min-height: 28px;
+}
+
+.featured-league img{
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+/* التاريخ: في المنتصف تحت اسم البطولة */
+.featured-date{
+    text-align: center;
+    color: #ddd;
+    font-size: 13px;
+    margin: 14px 0 22px;
+}
+
+/* ---------- الفريقان ---------- */
+.featured-teams{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.featured-team,
+.featured-team.away{
+    display: flex;
+    flex-direction: column;     /* الشعار فوق والاسم تحته */
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* نوحّد الترتيب: الشعار أولًا عند الفريقين */
+.featured-team.away img{
+    order: -1;
+}
+
+.featured-team img{
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.featured-team span{
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* ---------- المنتصف: VS + الساعة / النتيجة ---------- */
+.featured-center{
+    width: 80px;
+    flex-shrink: 0;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.featured-vs{
+    font-size: 20px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    margin-top: 20%;
+}
+
+.featured-time{
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+}
+
+.featured-score{
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+}
+
+.featured-state{
+    font-size: 11px;
+    font-weight: 900;
+    color: #bbb;
+    margin-bottom: 4px;
+}
+
+.featured-state.live{
+    color: #ff0000;
+}
+
+/* ---------- الجوال ---------- */
+@media (max-width: 1000px){
+    .featured-panel{
+        order: 0;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+}
+
+
+
+
+
+/* ================= MINI STANDINGS ================= */
+.mini-standings{
+    margin-top: 18px;
+    background: linear-gradient(180deg, #2a0000, #111 1%);
+    border: 1px solid red;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.mini-slide{
+    display: none;
+    padding: 12px 14px 14px;
+}
+
+.mini-slide.active{
+    display: block;
+}
+
+/* اسم البطولة يمين + زر التنقل يسار */
+
+
+.mini-head{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.mini-league{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.mini-league img{
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.mini-title{
+    margin: 0;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: left;
+}
+
+.mini-btn{
+    width: 28px;
+    height: 28px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: .25s;
+}
+
+.mini-btn:hover{
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+.mini-table{
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    font-size: 13px;
+}
+
+.mini-table th{
+    color: #999;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 4px;
+    text-align: center;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.mini-table td{
+    padding: 7px 4px;
+    text-align: center;
+    border-bottom: 1px solid #1d1d1d;
+}
+
+.mini-table tr:last-child td{
+    border-bottom: none;
+}
+
+.mini-table .left{
+    text-align: left;
+}
+
+.mini-table .rank{
+    color: #bbb;
+    width: 26px;
+}
+
+.mini-table .pts{
+    font-weight: 800;
+}
+
+.mini-team{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+}
+
+.mini-team img{
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.mini-team span{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.mini-team:hover span{
+    color: #ff0000;
+}
+
+.mini-table tbody tr:hover{
+    background: rgba(255,255,255,.04);
+}
+
+.mini-full{
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    color: #bbb;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.mini-full:hover{
+    color: #ff0000;
+}
+
+@media (max-width: 1000px){
+    .mini-standings{
+        margin-bottom: 15px;
+    }
+}
+
+
+
+
+/* ================= LEAGUE STATS CARD ================= */
+.ls-panel{
+    order: 2;
+    flex: 0 0 340px;
+    width: 340px;
+    margin: 40% auto 30px;
+}
+
+.ls-card{
+    background: linear-gradient(180deg, #2a0000, #111 4%);
+    border: 1px solid red;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ls-slide{
+    display: none;
+    padding: 12px 14px 14px;
+}
+
+.ls-slide.active{
+    display: block;
+}
+
+/* شعار البطولة + اسمها يسار، وزر التنقل أقصى اليمين */
+.ls-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.ls-league{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.ls-league img{
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.ls-title{
+    margin: 0;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.ls-btn{
+    width: 28px;
+    height: 28px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: .25s;
+}
+
+.ls-btn:hover{
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+.ls-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ls-tile{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+    padding: 10px 6px;
+    background: #0b0b0b;
+    border: 1px solid #222;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    min-width: 0;
+    transition: .25s;
+}
+
+.ls-tile:hover{
+    border-color: #ff0000;
+    background: #141414;
+}
+
+.ls-label{
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ls-photo{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #1a1a1a;
+}
+
+.ls-team-logo{
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.ls-name{
+    font-size: 13px;
+    font-weight: 700;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ls-sub{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #aaa;
+    max-width: 100%;
+}
+
+.ls-sub img{
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.ls-value{
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.ls-value small{
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #999;
+}
+
+.ls-full{
+    display: block;
+    margin-top: 4px;
+    text-align: center;
+    color: #bbb;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.ls-full:hover{
+    color: #ff0000;
+}
+
+/* على الشاشات الأصغر من 1600px نخفيها لأن المساحة لا تكفي */
+@media (max-width: 1600px){
+    .ls-panel{
+        display: none;
+    }
+}
+
+
+
+/* ================= ترتيب الأعمدة الثلاثة ================= */
+.page-layout{
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.sidebar{
+    order: 1;
+    flex: 0 0 230px;
+    width: 230px;
+}
+
+.ls-panel{
+    order: 2;
+    flex: 0 0 340px;
+    width: 340px;
+    margin: 20px 0 0 0;
+}
+
+.main-content{
+    order: 3;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.featured-panel{
+    order: 4;
+    flex: 0 0 400px;
+    width: 400px;
+    margin: 20px 0 0 0;
+}
+
+.featured-heading{
+    margin: 0 0 10px;
+    text-align: center;
+}
+
+
+
+/* ================= MOBILE FINAL (يجب أن يكون الأخير) ================= */
+@media (max-width: 1000px){
+
+    .page-layout{
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 12px;
+        align-items: stretch;
+    }
+
+    .sidebar{
+        display: none;
+    }
+
+    /* نفكّ الـ aside ليصبح أبناؤه عناصر مستقلة قابلة للترتيب */
+    .featured-panel{
+        display: contents;
+    }
+
+    /* 1) أهم المباريات */
+    .featured-heading{
+        order: 1;
+        margin: 10px 0 10px;
+        text-align: center;
+    }
+
+    .featured-card{
+        order: 2;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+    }
+
+    /* 2) مباريات اليوم */
+    .main-content{
+        order: 3;
+        flex: none;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+
+    /* 3) الترتيب */
+    .mini-standings{
+        order: 4;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 15px 0;
+    }
+
+    /* 4) الإحصائيات */
+    .ls-panel{
+        display: block;
+        order: 5;
+        flex: none;
+        width: 100%;
+        margin: 0 0 70px 0;     /* مسافة للشريط السفلي */
+    }
+
+    .ls-card{
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* شريط التاريخ والمباريات بعرض الشاشة */
+    .date-nav,
+    .league-group{
+        max-width: 100%;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .league-group .match-card{
+        margin-left: 0;
+        width: 100%;
+        padding: 0 12px;
+    }
+
+    .league-group-header{
+        margin-left: 0;
+        padding: 10px 12px;
+    }
+
+    /* تصغير بطاقة Top Matches */
+    .featured-team img{
+        width: 52px;
+        height: 52px;
+    }
+
+    .featured-vs{
+        font-size: 17px;
+        margin-top: 15%;
+    }
+
+    .featured-league{
+        padding-right: 110px;
+    }
+}
+
+
 </style>
 
 
@@ -1189,6 +2080,74 @@ function openMobileSearch(){
 function closeMobileSearch(){
     document.getElementById('mobile-search-overlay').classList.remove('active');
 }
+
+
+(function(){
+    const slides = document.querySelectorAll(".featured-slide");
+    if(!slides.length) return;
+
+    const counter = document.getElementById("featuredCounter");
+    const prev = document.getElementById("featuredPrev");
+    const next = document.getElementById("featuredNext");
+    let index = 0;
+
+    function show(n){
+        slides[index].classList.remove("active");
+        index = (n + slides.length) % slides.length;
+        slides[index].classList.add("active");
+        counter.textContent = (index + 1) + " / " + slides.length;
+    }
+
+    if(slides.length < 2){
+        prev.style.display = "none";
+        next.style.display = "none";
+        counter.style.display = "none";
+        return;
+    }
+
+    prev.addEventListener("click", function(){ show(index - 1); });
+    next.addEventListener("click", function(){ show(index + 1); });
+})();
+
+
+(function(){
+    const slides = document.querySelectorAll(".mini-slide");
+    if(slides.length < 2){
+        document.querySelectorAll(".mini-btn").forEach(function(b){ b.style.display = "none"; });
+        return;
+    }
+
+    let index = 0;
+
+    document.querySelectorAll(".mini-btn").forEach(function(btn){
+        btn.addEventListener("click", function(){
+            slides[index].classList.remove("active");
+            index = (index + 1) % slides.length;
+            slides[index].classList.add("active");
+        });
+    });
+})();
+
+
+(function(){
+    const slides = document.querySelectorAll(".ls-slide");
+    const buttons = document.querySelectorAll(".ls-btn");
+
+    if(slides.length < 2){
+        buttons.forEach(function(b){ b.style.display = "none"; });
+        return;
+    }
+
+    let index = 0;
+
+    buttons.forEach(function(btn){
+        btn.addEventListener("click", function(){
+            slides[index].classList.remove("active");
+            index = (index + 1) % slides.length;
+            slides[index].classList.add("active");
+        });
+    });
+})();
 
 </script>
 

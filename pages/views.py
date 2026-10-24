@@ -5715,7 +5715,7 @@ def get_today_matches(target_date=None):
 
     date_str = target_date.isoformat()
 
-    cache_key = f"matches_by_date_v3_{date_str}"
+    cache_key = f"matches_by_date_v4_{date_str}" 
 
     cached = cache.get(cache_key)
 
@@ -5800,6 +5800,264 @@ def get_today_matches(target_date=None):
     return grouped
 
 
+
+# ================= FEATURED MATCHES (بطاقة أهم المباريات) =================
+# ترتيب الأولوية: الإنجليزي ثم الإسباني ثم الأبطال ثم البقية
+FEATURED_ORDER = ["PL", "PD", "UCL", "UEL", "UECL", "SA", "BL1", "FL1"]
+
+# أندية كبيرة تعطي المباراة أهمية أعلى (IDs من API-Football)
+BIG_TEAM_IDS = {33, 40, 42, 47, 49, 50, 85, 157, 165, 489, 496, 505, 529, 530, 541}
+
+FEATURED_FINISHED = {"FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO", "PST"}
+
+
+def _featured_rank_map(code):
+    """ترتيب الفرق في الجدول (مخزّن مؤقتًا أصلًا في get_standings)"""
+    if code not in FEATURED_ORDER:
+        return {}
+    try:
+        table = get_standings(code)
+    except Exception:
+        return {}
+    return {
+        row["team"]["id"]: row.get("rank", 20)
+        for row in table
+    }
+
+
+def _match_importance(match, ranks):
+    """رقم أصغر = مباراة أهم"""
+    home_id = match["homeTeam"]["id"]
+    away_id = match["awayTeam"]["id"]
+
+    score = ranks.get(home_id, 20) + ranks.get(away_id, 20)
+
+    if home_id in BIG_TEAM_IDS:
+        score -= 10
+    if away_id in BIG_TEAM_IDS:
+        score -= 10
+
+    return score
+
+
+def get_featured_matches(grouped_matches):
+    """أهم مباراة قادمة/مباشرة من كل بطولة، مرتبة حسب الأولوية"""
+
+    ordered = sorted(
+        enumerate(grouped_matches),
+        key=lambda p: (
+            FEATURED_ORDER.index(p[1]["code"])
+            if p[1]["code"] in FEATURED_ORDER
+            else len(FEATURED_ORDER),
+            p[0],
+        ),
+    )
+
+    def collect(include_finished):
+        featured = []
+
+        for _, group in ordered:
+
+            candidates = [
+                m for m in group["matches"]
+                if include_finished or m["status"] not in FEATURED_FINISHED
+            ]
+
+            if not candidates:
+                continue
+
+            ranks = _featured_rank_map(group["code"])
+
+            best = min(
+                candidates,
+                key=lambda m: (
+                    _match_importance(m, ranks),
+                    m["utcDate"] or datetime.max,
+                ),
+            )
+
+            featured.append({
+                **best,
+                "league": {
+                    "code": group["code"],
+                    "name": group["name"],
+                    "logo": group["logo"],
+                },
+            })
+
+        return featured
+
+    # أولًا المباريات القادمة، وإذا ما في أي مباراة قادمة نعرض المنتهية
+    return collect(False) or collect(True)
+
+
+
+# ================= MINI STANDINGS (ترتيب مصغّر) =================
+MINI_STANDINGS_ORDER = ["PL", "PD", "SA", "BL1", "FL1"]
+
+
+def get_mini_standings(limit=10):
+    result = []
+
+    for code in MINI_STANDINGS_ORDER:
+
+        try:
+            table = get_standings(code)
+        except Exception:
+            table = []
+
+        if not table:
+            continue
+
+        table = sorted(table, key=lambda r: r.get("rank", 99))[:limit]
+
+        rows = [
+            {
+                "rank": row.get("rank"),
+                "team_id": row["team"]["id"],
+                "name": row["team"]["name"],
+                "logo": row["team"]["logo"],
+                "played": (row.get("all") or {}).get("played", 0),
+                "gd": row.get("goalsDiff", 0),
+                "points": row.get("points", 0),
+            }
+            for row in table
+        ]
+
+        result.append({
+            "code": code,
+            "name": LEAGUES[code]["name"],
+            "logo": LEAGUES[code]["logo"],
+            "rows": rows,
+        })
+
+    return result
+
+
+
+
+
+# ================= HOME LEAGUE STATS CARD (إحصائيات البطولات) =================
+STATS_CARD_ORDER = ["PD","PL", "SA", "BL1", "FL1"]
+STATS_CARD_TTL = 60 * 60          # ساعة إذا اكتملت البيانات
+STATS_CARD_PARTIAL_TTL = 60 * 5   # 5 دقائق إذا نقص شيء (لإعادة المحاولة قريبًا)
+
+
+def _fetch_top_player(endpoint, league_id):
+    """أول لاعب في قائمة topscorers أو topassists"""
+    try:
+        response = requests.get(
+            f"https://v3.football.api-sports.io/players/{endpoint}",
+            headers=headers,
+            params={"league": league_id, "season": SEASON},
+            timeout=10,
+        )
+        entries = response.json().get("response", [])
+    except (requests.RequestException, ValueError):
+        return None
+
+    if not entries:
+        return None
+
+    entry = entries[0]
+    player = entry.get("player", {}) or {}
+    stats_list = entry.get("statistics", [])
+
+    if not stats_list:
+        return None
+
+    s = stats_list[0]
+    team = s.get("team", {}) or {}
+
+    return {
+        "id": player.get("id"),
+        "name": player.get("name"),
+        "photo": player.get("photo"),
+        "team_name": clean_team_name(team.get("name", "")),
+        "team_logo": team.get("logo"),
+        "goals": (s.get("goals") or {}).get("total") or 0,
+        "assists": (s.get("goals") or {}).get("assists") or 0,
+    }
+
+
+def get_league_stats_cards():
+    result = []
+
+    for code in STATS_CARD_ORDER:
+
+        cache_key = f"home_league_stats_v1_{code}_{SEASON}"
+        card = cache.get(cache_key)
+
+        if card is None:
+
+            standings = get_standings(code)
+
+            if not standings:
+                continue
+
+            def goals_for(row):
+                return ((row.get("all") or {}).get("goals") or {}).get("for", 0) or 0
+
+            def goals_against(row):
+                return ((row.get("all") or {}).get("goals") or {}).get("against", 0) or 0
+
+            best_attack = max(standings, key=goals_for)
+            best_defense = min(standings, key=goals_against)
+
+            # نستفيد من كاش صفحة إحصائيات البطولة إن كان موجودًا لتوفير طلبات API
+            stats_page = cache.get(f"league_statistics_v2_{code}_{SEASON}")
+
+            if stats_page and stats_page.get("top_scorers") and stats_page.get("top_assists"):
+                s0 = stats_page["top_scorers"][0]
+                a0 = stats_page["top_assists"][0]
+
+                scorer = {
+                    "id": s0["player_id"], "name": s0["player_name"],
+                    "photo": s0["player_photo"], "team_name": s0["team_name"],
+                    "team_logo": s0["team_logo"], "goals": s0["goals"],
+                }
+                assister = {
+                    "id": a0["player_id"], "name": a0["player_name"],
+                    "photo": a0["player_photo"], "team_name": a0["team_name"],
+                    "team_logo": a0["team_logo"], "assists": a0["assists"],
+                }
+            else:
+                league_id = LEAGUES[code]["id"]
+                scorer = _fetch_top_player("topscorers", league_id)
+                assister = _fetch_top_player("topassists", league_id)
+
+            card = {
+                "code": code,
+                "name": LEAGUES[code]["name"],
+                "logo": LEAGUES[code]["logo"],
+                "scorer": scorer,
+                "assister": assister,
+                "attack": {
+                    "team_id": best_attack["team"]["id"],
+                    "name": best_attack["team"]["name"],
+                    "logo": best_attack["team"]["logo"],
+                    "value": goals_for(best_attack),
+                },
+                "defense": {
+                    "team_id": best_defense["team"]["id"],
+                    "name": best_defense["team"]["name"],
+                    "logo": best_defense["team"]["logo"],
+                    "value": goals_against(best_defense),
+                },
+            }
+
+            complete = bool(scorer and assister)
+            cache.set(
+                cache_key,
+                card,
+                STATS_CARD_TTL if complete else STATS_CARD_PARTIAL_TTL,
+            )
+
+        result.append(card)
+
+    return result
+
+
 def today_matches_view(request):
 
     date_param = request.GET.get("date")
@@ -5814,6 +6072,9 @@ def today_matches_view(request):
     context = {
         **get_common_context(),
         "grouped_matches": grouped_matches,
+        "featured_matches": get_featured_matches(grouped_matches),
+        "mini_standings": get_mini_standings(),
+        "league_stats": get_league_stats_cards(),
         "selected_date": target_date,
         "prev_date": target_date - timedelta(days=1),
         "next_date": target_date + timedelta(days=1),
