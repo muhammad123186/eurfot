@@ -9,6 +9,65 @@ from django.http import HttpResponse, HttpResponseForbidden
 from .models import PageVisit
 
 
+
+import time
+import threading
+
+# ================= تجميع الزيارات =================
+FLUSH_INTERVAL = 60 * 30        # كل 30 دقيقة (ارفعها لساعة لتوفير أكثر)
+FLUSH_MAX = 500                 # أو عند تجمع 500 زيارة
+BUFFER_HARD_LIMIT = 2000        # حد أمان للذاكرة
+DB_RETRY_DELAY = 60 * 15        # بعد فشل القاعدة: لا نحاول 15 دقيقة
+
+_BUFFER = []
+_LOCK = threading.Lock()
+_LAST_FLUSH = time.time()
+_DB_DOWN_UNTIL = 0
+
+BOT_AGENT_HINTS = [
+    "bot", "spider", "crawl", "slurp", "facebookexternalhit",
+    "inspectiontool", "lighthouse", "pagespeed", "headless",
+    "preview", "monitor", "uptime", "python", "curl", "wget",
+]
+
+
+def is_bot_agent(user_agent):
+    if not user_agent:
+        return True
+    return any(hint in user_agent for hint in BOT_AGENT_HINTS)
+
+
+def queue_visit(visit):
+    if time.time() < _DB_DOWN_UNTIL:
+        return
+    with _LOCK:
+        if len(_BUFFER) < BUFFER_HARD_LIMIT:
+            _BUFFER.append(visit)
+
+
+def flush_visits_if_needed():
+    global _BUFFER, _LAST_FLUSH, _DB_DOWN_UNTIL
+
+    now = time.time()
+
+    if now < _DB_DOWN_UNTIL:
+        return
+
+    with _LOCK:
+        due = (now - _LAST_FLUSH >= FLUSH_INTERVAL) or (len(_BUFFER) >= FLUSH_MAX)
+        if not due:
+            return
+        batch, _BUFFER = _BUFFER, []
+        _LAST_FLUSH = now
+
+    if not batch:
+        return
+
+    try:
+        PageVisit.objects.bulk_create(batch)
+    except Exception as e:
+        _DB_DOWN_UNTIL = time.time() + DB_RETRY_DELAY
+        print("PageVisit flush error:", repr(e))
 # ==========================================
 # نطاقات IP محظورة بالكامل
 # ==========================================
