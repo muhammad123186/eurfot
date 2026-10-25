@@ -139,10 +139,9 @@ CACHE_TTL = 90
 
 
 # ================= SPECIFIC CACHE TTLs (حسب طلب التحديث) =================
-MATCHES_CACHE_TTL = 90                  # جدول مباريات الدوريات والكؤوس - دقيقة واحدة
+MATCHES_CACHE_TTL = 60                  # جدول مباريات الدوريات والكؤوس - دقيقة واحدة
 TEAM_DETAIL_CACHE_TTL = 60 * 45         # صفحة تفاصيل الفريق - 45 دقيقة
 PLAYER_DETAIL_CACHE_TTL = 60 * 60       # صفحة تفاصيل اللاعب - ساعة واحدة
-STANDINGS_CACHE_TTL = 60 * 10           # جدول الترتيب لكل البطولات - 10 دقائق
 LEAGUE_STATS_CACHE_TTL = 60 * 30        # صفحة إحصائيات كل بطولة - نصف ساعة
 TODAY_MATCHES_CACHE_TTL = 60 * 2
 
@@ -3514,56 +3513,222 @@ def compare_team(request, id):
 
 
 # ================= STANDINGS (جدول الترتيب - 10 دقائق) =================
-def get_standings(code):
+# ================= STANDINGS (محسوب من النتائج + احتياط من API) =================
+STANDINGS_CACHE_TTL = 60 * 10        # جدول API الرسمي
+STANDINGS_COMPUTED_TTL = 60          # الجدول المحسوب
+COMPUTED_STANDINGS_CODES = {"PL", "PD", "SA", "BL1", "FL1"}
+
+
+def _get_api_standings(code):
+    """جدول API الرسمي (قد يتأخر لساعات)"""
 
     league = LEAGUES[code]["id"]
-
-    cache_key = f"standings_v2_{code}_{SEASON}"
+    cache_key = f"standings_api_v1_{code}_{SEASON}"
 
     cached = cache.get(cache_key)
-
     if cached is not None:
         return cached
 
-    url = (
-        "https://v3.football.api-sports.io/"
-        "standings"
-    )
-
     try:
         response = requests.get(
-            url,
+            "https://v3.football.api-sports.io/standings",
             headers=headers,
-            params={
-                "league": league,
-                "season": SEASON
-            },
+            params={"league": league, "season": SEASON},
             timeout=15
         )
-
         data = response.json()
-
-    except requests.RequestException:
+    except (requests.RequestException, ValueError):
         return []
 
     try:
-        table = (
-            data["response"][0]
-            ["league"]
-            ["standings"][0]
-        )
-
+        table = data["response"][0]["league"]["standings"][0]
     except (KeyError, IndexError, TypeError):
         table = []
 
     for row in table:
-        row["team"]["name"] = clean_team_name(
-            row["team"]["name"]
-        )
+        row["team"]["name"] = clean_team_name(row["team"]["name"])
 
-    cache.set(cache_key, table, STANDINGS_CACHE_TTL)
+    cache.set(cache_key, table, STANDINGS_CACHE_TTL if table else 30)
 
     return table
+
+
+def _new_record():
+    return {"played": 0, "win": 0, "draw": 0, "lose": 0, "gf": 0, "ga": 0}
+
+
+def _compute_standings(code, api_table):
+    """يبني الجدول من المباريات المنتهية في الدوري"""
+
+    league = LEAGUES[code]["id"]
+
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/fixtures",
+            headers=headers,
+            params={"league": league, "season": SEASON},
+            timeout=20
+        )
+        fixtures = response.json().get("response", [])
+    except (requests.RequestException, ValueError):
+        return []
+
+    if not isinstance(fixtures, list) or not fixtures:
+        return []
+
+    teams = {}
+
+    def get_team(info):
+        tid = info["id"]
+        if tid not in teams:
+            teams[tid] = {
+                "info": {
+                    "id": tid,
+                    "name": clean_team_name(info["name"]),
+                    "logo": info["logo"],
+                },
+                "all": _new_record(),
+                "home": _new_record(),
+                "away": _new_record(),
+                "results": [],        # (date, "W"/"D"/"L")
+            }
+        return teams[tid]
+
+    def apply(rec, gf, ga):
+        rec["played"] += 1
+        rec["gf"] += gf
+        rec["ga"] += ga
+        if gf > ga:
+            rec["win"] += 1
+        elif gf == ga:
+            rec["draw"] += 1
+        else:
+            rec["lose"] += 1
+
+    for f in fixtures:
+
+        round_name = (f["league"].get("round") or "")
+
+        # الدوري فقط (نستبعد التصفيات أو الملحق إن وُجدت)
+        if not round_name.startswith("Regular Season"):
+            continue
+
+        home = get_team(f["teams"]["home"])
+        away = get_team(f["teams"]["away"])
+
+        if f["fixture"]["status"]["short"] != "FT":
+            continue
+
+        hg = f["goals"]["home"]
+        ag = f["goals"]["away"]
+
+        if hg is None or ag is None:
+            continue
+
+        date = f["fixture"]["date"]
+
+        apply(home["all"], hg, ag)
+        apply(home["home"], hg, ag)
+        apply(away["all"], ag, hg)
+        apply(away["away"], ag, hg)
+
+        if hg > ag:
+            home["results"].append((date, "W"))
+            away["results"].append((date, "L"))
+        elif hg == ag:
+            home["results"].append((date, "D"))
+            away["results"].append((date, "D"))
+        else:
+            home["results"].append((date, "L"))
+            away["results"].append((date, "W"))
+
+    if not teams:
+        return []
+
+    def points(rec):
+        return rec["win"] * 3 + rec["draw"]
+
+    ordered = sorted(
+        teams.values(),
+        key=lambda t: (
+            -points(t["all"]),
+            -(t["all"]["gf"] - t["all"]["ga"]),
+            -t["all"]["gf"],
+            t["info"]["name"],
+        )
+    )
+
+    # نأخذ وصف المراكز (دوري أبطال، هبوط...) من جدول API حسب رقم المركز
+    descriptions = {
+        row.get("rank"): row.get("description")
+        for row in (api_table or [])
+    }
+
+    now_iso = datetime.now().isoformat()
+
+    def block(rec):
+        return {
+            "played": rec["played"],
+            "win": rec["win"],
+            "draw": rec["draw"],
+            "lose": rec["lose"],
+            "goals": {"for": rec["gf"], "against": rec["ga"]},
+        }
+
+    table = []
+
+    for index, t in enumerate(ordered, start=1):
+
+        last5 = [r for _, r in sorted(t["results"])][-5:]
+
+        table.append({
+            "rank": index,
+            "team": t["info"],
+            "points": points(t["all"]),
+            "goalsDiff": t["all"]["gf"] - t["all"]["ga"],
+            "form": "".join(last5),
+            "status": "same",
+            "description": descriptions.get(index),
+            "all": block(t["all"]),
+            "home": block(t["home"]),
+            "away": block(t["away"]),
+            "update": now_iso,
+        })
+
+    return table
+
+
+def get_standings(code):
+
+    api_table = _get_api_standings(code)
+
+    # الكؤوس والبطولات الأوروبية: جدول API فقط
+    if code not in COMPUTED_STANDINGS_CODES:
+        return api_table
+
+    cache_key = f"standings_final_v1_{code}_{SEASON}"
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    computed = _compute_standings(code, api_table)
+
+    if not computed:
+        return api_table
+
+    def total_played(table):
+        return sum((r.get("all") or {}).get("played", 0) for r in table)
+
+    # إذا لحق API (أو سبقنا) نعتمد جدوله الرسمي لأنه أدق
+    if api_table and total_played(api_table) >= total_played(computed):
+        result = api_table
+    else:
+        result = computed
+
+    cache.set(cache_key, result, STANDINGS_COMPUTED_TTL)
+
+    return result
 
 
 def competition_standings(request, code):
