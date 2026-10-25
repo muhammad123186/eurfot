@@ -1352,32 +1352,35 @@ def match_detail(request, id):
     CORE_CACHE_TTL = 60 * 60 * 12       # Overview + Comparison + H2H - 12 ساعة
     LIVE_STATUS_CACHE_TTL = 60          # حالة ونتيجة المباراة - كل دقيقة
     LINEUPS_CACHE_TTL = 60 * 15         # Lineups - 15 دقيقة
+    LINEUPS_FALLBACK_TTL = 120          # أثناء عرض تشكيلة سابقة - دقيقتان
     EVENTS_CACHE_TTL = 60 * 2           # أثناء المباراة - دقيقتين
     STATS_CACHE_TTL = 60 * 2            # أثناء المباراة - دقيقتين
-    HALFTIME_CACHE_TTL = 60 * 10       
-    FINISHED_CACHE_TTL = 360   # بعد المباراة - 24 ساعة
-    STATIC_CACHE_TTL = 360 # البيانات الثابتة - أسبوع
+    HALFTIME_CACHE_TTL = 60 * 10
+    FINISHED_CACHE_TTL = 360            # بعد المباراة
+    STATIC_CACHE_TTL = 360              # البيانات الثابتة
     NOT_STARTED_CACHE_TTL = 60          # المباراة لم تبدأ - دقيقة واحدة
+
+    FINISHED_STATUSES = ["FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO"]
 
     def get_match_ttl(status):
         if status in ["1H", "2H", "ET", "BT", "P", "LIVE"]:
             return EVENTS_CACHE_TTL
         elif status == "HT":
             return HALFTIME_CACHE_TTL
-        elif status in ["FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO"]:
+        elif status in FINISHED_STATUSES:
             return FINISHED_CACHE_TTL
         elif status in ["NS", "TBD", "PST", "SUSP", "INT"]:
             return NOT_STARTED_CACHE_TTL
         return NOT_STARTED_CACHE_TTL
 
     def get_live_status_ttl(status):
-        if status in ["FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO"]:
+        if status in FINISHED_STATUSES:
             return FINISHED_CACHE_TTL
         return LIVE_STATUS_CACHE_TTL
 
     core_cache_key = f"match_core_v3_{id}"
     live_cache_key = f"match_live_v3_{id}"
-    lineups_cache_key = f"match_lineups_v3_{id}"
+    lineups_cache_key = f"match_lineups_v4_{id}"
     events_cache_key = f"match_events_v3_{id}"
     stats_cache_key = f"match_stats_v4_{id}"
 
@@ -1403,7 +1406,7 @@ def match_detail(request, id):
                 "pages/match_detail.html",
                 {
                     "game": None,
-                    "lineups": [],
+                    "lineups": {"home": None, "away": None},
                     "competitions": LEAGUES
                 }
             )
@@ -1467,19 +1470,17 @@ def match_detail(request, id):
             "https://v3.football.api-sports.io/fixtures",
             headers=headers,
             params={
-            "team": away_id,
-            "season": f["league"]["season"],
-            "league": league_id,
-            "last": 5
+                "team": away_id,
+                "season": f["league"]["season"],
+                "league": league_id,
+                "last": 5
             },
             timeout=15
         )
-        
+
         home_last_matches = home_last_response.json().get("response", [])
 
         away_last_matches = away_last_response.json().get("response", [])
-
-        
 
         # ---- comparison (season team stats) ----
 
@@ -1660,7 +1661,7 @@ def match_detail(request, id):
     home_id = game["home_id"]
     away_id = game["away_id"]
 
-    # ================= LINEUPS (15 دقيقة) =================
+    # ================= LINEUPS =================
 
     lineups_cached = cache.get(lineups_cache_key)
 
@@ -1905,6 +1906,72 @@ def match_detail(request, id):
 
             return result
 
+        def get_previous_lineup(team_id, last_matches, is_away):
+            """تشكيلة الفريق في آخر مباراة منتهية له بنفس البطولة"""
+
+            finished = [
+                m for m in last_matches
+                if m["fixture"]["status"]["short"] in ("FT", "AET", "PEN")
+                and m["fixture"]["id"] != int(id)
+            ]
+
+            if not finished:
+                return None
+
+            finished.sort(key=lambda m: m["fixture"]["date"], reverse=True)
+            prev = finished[0]
+            prev_id = prev["fixture"]["id"]
+
+            prev_cache_key = (
+                f"prev_lineup_v1_{team_id}_{prev_id}_{'a' if is_away else 'h'}"
+            )
+
+            cached_prev = cache.get(prev_cache_key)
+
+            if cached_prev is not None:
+                return cached_prev
+
+            try:
+                resp = safe_api_get(
+                    "https://v3.football.api-sports.io/fixtures/lineups",
+                    headers=headers,
+                    params={"fixture": prev_id},
+                    timeout=15
+                )
+                prev_data = resp.json().get("response", [])
+            except (requests.RequestException, ValueError):
+                return None
+
+            team_entry = next(
+                (t for t in prev_data if t["team"]["id"] == team_id),
+                None
+            )
+
+            if not team_entry or not team_entry.get("startXI"):
+                return None
+
+            lineup = build_team_lineup(team_entry, {}, is_away=is_away)
+
+            try:
+                prev_date = datetime.fromisoformat(
+                    prev["fixture"]["date"].replace("Z", "+00:00")
+                ).strftime("%d/%m/%Y")
+            except (ValueError, TypeError):
+                prev_date = ""
+
+            lineup["previous_match"] = {
+                "label": (
+                    f"{clean_team_name(prev['teams']['home']['name'])} "
+                    f"{prev['goals']['home']}-{prev['goals']['away']} "
+                    f"{clean_team_name(prev['teams']['away']['name'])}"
+                ),
+                "date": prev_date,
+            }
+
+            cache.set(prev_cache_key, lineup, 60 * 60 * 12)
+
+            return lineup
+
         players_response = safe_api_get(
             "https://v3.football.api-sports.io/fixtures/players",
             headers=headers,
@@ -1937,22 +2004,43 @@ def match_detail(request, id):
             []
         )
 
+        # مطابقة الفريق بالـ id بدل الترتيب
+        by_team = {
+            t["team"]["id"]: t
+            for t in lineups_data_raw
+        }
+
+        home_entry = by_team.get(home_id)
+        away_entry = by_team.get(away_id)
+
         lineups = {
             "home": None,
             "away": None
         }
 
-        if len(lineups_data_raw) >= 2:
-
+        if home_entry and home_entry.get("startXI"):
             lineups["home"] = build_team_lineup(
-                lineups_data_raw[0],
+                home_entry,
                 player_stats,
                 is_away=False
             )
+        else:
+            lineups["home"] = get_previous_lineup(
+                home_id,
+                home_last_matches,
+                is_away=False
+            )
 
+        if away_entry and away_entry.get("startXI"):
             lineups["away"] = build_team_lineup(
-                lineups_data_raw[1],
+                away_entry,
                 player_stats,
+                is_away=True
+            )
+        else:
+            lineups["away"] = get_previous_lineup(
+                away_id,
+                away_last_matches,
                 is_away=True
             )
 
@@ -1961,20 +2049,23 @@ def match_detail(request, id):
             "player_stats": player_stats,
         }
 
+        # أثناء عرض تشكيلة سابقة نخزّن لفترة قصيرة حتى تظهر الرسمية فور صدورها
+        using_fallback = any(
+            side and side.get("previous_match")
+            for side in lineups.values()
+        )
+
+        if using_fallback:
+            lineups_ttl = LINEUPS_FALLBACK_TTL
+        elif match_status in FINISHED_STATUSES:
+            lineups_ttl = FINISHED_CACHE_TTL
+        else:
+            lineups_ttl = LINEUPS_CACHE_TTL
+
         cache.set(
             lineups_cache_key,
             lineups_cached,
-            FINISHED_CACHE_TTL
-            if match_status in [
-                "FT",
-                "AET",
-                "PEN",
-                "CANC",
-                "ABD",
-                "AWD",
-                "WO"
-            ]
-            else LINEUPS_CACHE_TTL
+            lineups_ttl
         )
 
     lineups = lineups_cached["lineups"]
@@ -2217,8 +2308,6 @@ def match_detail(request, id):
                 for stat_type in preferred_order
                 if stat_type in available_types
             ]
-
-            print("AVAILABLE STAT TYPES:", available_types)
 
             remaining_types = [
                 s.get("type")
@@ -5840,24 +5929,39 @@ def _match_importance(match, ranks):
     return score
 
 
-def get_featured_matches(grouped_matches):
-    """أهم مباراة من كل بطولة، تبقى طوال اليوم حتى بعد انتهائها"""
 
-    ordered = sorted(
-        enumerate(grouped_matches),
-        key=lambda p: (
-            FEATURED_ORDER.index(p[1]["code"])
-            if p[1]["code"] in FEATURED_ORDER
-            else len(FEATURED_ORDER),
-            p[0],
-        ),
-    )
+# أزواج الكلاسيكو والديربيات الكبرى (IDs من API-Football، تحقق منها من روابط /team/ID/)
+BIG_RIVALRIES = [
+    {541, 529},   # Real Madrid - Barcelona
+    {33, 40},     # Man United - Liverpool
+    {33, 50},     # Man United - Man City
+    {42, 47},     # Arsenal - Tottenham
+    {49, 42},     # Chelsea - Arsenal
+    {40, 45},     # Liverpool - Everton
+    {489, 505},   # AC Milan - Inter
+    {496, 505},   # Juventus - Inter
+    {541, 530},   # Real Madrid - Atletico
+    {157, 165},   # Bayern - Dortmund
+    {85, 80},     # PSG - Marseille
+]
+
+# وزن البطولة: الأقل = أهم (يُضاف لنقاط المباراة)
+LEAGUE_WEIGHT = {"UCL": 0, "PL": 2, "PD": 2, "SA": 6, "BL1": 6, "FL1": 8, "UEL": 8, "UECL": 12}
+
+
+def _is_rivalry(match):
+    pair = {match["homeTeam"]["id"], match["awayTeam"]["id"]}
+    return any(pair == r for r in BIG_RIVALRIES)
+
+
+
+def get_featured_matches(grouped_matches):
+    """أهم مباراة من كل بطولة، مرتبة حسب أهمية المباراة نفسها على مستوى اليوم"""
 
     featured = []
 
-    for _, group in ordered:
+    for group in grouped_matches:
 
-        # نستبعد المؤجلة والملغاة فقط
         candidates = [
             m for m in group["matches"]
             if m["status"] not in ("PST", "CANC", "ABD", "AWD", "WO")
@@ -5871,9 +5975,15 @@ def get_featured_matches(grouped_matches):
         best = min(
             candidates,
             key=lambda m: (
-                _match_importance(m, ranks),
+                _match_importance(m, ranks) - (30 if _is_rivalry(m) else 0),
                 m["utcDate"] or datetime.max,
             ),
+        )
+
+        score = (
+            _match_importance(best, ranks)
+            - (30 if _is_rivalry(best) else 0)
+            + LEAGUE_WEIGHT.get(group["code"], 20)
         )
 
         featured.append({
@@ -5883,12 +5993,12 @@ def get_featured_matches(grouped_matches):
                 "name": group["name"],
                 "logo": group["logo"],
             },
+            "_score": score,
         })
 
-    return featured
+    featured.sort(key=lambda m: m["_score"])
 
-    # أولًا المباريات القادمة، وإذا ما في أي مباراة قادمة نعرض المنتهية
-    return collect(False) or collect(True)
+    return featured
 
 
 
@@ -6058,6 +6168,151 @@ def get_league_stats_cards():
     return result
 
 
+
+
+
+# ================= DAILY SUMMARY v2 =================
+def _team_line(team_name, league_code, mini_standings):
+    """جملة قصيرة عن ترتيب الفريق إن وُجد في الجدول المصغّر"""
+    for s in mini_standings:
+        if s["code"] == league_code:
+            for r in s["rows"]:
+                if r["name"] == team_name:
+                    return r
+    return None
+
+
+def _ordinal(n):
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def _describe_fixture(m, mini_standings):
+    """وصف مباراة واحدة بجملة طبيعية، مع الترتيب إن توفر"""
+    home = m["homeTeam"]["name"]
+    away = m["awayTeam"]["name"]
+    league = m["league"]["name"]
+    code = m["league"]["code"]
+
+    h = _team_line(home, code, mini_standings)
+    a = _team_line(away, code, mini_standings)
+
+    base = f"{home} vs {away} in {league}"
+
+    if h and a:
+        return (
+            f"{base}, a meeting between the league's {_ordinal(h['rank'])}-placed side "
+            f"({h['points']} pts) and {_ordinal(a['rank'])}-placed side ({a['points']} pts)"
+        )
+    if h:
+        return f"{base}, with {home} sitting {_ordinal(h['rank'])} on {h['points']} points"
+    if a:
+        return f"{base}, with {away} sitting {_ordinal(a['rank'])} on {a['points']} points"
+    return base
+
+
+
+def build_daily_summary(grouped_matches, featured_matches, mini_standings, target_date):
+    """فقرة يومية احترافية من بيانات اليوم. تعيد None إذا لا توجد مباريات."""
+
+    all_matches = [m for g in grouped_matches for m in g["matches"]]
+    total = len(all_matches)
+
+    if total == 0:
+        return None
+
+    comp_count = len(grouped_matches)
+    date_text = f"{target_date.strftime('%A')}, {target_date.day} {target_date.strftime('%B %Y')}"
+
+    finished = sum(1 for m in all_matches if m["status"] in ("FT", "AET", "PEN"))
+    live = sum(1 for m in all_matches if m["status"] in ("1H", "2H", "HT", "ET", "BT", "P", "LIVE"))
+    upcoming = sum(1 for m in all_matches if m["status"] in ("NS", "TBD"))
+
+    # حالة اليوم
+    status_parts = []
+    if live:
+        status_parts.append(f"{live} in play now")
+    if finished:
+        status_parts.append(f"{finished} finished")
+    if upcoming:
+        status_parts.append(f"{upcoming} still to come")
+    status_text = ", ".join(status_parts)
+
+    # أهم مباراتين من بطولتين مختلفتين إن أمكن
+    picks = []
+    seen_leagues = set()
+    for m in featured_matches:
+        if m["league"]["code"] not in seen_leagues:
+            picks.append(m)
+            seen_leagues.add(m["league"]["code"])
+        if len(picks) == 2:
+            break
+
+    lead = _describe_fixture(picks[0], mini_standings) if picks else None
+    second = _describe_fixture(picks[1], mini_standings) if len(picks) > 1 else None
+
+    # أسماء بقية البطولات
+    picked_leagues = {p["league"]["name"] for p in picks}
+    others = [g["name"] for g in grouped_matches if g["name"] not in picked_leagues][:3]
+    if len(others) > 1:
+        others_text = ", ".join(others[:-1]) + " and " + others[-1]
+    elif others:
+        others_text = others[0]
+    else:
+        others_text = ""
+
+    match_word = "match" if total == 1 else "matches"
+    comp_word = "competition" if comp_count == 1 else "competitions"
+
+    # اختيار القالب حسب اليوم (يتنوع تلقائيًا)
+    variant = target_date.toordinal() % 3
+
+    parts = []
+
+    if variant == 0:
+        parts.append(
+            f"Today's football schedule on {date_text} features {total} {match_word} "
+            f"across {comp_count} {comp_word}"
+            + (f" ({status_text})." if status_text else ".")
+        )
+        if lead:
+            parts.append(f"The standout fixture is {lead}.")
+        if second:
+            parts.append(f"Also worth watching: {second}.")
+
+    elif variant == 1:
+        if lead:
+            parts.append(f"The headline game on {date_text} is {lead}.")
+        if second:
+            parts.append(f"Elsewhere, {second}.")
+        parts.append(
+            f"In total, {total} {match_word} are on the calendar across {comp_count} {comp_word}"
+            + (f", with {status_text}." if status_text else ".")
+        )
+
+    else:
+        parts.append(
+            f"{total} {match_word} across {comp_count} {comp_word} make up the fixture list for {date_text}."
+        )
+        if lead:
+            parts.append(f"Leading the card is {lead}.")
+        if second:
+            parts.append(f"The day also brings {second}.")
+        if status_text:
+            parts.append(f"Right now: {status_text}.")
+
+    if others_text:
+        parts.append(f"Further action comes from {others_text}.")
+
+    parts.append("Follow live scores, standings and team statistics on Eurfot.")
+
+    return " ".join(parts)
+
+
+
 def today_matches_view(request):
 
     date_param = request.GET.get("date")
@@ -6069,12 +6324,16 @@ def today_matches_view(request):
 
     grouped_matches = get_today_matches(target_date)
 
+    featured = get_featured_matches(grouped_matches)
+    mini = get_mini_standings()
+
     context = {
         **get_common_context(),
         "grouped_matches": grouped_matches,
-        "featured_matches": get_featured_matches(grouped_matches),
-        "mini_standings": get_mini_standings(),
+        "featured_matches": featured,
+        "mini_standings": mini,
         "league_stats": get_league_stats_cards(),
+        "daily_summary": build_daily_summary(grouped_matches, featured, mini, target_date),
         "selected_date": target_date,
         "prev_date": target_date - timedelta(days=1),
         "next_date": target_date + timedelta(days=1),

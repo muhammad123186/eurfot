@@ -373,6 +373,11 @@
 {% endif %}
 
 
+{% if daily_summary %}
+<p class="daily-summary">{{ daily_summary }}</p>
+{% endif %}
+
+
         {% for group in grouped_matches %}
 
         <div class="league-group">
@@ -2104,6 +2109,32 @@ html, body{
 
 
 
+
+/* ================= DAILY SUMMARY ================= */
+.daily-summary{
+    width: 100%;
+    max-width: 700px;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    background: #0e0e0e;
+    border-left: 3px solid #ff0000;
+    border-radius: 0 10px 10px 0;
+    color: #b5b5b5;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+    text-align: left;
+}
+
+@media (max-width: 1000px){
+    .daily-summary{
+        max-width: 100%;
+        font-size: 13px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+    }
+}
 
 
 </style>

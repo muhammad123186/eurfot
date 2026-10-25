@@ -636,25 +636,40 @@ No matches available
 <!-- ================= LINEUPS ================= -->
 <div id="lineups" class="tab-content">
 
+  {% if lineups.home.previous_match or lineups.away.previous_match %}
+  <p class="lineup-note">
+    Confirmed lineups are usually released about an hour before kick-off.
+    Until then, each team's starting XI from its previous league match is shown.
+  </p>
+  {% endif %}
+
+  {% if not lineups.home and not lineups.away %}
+  <p class="bench-empty">Lineups are not available yet.</p>
+  {% endif %}
+
   <!-- معلومات الفريقين -->
   <div class="lineup-header-container">
     {% for key, team in lineups.items %}
+      {% if team %}
       <div class="lineup-team-card">
         <img src="{{ team.logo }}" alt="{{ team.team }}">
         <div class="lineup-info">
           <h2>{{ team.team }}</h2>
           <p>Formation: {{ team.formation }}</p>
           <p>Manager: {{ team.coach }}</p>
+          {% if team.previous_match %}
+          <p class="lineup-prev">Previous match: {{ team.previous_match.label }} ({{ team.previous_match.date }})</p>
+          {% endif %}
         </div>
       </div>
+      {% endif %}
     {% endfor %}
   </div>
 
   <!-- الملعب -->
   <div class="pitch">
 
-
-     <!-- خطوط منطقة الـ 18 والـ 6 -->
+    <!-- خطوط منطقة الـ 18 والـ 6 -->
     <div class="penalty-box home-box"></div>
     <div class="goal-box home-goal"></div>
     <div class="penalty-spot home-spot"></div>
@@ -664,45 +679,44 @@ No matches available
     <div class="penalty-spot away-spot"></div>
 
     {% for key, team in lineups.items %}
+      {% if team %}
       <div class="team-side {% if key == 'home' %}home-side{% else %}away-side{% endif %}">
 
         {% for line in team.lines %}
           <div class="formation-line {% if line.is_gk %}gk-line{% endif %}">
 
-        {% for player in line.players %}
-  <div class="player-position" data-player-id="{{ player.id }}" onclick="openPlayerStats({{ player.id }}, '{{ player.name|escapejs }}')">
-    <div class="player-circle">
+            {% for player in line.players %}
+            <div class="player-position" data-player-id="{{ player.id }}" onclick="openPlayerStats({{ player.id }}, '{{ player.name|escapejs }}')">
 
-    {% if player.photo %}
-        <img src="{{ player.photo }}" class="player-photo" onerror="this.style.display='none'; this.parentElement.textContent='{{ player.number }}';">
-    {% else %}
-        {{ player.number }}
-    {% endif %}
+              <div class="player-circle">
+                {% if player.photo %}
+                  <img src="{{ player.photo }}" class="player-photo" onerror="this.style.display='none'; this.parentElement.textContent='{{ player.number }}';">
+                {% else %}
+                  {{ player.number }}
+                {% endif %}
+              </div>
 
-    </div>
+              {% if player.rating %}
+              <div class="player-rating rating-{{ player.rating_class }}">
+                {{ player.rating }}
+              </div>
+              {% endif %}
 
-    {% if player.rating %}
-    <div class="player-rating rating-{{ player.rating_class }}">
-        {{ player.rating }}
-    </div>
-    {% endif %}
+              <div class="player-name">
+                <span>{{ player.name }}</span>
+              </div>
 
-    <div class="player-name">
-    <span>{{ player.name }}</span>
-    </div>
-  </div>
-{% endfor %}
+            </div>
+            {% endfor %}
 
           </div>
         {% endfor %}
 
       </div>
+      {% endif %}
     {% endfor %}
 
   </div>
-
-
-
   <!-- ================= الدكة (الاحتياط) ================= -->
 
 <div class="bench-container">
@@ -754,6 +768,8 @@ No matches available
 </div>
 
 </div>
+
+
 
 
 <!--statics-->
@@ -4075,6 +4091,24 @@ margin-left: -2%;
 }
 
 }
+
+
+.lineup-note{
+    background: #111;
+    border-left: 3px solid #ff0000;
+    border-radius: 0 10px 10px 0;
+    color: #b5b5b5;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 10px 14px;
+    margin: 0 0 18px;
+}
+
+.lineup-info .lineup-prev{
+    font-size: 12px;
+    color: #888;
+}
+
 
 </style>
 
