@@ -198,81 +198,262 @@
             </div>
         </div>
 
-        <!-- ROUNDS NAV -->
-        {% if rounds %}
-        <div class="matchweek">
-            {% for round_data in rounds %}
-            <a href="#round-{{ forloop.counter }}">
-                {{ round_data.round }}
-            </a>
-            {% endfor %}
-        </div>
-        {% endif %}
 
-        <!-- MATCHES BY ROUND -->
-         {% for round_data in rounds %}
-         <h3 
-id="round-{{ forloop.counter }}" 
-class="round-title"
-style="border-bottom:2px solid {{ competition.theme_color }};">
+<!-- ================= CUP DASHBOARD ================= -->
+<div class="cup-dashboard">
 
-Round {{ forloop.counter }}
+    <!-- ===== LEFT: MINI STANDINGS ===== -->
 
-</h3>
+<!-- ===== MINI STANDINGS ===== -->
 
-  
+<aside class="mini-standings">
 
-        {% for game in round_data.matches %}
-        <div class="match-card" onclick="window.location='{% url 'match_detail' game.id %}';">
-            
-        <div class="team home">
+    <div class="side-card-header">
         <img
-            src="{{ game.homeTeam.crest }}"
-            alt="{{ game.homeTeam.name }}"
-            width="32"
-            height="32"
+            class="standings-competition-logo"
+            src="{{ competition.logo }}"
+            alt="{{ competition.name }}"
+            loading="lazy"
         >
-        <span class="team-home">{{ game.homeTeam.name }}</span>
 
-</div>
-
-            <div class="score-board">
-    <div class="score-status">
-        {% if game.status == "FINISHED" %}
-            FULL TIME
-        {% elif game.status == "IN_PLAY" or game.status == "PAUSED" %}
-            LIVE
-        {% else %}
-            {{ game.status }}
-        {% endif %}
+        <div class="standings-competition-info">
+            <h2 title="{{ competition.name }}">
+                {{ competition.name }}
+            </h2>
+            <span class="standings-subtitle">Standings</span>
+        </div>
     </div>
 
-    <div class="score-value">
-    {% if game.status == "TIMED" or game.status == "SCHEDULED" or game.status == "NS" %}
-        <span>VS</span>
-    {% else %}
-        <span>{{ game.score.fullTime.home|default_if_none:"0" }}</span>
-        <b>-</b>
-        <span>{{ game.score.fullTime.away|default_if_none:"0" }}</span>
-    {% endif %}
-</div>
+    <div class="standings-labels">
+        <span class="standings-rank-label">#</span>
+        <span class="standings-team-label">Team</span>
+        <span class="standings-played-label">MP</span>
+        <span class="standings-gd-label">+/-</span>
+        <span class="standings-points-label">PTS</span>
+    </div>
+
+    {% for row in mini_standings %}
+    <div class="standings-row">
+
+        <span class="standings-rank">{{ row.rank }}</span>
+
+        <a
+            class="standings-team"
+            href="{% url 'team_detail' row.team.id %}"
+            title="{{ row.team.name }}"
+        >
+            <img
+                src="{{ row.team.logo }}"
+                alt="{{ row.team.name }}"
+                loading="lazy"
+            >
+            <span>{{ row.team.name }}</span>
+        </a>
+
+        <span class="standings-played">
+            {{ row.all.played }}
+        </span>
+
+        <span class="standings-gd">
+            {{ row.goalsDiff|stringformat:"+d" }}
+        </span>
+
+        <strong class="standings-points">
+            {{ row.points }}
+        </strong>
+
+    </div>
+    {% empty %}
+    <p class="mini-empty">Standings unavailable.</p>
+    {% endfor %}
+
+    <a
+        class="full-table-link"
+        href="{% url 'competition_standings' cup_code %}"
+    >
+        View Full Table <span aria-hidden="true">↗</span>
+    </a>
+
+</aside>
+
+
+
+    <!-- ===== CENTER: ROUND FIXTURES ===== -->
+    <section class="rounds-column">
+
+        {% if rounds %}
+        <div class="round-navigation">
+            <button type="button" id="prev-round" class="round-nav-btn">
+                ← Previous
+            </button>
+
+            
+
+            <button type="button" id="next-round" class="round-nav-btn">
+                Next →
+            </button>
+        </div>
+
+        <div class="rounds-container">
+            {% for round_data in rounds %}
+            <section
+                class="round-panel"
+                id="round-panel-{{ forloop.counter }}"
+                {% if forloop.counter != current_round_index %}hidden{% endif %}
+            >
+                <h3 class="round-title"
+                    style="border-bottom-color:{{ competition.theme_color }};">
+                    {{ round_data.round }}
+                </h3>
+
+                {% for game in round_data.matches %}
+                <div class="match-card"
+                     onclick="window.location='{% url 'match_detail' game.id %}';">
+
+                    <div class="team home">
+                        <img src="{{ game.homeTeam.crest }}"
+                             alt="{{ game.homeTeam.name }}"
+                             loading="lazy">
+                        <span class="team-home">{{ game.homeTeam.name }}</span>
+                    </div>
+
+                    <div class="score-board">
+                        <div class="score-status">
+                            {% if game.status == "HT" %}
+                                HT
+                            {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+                                FT
+                            {% elif game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+                                {{ game.elapsed|default:"LIVE" }}{% if game.elapsed %}'{% endif %}
+                            {% else %}
+                                {{ game.status }}
+                            {% endif %}
+                        </div>
+
+                        <div class="score-value">
+                            {% if game.status == "NS" or game.status == "TBD" %}
+                                <span>VS</span>
+                            {% else %}
+                                <span>{{ game.score.fullTime.home|default_if_none:"0" }}</span>
+                                <b>-</b>
+                                <span>{{ game.score.fullTime.away|default_if_none:"0" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="team away">
+                        <span class="team-home">{{ game.awayTeam.name }}</span>
+                        <img src="{{ game.awayTeam.crest }}"
+                             alt="{{ game.awayTeam.name }}"
+                             loading="lazy">
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-matches">No matches available in this round.</p>
+                {% endfor %}
+            </section>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <h3 class="no-matches">No Matches Available</h3>
+        {% endif %}
+
+    </section>
+
+
+    <!-- ===== RIGHT: TOP MATCHES ===== -->
+    <aside class="top-matches-column">
+        <div class="top-match-card">
+
+            <div class="top-match-header">
+
+                <!-- زر التنقل على اليسار -->
+                <button type="button" id="next-top-match"
+                        class="top-match-next"
+                        aria-label="Next top match">
+                    ❮
+                </button>
+
+                <!-- شعار البطولة واسمها على اليمين -->
+                <div class="top-match-competition">
+                    <div>
+                        <h2>TOP MATCHES</h2>
+                        <span id="top-match-counter">Match 1 / {{ top_matches|length }}</span>
+                    </div>
+
+                    <div class="top-match-league">
+                        <img src="{{ competition.logo }}" alt="{{ competition.name }}">
+                        <span>{{ competition.name }}</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="team away">
-        <span class="team-home">{{ game.awayTeam.name }}</span>
-        <img
-            src="{{ game.awayTeam.crest }}"
-            alt="{{ game.awayTeam.name }}"
-        >
-</div>
+            {% for game in top_matches %}
+            <a href="{% url 'match_detail' game.id %}"
+               class="top-match-slide"
+               {% if not forloop.first %}hidden{% endif %}
+               data-status="{{ game.status }}"
+               data-elapsed="{{ game.elapsed|default_if_none:'' }}">
+
+                <div class="top-match-teams">
+
+                    <div class="top-match-team">
+                        <img src="{{ game.homeTeam.crest }}"
+                             alt="{{ game.homeTeam.name }}"
+                             loading="lazy">
+                        <span>{{ game.homeTeam.name }}</span>
+                    </div>
+
+                    <div class="top-match-score">
+                        <span class="top-match-status">
+                            {% if game.status == "HT" %}
+                                HALF TIME
+                            {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+                                FULL TIME
+                            {% elif game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+                                {{ game.elapsed|default:"LIVE" }}{% if game.elapsed %}'{% endif %}
+                            {% elif game.status == "NS" or game.status == "TBD" %}
+                                {{ game.utcDate|date:"H:i" }}
+                            {% else %}
+                                {{ game.statusLong|default:game.status }}
+                            {% endif %}
+                        </span>
+
+                        {% if game.status == "NS" or game.status == "TBD" %}
+                            <strong class="top-match-vs">VS</strong>
+                        {% else %}
+                            <strong class="top-match-result">
+                                {{ game.score.fullTime.home|default_if_none:"0" }}
+                                <span>-</span>
+                                {{ game.score.fullTime.away|default_if_none:"0" }}
+                            </strong>
+                        {% endif %}
+                    </div>
+
+                    <div class="top-match-team">
+                        <img src="{{ game.awayTeam.crest }}"
+                             alt="{{ game.awayTeam.name }}"
+                             loading="lazy">
+                        <span>{{ game.awayTeam.name }}</span>
+                    </div>
+
+                </div>
+            </a>
+            {% empty %}
+            <p class="mini-empty">No featured matches available.</p>
+            {% endfor %}
+
+            <div class="top-match-footer">
+                <span>FEATURED FIXTURES</span>
+                <span class="top-match-dots" id="top-match-dots"></span>
+            </div>
 
         </div>
-        {% endfor %}
+    </aside>
 
-{% empty %}
-<h3 style="color:white; margin-top:30px;">No Matches Available</h3>
-{% endfor %}
-
+</div>
+<!-- ================= END CUP DASHBOARD ================= -->
     </div>
 </div>
 
@@ -357,19 +538,6 @@ Round {{ forloop.counter }}
 
 
     {% endfor %}
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const targetId = "round-{{ current_round_index }}";
-    const targetEl = document.getElementById(targetId);
-
-    if (targetEl) {
-        targetEl.scrollIntoView({ behavior: "instant", block: "start" });
-    }
-
-});
-</script>
 
 </div>
 
@@ -1209,7 +1377,696 @@ box-shadow:0 0 15px var(--cup-color);
 
 }
 
-   
+
+
+/* ROUND NAVIGATION */
+
+.round-navigation {
+    width: 100%;
+    max-width: 750px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 460px;
+    margin-top: 0;
+    margin-bottom: 5px;
+    position: relative;
+    top: 50px;
+    z-index: 2;
+}
+
+.round-nav-btn {
+    background: #080808;
+    color: #fff;
+    border: 1px solid {{ competition.theme_color }};
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.round-nav-btn:hover:not(:disabled) {
+    background: {{ competition.theme_color }};
+    transform: translateY(-2px);
+}
+
+.round-nav-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.round-counter {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+}
+
+.round-panel[hidden] {
+    display: none !important;
+}
+
+.rounds-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -15px;
+    padding-top: 0;
+}
+
+.round-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.no-matches {
+    color: #ccc;
+    text-align: center;
+}
+
+@media (max-width: 1000px) {
+    .round-navigation {
+        gap: 8px;
+        padding: 0 8px;
+        box-sizing: border-box;
+        top: 10px;
+        margin-bottom: 5px;
+    }
+
+    .round-nav-btn {
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+
+    .round-counter {
+        font-size: 12px;
+    }
+
+    .rounds-container {
+        margin-top: -10px;
+    }
+}
+
+
+
+
+/* ================= CUP THREE-COLUMN DASHBOARD ================= */
+.cup-dashboard {
+    width: 100%;
+    display: grid;
+    grid-template-columns:
+        minmax(280px, 1fr)
+        minmax(420px, 1.5fr)
+        minmax(230px, 0.9fr);
+    grid-template-areas: "topmatches rounds standings";
+    align-items: start;
+    gap: 18px;
+    margin-top: 22px;
+    direction: ltr;
+    box-sizing: border-box;
+    column-gap: 45px;
+}
+
+/* ترتيب الأعمدة */
+
+.top-matches-column {
+    grid-area: topmatches;
+    min-width: 0;
+    width: 100%;
+}
+
+.rounds-column {
+    grid-area: rounds;
+    min-width: 0;
+    width: 100%;
+}
+
+.mini-standings {
+    grid-area: standings;
+    min-width: 0;
+    width: 100%;
+}
+
+/* البطاقات */
+
+.mini-standings,
+.top-match-card {
+    background: #080808;
+    color: #fff;
+    border: 1px solid #292929;
+    border-radius: 13px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .2);
+    box-sizing: border-box;
+}
+
+/* رأس بطاقة الترتيب */
+
+.side-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 14px 12px;
+    border-bottom: 1px solid #292929;
+    direction: ltr;
+}
+
+.standings-competition-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.standings-competition-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.side-card-header h2 {
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+    color: #fff;
+    overflow-wrap: anywhere;
+}
+
+.standings-subtitle {
+    font-size: 10px;
+    color: #999;
+}
+
+/* جدول الترتيب المصغّر */
+
+.standings-labels,
+.standings-row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) 28px 32px;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 10px;
+    direction: ltr;
+}
+
+.standings-labels {
+    color: #999;
+    font-size: 10px;
+    border-bottom: 1px solid #242424;
+}
+
+.standings-row {
+    min-height: 42px;
+    border-bottom: 1px solid #1e1e1e;
+    font-size: 11px;
+    transition: background .2s ease;
+}
+
+.standings-row:hover {
+    background: #151515;
+}
+
+.standings-rank,
+.standings-played {
+    color: #bdbdbd;
+    text-align: center;
+}
+
+.standings-team {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.standings-team:hover span {
+    color: red;
+}
+
+.standings-team img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.standings-team span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color .2s ease;
+}
+
+.standings-points {
+    color: #fff;
+    text-align: center;
+    font-weight: 800;
+}
+
+.standings-team-label {
+    padding-left: 2px;
+}
+
+.mini-empty {
+    color: #aaa;
+    font-size: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+/* رابط الجدول الكامل أسفل البطاقة */
+
+.full-table-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 10px;
+    background: #111;
+    border-top: 1px solid #292929;
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease;
+}
+
+.full-table-link:hover {
+    background: #1c1c1c;
+    color: #fff;
+}
+
+/* بطاقة Top Matches */
+
+.top-match-card {
+    padding: 15px;
+    min-height: 230px;
+    border-top: 3px solid {{ competition.theme_color }};
+}
+
+.top-match-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    direction: ltr;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #292929;
+}
+
+.top-match-next {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: #191919;
+    color: #fff;
+    border: 1px solid #383838;
+    font-size: 16px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.top-match-competition {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    text-align: right;
+    direction: ltr;
+}
+
+.top-match-competition h2 {
+    margin: 0 75px 5px;
+    font-size: 15px;
+}
+
+.top-match-competition > div:first-child > span {
+    font-size: 10px;
+    color: #aaa;
+    margin: 0 105px 5px;
+}
+
+.top-match-league {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 80px;
+}
+
+.top-match-league img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.top-match-league span {
+    font-size: 9px;
+    color: #ccc;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.top-match-slide {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.top-match-slide[hidden] {
+    display: none !important;
+}
+
+.top-match-teams {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 75px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 24px 0;
+}
+
+.top-match-team {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.top-match-team img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.top-match-team span {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.top-match-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.top-match-status {
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.top-match-vs {
+    font-size: 25px;
+    color: #fff;
+}
+
+.top-match-result {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 900;
+}
+
+.top-match-result span {
+    color: #777;
+    font-size: 20px;
+}
+
+.top-match-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #292929;
+    padding-top: 12px;
+    color: #777;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.top-match-dots {
+    display: flex;
+    gap: 5px;
+}
+
+.top-match-dot {
+    width: 7px;
+    height: 7px;
+    border: 0;
+    border-radius: 50%;
+    background: #555;
+    padding: 0;
+    cursor: pointer;
+}
+
+.top-match-dot.active {
+    transform: scale(1.2);
+}
+
+/* عمود مباريات الجولة */
+
+.rounds-column .round-navigation {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    top: 0;
+    margin: 0 0 15px;
+}
+
+.rounds-column .rounds-container {
+    width: 100%;
+    margin-top: 0;
+}
+
+.rounds-column .match-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 12px;
+}
+
+.rounds-column .team {
+    min-width: 0;
+}
+
+.rounds-column .team-home {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rounds-column .round-title {
+    margin-top: 10px;
+}
+
+/* الشاشات المتوسطة */
+
+@media (max-width: 1200px) {
+    .cup-dashboard {
+        grid-template-columns: minmax(230px, .9fr) minmax(0, 1.5fr);
+        grid-template-areas:
+            "topmatches standings"
+            "rounds rounds";
+        gap: 16px;
+    }
+
+    .rounds-column .match-card {
+        max-width: 750px;
+    }
+}
+
+/* الهواتف */
+
+@media (max-width: 700px) {
+    .cup-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: stretch;
+        margin-top: 10px;
+    }
+
+    .top-matches-column {
+        order: 1;
+    }
+
+    .rounds-column {
+        order: 2;
+    }
+
+    .mini-standings {
+        order: 3;
+    }
+
+    .top-match-card {
+        width: 100%;
+        min-height: 0;
+    }
+
+    .top-match-team img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .top-match-teams {
+        grid-template-columns: minmax(0, 1fr) 65px minmax(0, 1fr);
+        padding: 20px 0;
+    }
+
+    .rounds-column .match-card {
+        width: 100%;
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .rounds-column .team {
+        flex: 1;
+    }
+
+    .rounds-column .team-home {
+        font-size: 11px;
+    }
+
+    .rounds-column .score-board {
+        flex-shrink: 0;
+    }
+
+    .standings-labels,
+    .standings-row {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+
+
+/* تحريك البطاقتين الجانبيتين فقط */
+.cup-dashboard > .top-matches-column,
+.cup-dashboard > .mini-standings {
+    position: relative;
+    top: 35px;
+}
+
+/* إعادة أزرار Previous / Next إلى الأسفل */
+.cup-dashboard .rounds-column .round-navigation {
+    position: relative;
+    top: 50px;
+    margin-top: 0;
+}
+
+/* إبقاء قائمة المباريات دون تحريكها */
+.cup-dashboard .rounds-column .rounds-container {
+    margin-top: -15px;
+}
+
+/* ضبط مواضع العناصر على الهاتف */
+@media (max-width: 1000px) {
+    .cup-dashboard > .top-matches-column,
+    .cup-dashboard > .mini-standings {
+        top: 0;
+    }
+
+    .cup-dashboard .rounds-column .round-navigation {
+        top: 10px;
+    }
+
+    .cup-dashboard .rounds-column .rounds-container {
+        margin-top: -10px;
+    }
+}
+
+
+
+.cup-dashboard > .top-matches-column,
+.cup-dashboard > .mini-standings {
+    position: relative;
+    top: 100px;
+}
+
+
+
+
+/* ضبط أعمدة الترتيب المصغر */
+.mini-standings .standings-labels,
+.mini-standings .standings-row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) 30px 34px 34px;
+    align-items: center;
+    column-gap: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* محاذاة العناوين فوق القيم */
+.mini-standings .standings-labels > span,
+.mini-standings .standings-rank,
+.mini-standings .standings-played,
+.mini-standings .standings-gd,
+.mini-standings .standings-points {
+    text-align: center;
+    min-width: 0;
+}
+
+/* اسم الفريق وشعاره */
+.mini-standings .standings-team {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.mini-standings .standings-team img {
+    flex-shrink: 0;
+}
+
+.mini-standings .standings-team span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* منع تمدد الأعمدة بسبب الأرقام */
+.mini-standings .standings-gd,
+.mini-standings .standings-points,
+.mini-standings .standings-played {
+    font-variant-numeric: tabular-nums;
+}
+
+
 </style>
 
 <!-- ================= SCRIPTS ================= -->
@@ -1271,6 +2128,115 @@ function openMobileSearch(){
 function closeMobileSearch(){
     document.getElementById('mobile-search-overlay').classList.remove('active');
 }
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const panels = Array.from(document.querySelectorAll(".round-panel"));
+    const prevBtn = document.getElementById("prev-round");
+    const nextBtn = document.getElementById("next-round");
+    const counter = document.querySelector(".round-counter");
+
+    if (!panels.length || !prevBtn || !nextBtn) {
+        console.error("Round navigation: buttons or panels not found.");
+        return;
+    }
+
+    let currentIndex = panels.findIndex(panel => !panel.hidden);
+
+    if (currentIndex === -1) {
+        currentIndex = 0;
+    }
+
+    function showRound(index) {
+        currentIndex = Math.max(0, Math.min(index, panels.length - 1));
+
+        panels.forEach((panel, i) => {
+            panel.hidden = i !== currentIndex;
+        });
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === panels.length - 1;
+
+        if (counter) {
+            counter.textContent =
+                "الجولة " + (currentIndex + 1) + " من " + panels.length;
+        }
+    }
+
+    prevBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        showRound(currentIndex - 1);
+    });
+
+    nextBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        showRound(currentIndex + 1);
+    });
+
+    showRound(currentIndex);
+});
+
+
+
+
+
+
+/* ================= TOP MATCHES SLIDER ================= */
+(function () {
+    const slides = Array.from(
+        document.querySelectorAll(".top-match-slide")
+    );
+    const nextButton = document.getElementById("next-top-match");
+    const counter = document.getElementById("top-match-counter");
+    const dotsContainer = document.getElementById("top-match-dots");
+
+    if (!slides.length || !nextButton || !dotsContainer) return;
+
+    let current = 0;
+
+    slides.forEach(function (_, index) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "top-match-dot";
+        dot.setAttribute("aria-label", "Show match " + (index + 1));
+
+        dot.addEventListener("click", function () {
+            showMatch(index);
+        });
+
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = Array.from(
+        dotsContainer.querySelectorAll(".top-match-dot")
+    );
+
+    function showMatch(index) {
+        current = (index + slides.length) % slides.length;
+
+        slides.forEach(function (slide, i) {
+            slide.hidden = i !== current;
+        });
+
+        dots.forEach(function (dot, i) {
+            dot.classList.toggle("active", i === current);
+        });
+
+        if (counter) {
+            counter.textContent =
+                "Match " + (current + 1) + " / " + slides.length;
+        }
+    }
+
+    nextButton.addEventListener("click", function () {
+        showMatch(current + 1);
+    });
+
+    showMatch(0);
+})();
+
+
 </script>
 
 </div>

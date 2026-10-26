@@ -5849,7 +5849,7 @@ def get_cup_rounds(code):
 
     league_id = league_info["id"]
 
-    cache_key = f"cup_rounds_v2_{code}_{SEASON}"
+    cache_key = f"cup_rounds_v3_{code}_{SEASON}"
 
     cached = cache.get(cache_key)
 
@@ -5903,6 +5903,14 @@ def get_cup_rounds(code):
             "status": f["fixture"]["status"]["short"],
 
             "utcDate": to_mecca_time(f["fixture"]["date"]),
+
+            "elapsed": f["fixture"]["status"].get("elapsed"),
+            "statusLong": f["fixture"]["status"].get("long", ""),
+            "timestamp": f["fixture"].get("timestamp", 0),
+            "league": {
+            "name": f["league"].get("name", ""),
+            "logo": f["league"].get("logo", ""),
+            },
         })
 
     # ===== استبعاد الأدوار التمهيدية (قبل دور المجموعات/الدوري) =====
@@ -5927,6 +5935,37 @@ def get_cup_rounds(code):
 
 
 
+
+def get_top_cup_matches(rounds):
+    live_statuses = {"1H", "2H", "HT", "ET", "BT", "P", "LIVE"}
+    upcoming_statuses = {"NS", "TBD"}
+    finished_statuses = {"FT", "AET", "PEN"}
+
+    matches = [
+        game
+        for round_data in rounds
+        for game in round_data["matches"]
+    ]
+
+    def priority(game):
+        status = game.get("status")
+
+        if status in live_statuses:
+            return (0, game.get("timestamp", 0))
+
+        if status in upcoming_statuses:
+            return (1, game.get("timestamp", 0))
+
+        if status in finished_statuses:
+            return (2, -game.get("timestamp", 0))
+
+        return (3, game.get("timestamp", 0))
+
+    matches.sort(key=priority)
+
+    return matches[:4]
+
+
 def cup_competition(request, code):
 
     competition = LEAGUES.get(code)
@@ -5941,6 +5980,12 @@ def cup_competition(request, code):
 
     current_round_index = get_current_round_index(rounds)
 
+    top_matches = get_top_cup_matches(rounds)
+
+    standings = _get_api_standings(code)
+
+    mini_standings = standings[:8]
+
     context = {
 
         "competition": competition,
@@ -5950,6 +5995,8 @@ def cup_competition(request, code):
         "cup_code": code,
         "rounds": rounds,
         "current_round_index": current_round_index,
+        "top_matches": top_matches,
+        "mini_standings": mini_standings,
     }
 
     template_name = LEAGUES[code].get("template", "pages/cup_competition.html")
