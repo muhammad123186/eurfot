@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} | Eurfot{% endblock %}
+{% block meta_description %}{{ article.summary|truncatechars:155 }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article.title|escapejs }}",
+  "datePublished": "{{ article.created_at|date:'c' }}",
+  "image": "{{ article.image_url }}",
+  "publisher": {"@type": "Organization", "name": "EURFOT", "url": "https://eurfot.com/"}
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="an-wrap">
+    <a href="{% url 'matches' %}" class="an-back">← EURFOT</a>
+
+    <article class="an-article">
+        {% if article.image_url %}
+        <img class="an-img" src="{{ article.image_url }}" alt="{{ article.title }}">
+        {% endif %}
+        <h1>{{ article.title }}</h1>
+        <div class="an-date">{{ article.created_at|date:"j F Y" }}</div>
+        {% for para in article.paragraphs %}
+        <p>{{ para }}</p>
+        {% endfor %}
+    </article>
+
+    {% if related %}
+    <h2 class="an-related-title">More analysis</h2>
+    {% for a in related %}
+    <a class="an-related" href="{{ a.get_absolute_url }}">{{ a.title }}</a>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+body{background:#080808;margin:0}
+.an-wrap{max-width:760px;margin:0 auto;padding:20px;color:white;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.an-back{color:white;text-decoration:none;font-weight:800}
+.an-article{background:#111;border:1px solid ;border-radius:16px;padding:20px;margin-top:14px}
+.an-img{display:block;margin:0 auto 14px;max-height:120px;object-fit:contain}
+.an-article h1{font-size:24px;line-height:1.35;margin:0 0 6px}
+.an-date{color:#888;font-size:12px;margin-bottom:16px}
+.an-article p{color:#ccc;line-height:1.75;font-size:15px}
+.an-related-title{font-size:16px;margin:22px 0 8px}
+.an-related{display:block;padding:10px 14px;margin-bottom:8px;background:#0e0e0e;border-left:3px solid red;color:#ddd;text-decoration:none;border-radius:0 8px 8px 0}
+.an-related:hover{color:#ff0000}
+</style>
+{% endblock %}

@@ -300,3 +300,32 @@ class PageVisit(models.Model):
 
     def __str__(self):
         return f"{self.path} - {self.visited_at}"
+
+
+
+
+from django.urls import reverse
+
+class AnalysisArticle(models.Model):
+    KIND_CHOICES = [
+        ("round", "Round"), ("match", "Match"),
+        ("team", "Team"), ("compare", "Comparison"),
+    ]
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES)
+    key = models.CharField(max_length=120, unique=True)   # يمنع التكرار
+    slug = models.SlugField(max_length=170, unique=True)
+    title = models.CharField(max_length=200)
+    summary = models.TextField()
+    paragraphs = models.JSONField(default=list)
+    image_url = models.URLField(blank=True)
+    league_code = models.CharField(max_length=10, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("analysis_detail", args=[self.slug])

@@ -230,6 +230,10 @@ urlpatterns = [
     ),
 
 
+    path("analysis/", views.analysis_list, name="analysis_list"),
+    path("analysis/<slug:slug>/", views.analysis_detail, name="analysis_detail"),
+
+
 ]
 
 

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Football Analysis & Previews | Eurfot{% endblock %}
+{% block meta_description %}Data-driven football analysis: round reviews, match previews, team form and head-to-head comparisons on EURFOT.{% endblock %}
+
+{% block content %}
+<div class="an-wrap">
+    <a href="{% url 'matches' %}" class="an-back">← EURFOT</a>
+    <h1 style="margin:14px 0">Football Analysis | Eurfot</h1>
+    {% for a in articles %}
+    <a class="an-related" href="{{ a.get_absolute_url }}">
+        {{ a.title }}
+        <small style="display:block;color:#888">{{ a.get_kind_display }} · {{ a.created_at|date:"j M Y" }}</small>
+    </a>
+    {% empty %}
+    <p style="color:#aaa">No articles yet.</p>
+    {% endfor %}
+</div>
+<style>
+body{background:#080808;margin:0}
+.an-wrap{max-width:760px;margin:0 auto;padding:20px;color:white;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.an-back{color:white;text-decoration:none;font-weight:800}
+.an-related{display:block;padding:12px 14px;margin-bottom:8px;background:#0e0e0e;border-left:3px solid red;color:#ddd;text-decoration:none;border-radius:0 8px 8px 0}
+.an-related:hover{color:white}
+</style>
+{% endblock %}

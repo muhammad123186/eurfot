@@ -11,7 +11,7 @@ from .models import Prediction
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Q
 from django.shortcuts import render, get_object_or_404
-from .models import NewsArticle
+from .models import NewsArticle, AnalysisArticle
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import FanTeamOfWeek, FanTeamPlayer
 from django.core.cache import cache
@@ -4382,6 +4382,28 @@ def news_detail(request, id):
     )
 
 
+
+def analysis_list(request, code=None):
+    qs = AnalysisArticle.objects.all()
+    if code:
+        qs = qs.filter(league_code=code)
+    return render(request, "pages/analysis_list.html", {
+        "articles": qs[:60], "code": code, "competitions": LEAGUES,
+    })
+
+
+def analysis_detail(request, slug):
+    article = get_object_or_404(AnalysisArticle, slug=slug)
+    related = (
+        AnalysisArticle.objects
+        .filter(league_code=article.league_code)
+        .exclude(id=article.id)[:4]
+    )
+    return render(request, "pages/analysis_detail.html", {
+        "article": article, "related": related, "competitions": LEAGUES,
+    })
+
+
 def get_team_squad_positions(team_id):
 
     cache_key = f"squad_positions_{team_id}"
@@ -6553,6 +6575,7 @@ def today_matches_view(request):
         "prev_date": target_date - timedelta(days=1),
         "next_date": target_date + timedelta(days=1),
         "is_today": target_date == date_cls.today(),
+        "latest_analysis": AnalysisArticle.objects.all()[:2],
     }
 
     return render(request, "pages/today_matches.html", context)
