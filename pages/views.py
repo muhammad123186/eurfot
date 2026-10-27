@@ -6606,29 +6606,54 @@ def _with_logo(articles):
     return items
 
 
+# أولوية المقالات في الواجهة: الرقم الأصغر يظهر أولاً
+HOME_TEAM_TIERS = [
+    (0, ["barcelona"]),
+    (1, ["real madrid"]),
+    (2, ["liverpool"]),
+    (3, ["man city", "man united", "arsenal", "chelsea", "bayern", "psg",
+         "inter milan", "juventus", "ac milan", "atletico madrid",
+         "dortmund", "tottenham", "napoli"]),
+]
+HOME_LEAGUE_TIER = {"PL": 4, "UCL": 5, "PD": 6, "SA": 7, "BL1": 8, "FL1": 9}
+
+
+def _home_tier(a):
+    title = a.title.lower()
+    for tier, words in HOME_TEAM_TIERS:
+        if any(w in title for w in words):
+            return tier
+    return HOME_LEAGUE_TIER.get(a.league_code, 10)
+
+
 def get_home_analysis(grouped_matches, limit=6):
     try:
-        ranked = ranked_today_matches(grouped_matches)
-        order = {f"tp-{m['id']}": i for i, (_, m, _) in enumerate(ranked)}
+        today_keys = {f"tp-{m['id']}" for g in grouped_matches for m in g["matches"]}
+        cutoff = timezone.now() - timedelta(days=3)
 
-        articles = []
-        if order:
-            found = AnalysisArticle.objects.filter(key__in=list(order))
-            articles = sorted(found, key=lambda a: order[a.key])
+        pool, seen = [], set()
+        # الأحدث أولاً، ونأخذ أحدث مقالة فقط لكل (فريق / مقارنة / جولة / مباراة)
+        for a in AnalysisArticle.objects.order_by("-created_at")[:400]:
+            group = a.key if a.key.startswith("tp-") else a.key.rsplit("_", 1)[0]
+            if group in seen:
+                continue
+            seen.add(group)
+            # مقالات المباريات القديمة (غير مباريات اليوم) نستبعدها
+            if a.kind == "match" and a.key not in today_keys and a.created_at < cutoff:
+                continue
+            pool.append(a)
 
-        # إذا قلّت معاينات اليوم نكمّل بآخر المقالات
-        if len(articles) < limit:
-            taken = [a.id for a in articles]
-            articles += list(
-                AnalysisArticle.objects.exclude(id__in=taken)[: limit - len(articles)]
-            )
+        def kind_rank(a):
+            if a.kind == "match":
+                return 0 if a.key in today_keys else 3
+            return {"team": 1, "compare": 2}.get(a.kind, 4)
 
-        return _with_logo(articles[:limit])
+        pool.sort(key=lambda a: (_home_tier(a), kind_rank(a), -a.created_at.timestamp()))
+        return _with_logo(pool[:limit])
 
     except Exception as e:
         print("home analysis error:", repr(e))
         return []
-
 
 def today_matches_view(request):
 

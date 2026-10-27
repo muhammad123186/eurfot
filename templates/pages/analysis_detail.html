@@ -28,13 +28,13 @@
         <h1>{{ article.title }}</h1>
         <div class="an-date">{{ article.created_at|date:"j F Y" }}</div>
 
-        {% for para in article.paragraphs %}
-            {% if para|slice:":3" == "## " %}
-            <h2>{{ para|slice:"3:" }}</h2>
-            {% else %}
-            <p>{{ para }}</p>
-            {% endif %}
-        {% endfor %}
+{% for para in article.paragraphs %}
+    {% if para|slice:":3" == "## " %}
+        <h2 class="an-h2">{{ para|slice:"3:" }}</h2>
+    {% else %}
+        <p>{{ para }}</p>
+    {% endif %}
+{% endfor %}
 
         {% if article.key|slice:":3" == "tp-" %}
         <a class="an-match-link" href="{% url 'match_detail' article.key|slice:'3:' %}">
@@ -70,5 +70,6 @@ body{background:#080808;margin:0}
 .an-related{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:8px;background:#0e0e0e;border-left:3px solid red;color:#ddd;text-decoration:none;border-radius:0 8px 8px 0}
 .an-related img{width:32px;height:32px;object-fit:contain;flex-shrink:0}
 .an-related:hover{color:#ff0000}
+.an-h2{font-size:18px;margin:26px 0 8px;color:#fff;border-left:3px solid #ff0000;padding-left:10px}
 </style>
 {% endblock %}
