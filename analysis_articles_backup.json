@@ -1,0 +1,414 @@
+[
+{
+  "model": "pages.analysisarticle",
+  "pk": 1,
+  "fields": {
+    "kind": "round",
+    "key": "round_PL_8",
+    "slug": "premier-league-matchday-8-analysis-19-goals-and-3-home-wins-round_pl_8",
+    "title": "Premier League Matchday 8 Analysis: 19 Goals and 3 Home Wins",
+    "summary": "10 matches were completed in Premier League Matchday 8, delivering 19 goals (1.90 per game).",
+    "paragraphs": [
+      "10 matches were completed in Premier League Matchday 8, delivering 19 goals (1.90 per game).",
+      "Home sides won 3 games, away teams won 4, and 3 ended level. Goalkeepers kept 8 clean sheets across the round.",
+      "The widest margin was Man United 0-3 Bournemouth.",
+      "The highest-scoring game was Aston Villa 2-1 Man City.",
+      "After the round, Man City lead the table on 21 points, level with Arsenal."
+    ],
+    "image_url": "https://media.api-sports.io/football/leagues/39.png",
+    "league_code": "PL",
+    "created_at": "2026-10-27T15:13:37.326Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 2,
+  "fields": {
+    "kind": "team",
+    "key": "team_50_8",
+    "slug": "man-city-premier-league-analysis-1st-place-21-points-after-8-games-team_50_8",
+    "title": "Man City Premier League Analysis: 1st Place, 21 Points After 8 Games",
+    "summary": "Man City are 1st in the Premier League with 21 points from 8 games (7W 0D 1L) and a goal difference of +11.",
+    "paragraphs": [
+      "Man City are 1st in the Premier League with 21 points from 8 games (7W 0D 1L) and a goal difference of +11.",
+      "They have scored 20 and conceded 9, averaging 2.50 goals for and 1.12 against per game.",
+      "At home the record is 4W 0D 0L; away from home it is 3W 0D 1L.",
+      "Their last 5 league results read L W W W W, worth 12 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/50.png",
+    "league_code": "PL",
+    "created_at": "2026-10-27T15:13:37.442Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 3,
+  "fields": {
+    "kind": "compare",
+    "key": "compare_50_42_8",
+    "slug": "man-city-vs-arsenal-premier-league-title-race-compared-compare_50_42_8",
+    "title": "Man City vs Arsenal: Premier League Title Race Compared",
+    "summary": "Man City and Arsenal sit first and second in the Premier League, separated by 0 points. Here is how their seasons compare.",
+    "paragraphs": [
+      "Man City and Arsenal sit first and second in the Premier League, separated by 0 points. Here is how their seasons compare.",
+      "Man City have the edge in win rate (%): 80.0 against 75.0 for Arsenal.",
+      "Man City have the edge in goals scored: 40 against 33 for Arsenal.",
+      "Arsenal have the edge in goals conceded: 16 against 19 for Man City.",
+      "Arsenal have the edge in clean sheets: 8 against 5 for Man City."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/50.png",
+    "league_code": "PL",
+    "created_at": "2026-10-27T15:13:39.669Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 4,
+  "fields": {
+    "kind": "round",
+    "key": "round_PD_10",
+    "slug": "la-liga-matchday-10-analysis-24-goals-and-5-home-wins-round_pd_10",
+    "title": "La Liga Matchday 10 Analysis: 24 Goals and 5 Home Wins",
+    "summary": "10 matches were completed in La Liga Matchday 10, delivering 24 goals (2.40 per game).",
+    "paragraphs": [
+      "10 matches were completed in La Liga Matchday 10, delivering 24 goals (2.40 per game).",
+      "Home sides won 5 games, away teams won 3, and 2 ended level. Goalkeepers kept 6 clean sheets across the round.",
+      "The widest margin was Athletic Club 4-0 Getafe.",
+      "After the round, Barcelona lead the table on 27 points, 2 clear of Atletico Madrid."
+    ],
+    "image_url": "https://media.api-sports.io/football/leagues/140.png",
+    "league_code": "PD",
+    "created_at": "2026-10-27T15:13:41.825Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 5,
+  "fields": {
+    "kind": "team",
+    "key": "team_529_10",
+    "slug": "barcelona-la-liga-analysis-1st-place-27-points-after-10-games-team_529_10",
+    "title": "Barcelona La Liga Analysis: 1st Place, 27 Points After 10 Games",
+    "summary": "Barcelona are 1st in the La Liga with 27 points from 10 games (9W 0D 1L) and a goal difference of +29.",
+    "paragraphs": [
+      "Barcelona are 1st in the La Liga with 27 points from 10 games (9W 0D 1L) and a goal difference of +29.",
+      "They have scored 40 and conceded 11, averaging 4.00 goals for and 1.10 against per game.",
+      "At home the record is 4W 0D 1L; away from home it is 5W 0D 0L.",
+      "Their last 5 league results read L W W W W, worth 12 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/529.png",
+    "league_code": "PD",
+    "created_at": "2026-10-27T15:13:41.933Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 6,
+  "fields": {
+    "kind": "team",
+    "key": "team_530_10",
+    "slug": "atletico-madrid-la-liga-analysis-2nd-place-25-points-after-10-games-team_530_10",
+    "title": "Atletico Madrid La Liga Analysis: 2nd Place, 25 Points After 10 Games",
+    "summary": "Atletico Madrid are 2nd in the La Liga with 25 points from 10 games (8W 1D 1L) and a goal difference of +12.",
+    "paragraphs": [
+      "Atletico Madrid are 2nd in the La Liga with 25 points from 10 games (8W 1D 1L) and a goal difference of +12.",
+      "They have scored 20 and conceded 8, averaging 2.00 goals for and 0.80 against per game.",
+      "At home the record is 4W 1D 0L; away from home it is 4W 0D 1L.",
+      "Their last 5 league results read W W W W W, worth 15 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/530.png",
+    "league_code": "PD",
+    "created_at": "2026-10-27T15:13:42.063Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 7,
+  "fields": {
+    "kind": "compare",
+    "key": "compare_529_530_10",
+    "slug": "barcelona-vs-atletico-madrid-la-liga-title-race-compared-compare_529_530_10",
+    "title": "Barcelona vs Atletico Madrid: La Liga Title Race Compared",
+    "summary": "Barcelona and Atletico Madrid sit first and second in the La Liga, separated by 2 points. Here is how their seasons compare.",
+    "paragraphs": [
+      "Barcelona and Atletico Madrid sit first and second in the La Liga, separated by 2 points. Here is how their seasons compare.",
+      "Barcelona have the edge in win rate (%): 83.3 against 64.7 for Atletico Madrid.",
+      "Barcelona have the edge in goals scored: 63 against 32 for Atletico Madrid.",
+      "Atletico Madrid have the edge in goals conceded: 18 against 22 for Barcelona.",
+      "Atletico Madrid have the edge in clean sheets: 6 against 5 for Barcelona."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/529.png",
+    "league_code": "PD",
+    "created_at": "2026-10-27T15:13:44.190Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 8,
+  "fields": {
+    "kind": "round",
+    "key": "round_SA_8",
+    "slug": "serie-a-matchday-8-analysis-34-goals-and-5-home-wins-round_sa_8",
+    "title": "Serie A Matchday 8 Analysis: 34 Goals and 5 Home Wins",
+    "summary": "10 matches were completed in Serie A Matchday 8, delivering 34 goals (3.40 per game).",
+    "paragraphs": [
+      "10 matches were completed in Serie A Matchday 8, delivering 34 goals (3.40 per game).",
+      "Home sides won 5 games, away teams won 3, and 2 ended level. Goalkeepers kept 5 clean sheets across the round.",
+      "The widest margin was Cagliari 0-2 Bologna.",
+      "The highest-scoring game was Atalanta 4-4 Frosinone.",
+      "After the round, Inter Milan lead the table on 22 points, level with Lazio."
+    ],
+    "image_url": "https://media.api-sports.io/football/leagues/135.png",
+    "league_code": "SA",
+    "created_at": "2026-10-27T15:13:46.408Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 9,
+  "fields": {
+    "kind": "team",
+    "key": "team_505_8",
+    "slug": "inter-milan-serie-a-analysis-1st-place-22-points-after-8-games-team_505_8",
+    "title": "Inter Milan Serie A Analysis: 1st Place, 22 Points After 8 Games",
+    "summary": "Inter Milan are 1st in the Serie A with 22 points from 8 games (7W 1D 0L) and a goal difference of +13.",
+    "paragraphs": [
+      "Inter Milan are 1st in the Serie A with 22 points from 8 games (7W 1D 0L) and a goal difference of +13.",
+      "They have scored 23 and conceded 10, averaging 2.88 goals for and 1.25 against per game.",
+      "At home the record is 5W 0D 0L; away from home it is 2W 1D 0L.",
+      "Their last 5 league results read W W W D W, worth 13 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/505.png",
+    "league_code": "SA",
+    "created_at": "2026-10-27T15:13:46.566Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 10,
+  "fields": {
+    "kind": "compare",
+    "key": "compare_505_487_8",
+    "slug": "inter-milan-vs-lazio-serie-a-title-race-compared-compare_505_487_8",
+    "title": "Inter Milan vs Lazio: Serie A Title Race Compared",
+    "summary": "Inter Milan and Lazio sit first and second in the Serie A, separated by 0 points. Here is how their seasons compare.",
+    "paragraphs": [
+      "Inter Milan and Lazio sit first and second in the Serie A, separated by 0 points. Here is how their seasons compare.",
+      "Lazio have the edge in win rate (%): 81.2 against 75.0 for Inter Milan.",
+      "Lazio have the edge in goals scored: 41 against 36 for Inter Milan.",
+      "Lazio have the edge in goals conceded: 15 against 19 for Inter Milan.",
+      "Lazio have the edge in clean sheets: 7 against 5 for Inter Milan."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/505.png",
+    "league_code": "SA",
+    "created_at": "2026-10-27T15:13:48.692Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 11,
+  "fields": {
+    "kind": "round",
+    "key": "round_BL1_7",
+    "slug": "bundesliga-matchday-7-analysis-25-goals-and-4-home-wins-round_bl1_7",
+    "title": "Bundesliga Matchday 7 Analysis: 25 Goals and 4 Home Wins",
+    "summary": "Matchday 7 of the Bundesliga produced 25 goals in 9 games, an average of 2.78 per match.",
+    "paragraphs": [
+      "Matchday 7 of the Bundesliga produced 25 goals in 9 games, an average of 2.78 per match.",
+      "Home sides won 4 games, away teams won 3, and 2 ended level. Goalkeepers kept 6 clean sheets across the round.",
+      "The widest margin was RB Leipzig 4-0 SV Elversberg.",
+      "The highest-scoring game was VfB Stuttgart 2-3 M'gladbach.",
+      "After the round, Bayern München lead the table on 17 points, level with Borussia Dortmund."
+    ],
+    "image_url": "https://media.api-sports.io/football/leagues/78.png",
+    "league_code": "BL1",
+    "created_at": "2026-10-27T15:14:05.233Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 12,
+  "fields": {
+    "kind": "team",
+    "key": "team_157_7",
+    "slug": "bayern-munchen-bundesliga-analysis-1st-place-17-points-after-7-games-team_157_7",
+    "title": "Bayern München Bundesliga Analysis: 1st Place, 17 Points After 7 Games",
+    "summary": "Bayern München are 1st in the Bundesliga with 17 points from 7 games (5W 2D 0L) and a goal difference of +19.",
+    "paragraphs": [
+      "Bayern München are 1st in the Bundesliga with 17 points from 7 games (5W 2D 0L) and a goal difference of +19.",
+      "They have scored 25 and conceded 6, averaging 3.57 goals for and 0.86 against per game.",
+      "At home the record is 3W 0D 0L; away from home it is 2W 2D 0L.",
+      "Their last 5 league results read W W D W W, worth 13 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/157.png",
+    "league_code": "BL1",
+    "created_at": "2026-10-27T15:14:05.384Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 13,
+  "fields": {
+    "kind": "compare",
+    "key": "compare_157_165_7",
+    "slug": "bayern-munchen-vs-borussia-dortmund-bundesliga-title-race-compared-compare_157_165_7",
+    "title": "Bayern München vs Borussia Dortmund: Bundesliga Title Race Compared",
+    "summary": "Bayern München and Borussia Dortmund sit first and second in the Bundesliga, separated by 0 points. Here is how their seasons compare.",
+    "paragraphs": [
+      "Bayern München and Borussia Dortmund sit first and second in the Bundesliga, separated by 0 points. Here is how their seasons compare.",
+      "Bayern München have the edge in win rate (%): 72.2 against 61.1 for Borussia Dortmund.",
+      "Bayern München have the edge in goals scored: 58 against 33 for Borussia Dortmund.",
+      "Borussia Dortmund have the edge in goals conceded: 18 against 20 for Bayern München.",
+      "Borussia Dortmund have the edge in clean sheets: 7 against 4 for Bayern München."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/157.png",
+    "league_code": "BL1",
+    "created_at": "2026-10-27T15:14:17.260Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 14,
+  "fields": {
+    "kind": "round",
+    "key": "round_FL1_8",
+    "slug": "ligue-1-matchday-8-analysis-22-goals-and-4-home-wins-round_fl1_8",
+    "title": "Ligue 1 Matchday 8 Analysis: 22 Goals and 4 Home Wins",
+    "summary": "9 matches were completed in Ligue 1 Matchday 8, delivering 22 goals (2.44 per game).",
+    "paragraphs": [
+      "9 matches were completed in Ligue 1 Matchday 8, delivering 22 goals (2.44 per game).",
+      "Home sides won 4 games, away teams won 1, and 4 ended level. Goalkeepers kept 6 clean sheets across the round.",
+      "The widest margin was Rennes 3-0 Strasbourg.",
+      "The highest-scoring game was Marseille 4-3 Le Havre.",
+      "After the round, PSG lead the table on 17 points, 1 clear of Rennes."
+    ],
+    "image_url": "https://media.api-sports.io/football/leagues/61.png",
+    "league_code": "FL1",
+    "created_at": "2026-10-27T15:14:28.390Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 15,
+  "fields": {
+    "kind": "team",
+    "key": "team_85_8",
+    "slug": "psg-ligue-1-analysis-1st-place-17-points-after-8-games-team_85_8",
+    "title": "PSG Ligue 1 Analysis: 1st Place, 17 Points After 8 Games",
+    "summary": "PSG are 1st in the Ligue 1 with 17 points from 8 games (5W 2D 1L) and a goal difference of +7.",
+    "paragraphs": [
+      "PSG are 1st in the Ligue 1 with 17 points from 8 games (5W 2D 1L) and a goal difference of +7.",
+      "They have scored 16 and conceded 9, averaging 2.00 goals for and 1.12 against per game.",
+      "At home the record is 2W 0D 1L; away from home it is 3W 2D 0L.",
+      "Their last 5 league results read W W W W W, worth 15 points."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/85.png",
+    "league_code": "FL1",
+    "created_at": "2026-10-27T15:14:28.503Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 16,
+  "fields": {
+    "kind": "compare",
+    "key": "compare_85_94_8",
+    "slug": "psg-vs-rennes-ligue-1-title-race-compared-compare_85_94_8",
+    "title": "PSG vs Rennes: Ligue 1 Title Race Compared",
+    "summary": "PSG and Rennes sit first and second in the Ligue 1, separated by 1 points. Here is how their seasons compare.",
+    "paragraphs": [
+      "PSG and Rennes sit first and second in the Ligue 1, separated by 1 points. Here is how their seasons compare.",
+      "PSG have the edge in win rate (%): 60.0 against 42.1 for Rennes.",
+      "Rennes have the edge in goals scored: 35 against 33 for PSG.",
+      "PSG have the edge in goals conceded: 20 against 33 for Rennes.",
+      "Rennes have the edge in clean sheets: 3 against 2 for PSG."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/85.png",
+    "league_code": "FL1",
+    "created_at": "2026-10-27T15:14:30.849Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 17,
+  "fields": {
+    "kind": "match",
+    "key": "match_1550168_preview",
+    "slug": "as-roma-vs-cagliari-serie-a-preview-and-key-stats-match_1550168_preview",
+    "title": "AS Roma vs Cagliari: Serie A Preview and Key Stats",
+    "summary": "AS Roma host Cagliari in the Serie A, a game that pairs two sides with contrasting seasons so far.",
+    "paragraphs": [
+      "AS Roma host Cagliari in the Serie A, a game that pairs two sides with contrasting seasons so far.",
+      "In the table, AS Roma are 3rd with 18 points and Cagliari are 9th with 13.",
+      "AS Roma have won 7 of 16 games this season, scoring 37 and conceding 24. Cagliari have won 6 of 13, scoring 11 and conceding 13.",
+      "AS Roma have the edge in goals scored per game: 2.31 against 0.85 for Cagliari.",
+      "Cagliari have the edge in goals conceded per game: 1.0 against 1.5 for AS Roma.",
+      "In their last 10 meetings, AS Roma won 7, Cagliari won 2 and 1 were drawn."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/497.png",
+    "league_code": "SA",
+    "created_at": "2026-10-27T15:14:34.149Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 18,
+  "fields": {
+    "kind": "match",
+    "key": "match_1640386_preview",
+    "slug": "fleetwood-town-vs-arsenal-efl-cup-preview-and-key-stats-match_1640386_preview",
+    "title": "Fleetwood Town vs Arsenal: EFL Cup Preview and Key Stats",
+    "summary": "Fleetwood Town host Arsenal in the EFL Cup, a game that pairs two sides with contrasting seasons so far.",
+    "paragraphs": [
+      "Fleetwood Town host Arsenal in the EFL Cup, a game that pairs two sides with contrasting seasons so far.",
+      "Fleetwood Town have won 11 of 24 games this season, scoring 36 and conceding 22. Arsenal have won 12 of 16, scoring 33 and conceding 16.",
+      "Arsenal have the edge in goals scored per game: 2.06 against 1.5 for Fleetwood Town.",
+      "Fleetwood Town have the edge in goals conceded per game: 0.92 against 1.0 for Arsenal."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/1336.png",
+    "league_code": "ELCUP",
+    "created_at": "2026-10-27T15:14:36.390Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 19,
+  "fields": {
+    "kind": "match",
+    "key": "match_1638561_preview",
+    "slug": "borussia-dortmund-vs-werder-bremen-dfb-pokal-preview-and-key-stats-match_1638561_preview",
+    "title": "Borussia Dortmund vs Werder Bremen: DFB Pokal Preview and Key Stats",
+    "summary": "Borussia Dortmund host Werder Bremen in the DFB Pokal, a game that pairs two sides with contrasting seasons so far.",
+    "paragraphs": [
+      "Borussia Dortmund host Werder Bremen in the DFB Pokal, a game that pairs two sides with contrasting seasons so far.",
+      "Borussia Dortmund have won 11 of 18 games this season, scoring 33 and conceding 18. Werder Bremen have won 8 of 16, scoring 34 and conceding 28.",
+      "Werder Bremen have the edge in goals scored per game: 2.12 against 1.83 for Borussia Dortmund.",
+      "Borussia Dortmund have the edge in goals conceded per game: 1.0 against 1.75 for Werder Bremen.",
+      "In their last 10 meetings, Borussia Dortmund won 6, Werder Bremen won 1 and 3 were drawn."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/165.png",
+    "league_code": "DFB",
+    "created_at": "2026-10-27T15:14:38.605Z"
+  }
+},
+{
+  "model": "pages.analysisarticle",
+  "pk": 20,
+  "fields": {
+    "kind": "match",
+    "key": "match_1644352_preview",
+    "slug": "cuarte-vs-girona-copa-del-rey-preview-and-key-stats-match_1644352_preview",
+    "title": "Cuarte vs Girona: Copa del Rey Preview and Key Stats",
+    "summary": "Cuarte host Girona in the Copa del Rey, a game that pairs two sides with contrasting seasons so far.",
+    "paragraphs": [
+      "Cuarte host Girona in the Copa del Rey, a game that pairs two sides with contrasting seasons so far.",
+      "Cuarte have won 4 of 8 games this season, scoring 17 and conceding 10. Girona have won 7 of 17, scoring 32 and conceding 22.",
+      "Cuarte have the edge in goals scored per game: 2.12 against 1.88 for Girona.",
+      "Cuarte have the edge in goals conceded per game: 1.25 against 1.29 for Girona."
+    ],
+    "image_url": "https://media.api-sports.io/football/teams/9886.png",
+    "league_code": "CDR",
+    "created_at": "2026-10-27T15:14:42.014Z"
+  }
+}
+]
