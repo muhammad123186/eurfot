@@ -1,0 +1,1349 @@
+{% extends 'base.html' %}
+{% block title %}{{ competition.standings_name|default:competition.name }} Table 2026/27 | Standings & Points - Eurfot{% endblock %}
+
+{% block meta_description %}Follow the {{ competition.standings_name|default:competition.name }} standings for the 2026/27 season on EURFOT. Check team positions, points, wins, draws, losses, goals scored and goal difference.{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="{{ competition.standings_name|default:competition.name }} table, {{ competition.standings_name|default:competition.name }} standings, European football standings, European competition table, football points, team rankings">
+{% endblock %}
+
+{% block content %}
+
+
+{% url 'matches' as home_url %}
+{% url 'competition_standings' code=code as standings_url %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://eurfot.com{{ standings_url }}#webpage",
+  "url": "https://eurfot.com{{ standings_url }}",
+  "name": "{{ competition.standings_name|default:competition.name|escapejs }} Table 2026/27 - Standings & Statistics | EURFOT",
+  "description": "Follow the {{ competition.standings_name|default:competition.name|escapejs }} standings for the 2026/27 season, including team positions, points, wins, draws, losses, goals scored and goal difference.",
+  "inLanguage": "en",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://eurfot.com{{ home_url }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ competition.standings_name|default:competition.name|escapejs }} Table",
+        "item": "https://eurfot.com{{ standings_url }}"
+      }
+    ]
+  }
+}
+</script>
+
+
+<div class="site-header">
+
+    <div class="logo-box">
+    <h1>
+        <a href="{% url 'matches' %}" class="logo-link">EUR<span>FOT</span></a>
+    </h1>
+</div>
+
+    <div class="header-right">
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'profile' %}" class="profile-btn">
+                👤 {{ user.username }}
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'signup' %}" class="signup-btn">
+                Sign Up
+            </a>
+
+        {% endif %}
+
+        <form action="{% url 'search' %}" method="GET" class="search-box">
+            <input type="text" name="q" placeholder="Search">
+            <button type="submit">🔍</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+
+    <!-- المحتوى الرئيسي: البطاقات والجدول والـLegend -->
+    <main class="standings-main">
+
+        <!-- QUICK STATS CARDS -->
+        <div class="quick-cards">
+
+            <!-- LEADER CARD -->
+            <div class="quick-card leader-card">
+                <div class="quick-card-title">
+                    <span class="quick-icon">🟡</span>
+                    Leader
+                </div>
+
+                <div class="quick-logos">
+                    {% for row in live_table|slice:":1" %}
+                        <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
+                    {% endfor %}
+                </div>
+
+                {% for row in live_table|slice:":1" %}
+                    <span class="leader-name">{{ row.team.name }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- TOP 8 CARD -->
+            <div class="quick-card top4-card">
+                <div class="quick-card-title">
+                    <span class="quick-icon">🔵</span>
+                    Top 8
+                </div>
+
+                <div class="quick-logos">
+                    {% for row in live_table|slice:":8" %}
+                        <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- RELEGATION CARD -->
+            <div class="quick-card relegation-card">
+                <div class="quick-card-title">
+                    <span class="quick-icon">🔴</span>
+                    Relegation
+                </div>
+
+                <div class="quick-logos">
+                    {% for row in live_table|slice:"-12:" %}
+                        <img src="{{ row.team.logo }}" title="{{ row.team.name }}" alt="{{ row.team.name }}">
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <table class="premium-table standings-full">
+            <thead>
+                <tr>
+                    <th class="rank-title">#</th>
+                    <th class="player-title">TEAM</th>
+                    <th class="apps-title">P</th>
+                    <th class="apps-title">W</th>
+                    <th class="apps-title">D</th>
+                    <th class="apps-title">L</th>
+                    <th class="apps-title">GF</th>
+                    <th class="apps-titles">GA</th>
+                    <th class="apps-title">GD</th>
+                    <th class="goals-tit">PTS</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in live_table %}
+                <tr class="{% if forloop.counter <= 8 %}zone-ucl{% elif forloop.counter <= 24 %}zone-uel{% elif forloop.counter <= 36 %}zone-relegation{% endif %}">
+                    <td class="place">{{ forloop.counter }}</td>
+
+                    <td>
+                        <div class="club-card">
+                            <img src="{{ row.team.logo }}" alt="{{ row.team.name }}">
+
+                            {% if row.team.id %}
+                                <a href="{% url 'team_detail' row.team.id %}">
+                                    {{ row.team.name }}
+                                </a>
+                            {% else %}
+                                <span>{{ row.team.name }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td class="apps-titl">{{ row.all.played }}</td>
+                    <td class="apps-titl">{{ row.all.win }}</td>
+                    <td class="apps-titl">{{ row.all.draw }}</td>
+                    <td class="apps-titl">{{ row.all.lose }}</td>
+                    <td class="apps-titl">{{ row.all.goals.for }}</td>
+                    <td class="apps-titles">{{ row.all.goals.against }}</td>
+                    <td class="goals-diff">{{ row.goalsDiff }}</td>
+                    <td class="badge-gold">{{ row.points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- LEGEND -->
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-dot ucl"></span>
+                Round of 16
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot uel"></span>
+                Knockout Play-offs
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot relegation"></span>
+                Relegation
+            </div>
+        </div>
+
+    </main>
+    <!-- نهاية المحتوى الرئيسي -->
+
+    <!-- العمود الثاني: شرح البطولة -->
+    <aside class="standings-side guide-panel">
+
+        <div class="side-heading">
+            <span class="side-heading-icon">🏆</span>
+            <h2>Competition Guide</h2>
+        </div>
+
+        {% if code == "UCL" %}
+            <p class="side-description">
+                Follow the UEFA Champions League league phase
+                and track the positions that determine qualification
+                for the knockout rounds.
+            </p>
+
+            <div class="guide-item">
+                <span class="guide-number">01</span>
+                <div>
+                    <h3>Direct Qualification</h3>
+                    <p>The top eight teams in the league phase qualify directly for the round of 16.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">02</span>
+                <div>
+                    <h3>Knockout Play-offs</h3>
+                    <p>Teams finishing from ninth to 24th enter the knockout phase play-offs.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">03</span>
+                <div>
+                    <h3>Elimination</h3>
+                    <p>Teams finishing below 24th place do not advance to the knockout phase.</p>
+                </div>
+            </div>
+
+        {% elif code == "EL" %}
+            <p class="side-description">
+                Follow the UEFA Europa League league phase and
+                the positions that determine progression.
+            </p>
+
+            <div class="guide-item">
+                <span class="guide-number">01</span>
+                <div>
+                    <h3>Direct Qualification</h3>
+                    <p>The top eight teams qualify directly for the round of 16.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">02</span>
+                <div>
+                    <h3>Knockout Play-offs</h3>
+                    <p>Teams finishing from ninth to 24th compete for places in the round of 16.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">03</span>
+                <div>
+                    <h3>League Phase</h3>
+                    <p>Teams finishing below 24th place are eliminated from the competition.</p>
+                </div>
+            </div>
+
+        {% elif code == "UECL" %}
+            <p class="side-description">
+                Follow the UEFA Conference League league phase
+                and the race for the knockout rounds.
+            </p>
+
+            <div class="guide-item">
+                <span class="guide-number">01</span>
+                <div>
+                    <h3>Direct Qualification</h3>
+                    <p>The top eight teams qualify directly for the round of 16.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">02</span>
+                <div>
+                    <h3>Knockout Play-offs</h3>
+                    <p>Teams finishing from ninth to 24th compete in the knockout phase play-offs.</p>
+                </div>
+            </div>
+
+            <div class="guide-item">
+                <span class="guide-number">03</span>
+                <div>
+                    <h3>League Phase</h3>
+                    <p>Teams finishing below 24th place are eliminated from the competition.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="guide-table-key">
+            <h3>Table abbreviations</h3>
+            <p><strong>P</strong> — Played</p>
+            <p><strong>W</strong> — Wins</p>
+            <p><strong>D</strong> — Draws</p>
+            <p><strong>L</strong> — Losses</p>
+            <p><strong>GF</strong> — Goals For</p>
+            <p><strong>GA</strong> — Goals Against</p>
+            <p><strong>GD</strong> — Goal Difference</p>
+            <p><strong>PTS</strong> — Points</p>
+        </div>
+
+    </aside>
+
+</div>
+<!-- نهاية standings-layout -->
+
+</div>
+<!-- نهاية standings-page -->
+
+
+
+<style>
+
+
+.competition-title{
+    line-height: 1.4;
+}
+
+.competition-title-en{
+    display: block;
+    font-size: 13px;
+    color: #999;
+    font-weight: 400;
+    margin-top: 3px;
+}
+
+.site-header{
+    width:100%;
+    height: 40px;
+    background:linear-gradient(90deg,black,black,black,black,black);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:4px solid red;
+    box-shadow:0 8px 20px rgb(251, 255, 0);
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-box{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:15px;
+}
+
+.logo-ball{
+    font-size:40px;
+    filter:drop-shadow(0 0 12px rgb(17, 0, 255));
+}
+
+.logo-box h1{
+    margin:0;
+    font-size:41px;
+    font-weight:1000;
+    letter-spacing:4px;
+    color:rgb(255, 0, 0);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.logo-box h1 span{
+    color:white;
+}
+
+.profile-btn,
+.signup-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:black;
+    white-space:nowrap;
+    color:white;
+    padding:10px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:14px;
+    margin-right:8px;
+    transition:.25s;
+    box-shadow:0 15px 30px rgba(0,0,0,.7), inset 2px 2px 10px black;
+}
+
+.profile-btn{
+    border:2px solid rgba(0, 140, 255, 0.8);
+}
+
+.signup-btn{
+    border:2px solid rgba(255, 0, 0, 0.774);
+}
+
+.search-box{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
+
+.search-box input{
+    width:260px;
+    padding:11px 15px;
+    border:none;
+    border-radius:25px 0 0 25px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box button{
+    padding:11px 18px;
+    border:none;
+    background:black;
+    color:white;
+    border-radius:0 25px 25px 0;
+    cursor:pointer;
+    font-size:17px;
+    transition:.25s;
+}
+
+.search-box button:hover{
+    background:red;
+}
+
+
+/* =====================================================
+                    PAGE
+===================================================== */
+
+body{
+    margin:0;
+    background: linear-gradient(-45deg, black, black, black, black, black);
+}
+
+.standings-page{
+
+    width:min(1550px,94%);
+    margin:40px auto;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+
+}
+
+
+/* =====================================================
+                    HERO
+===================================================== */
+
+.hero{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:30px 40px;
+
+    border-radius:26px;
+
+    background: linear-gradient(135deg, #111, #1b1b1b);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow: 0 20px 45px rgba(0,0,0,.45);
+
+    margin-bottom:35px;
+
+}
+
+.hero-left{
+    display:flex;
+    align-items:center;
+    gap:22px;
+}
+
+.league-logo{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+}
+
+.hero h1{
+    margin:0;
+    font-size:32px;
+    font-weight:500;
+}
+
+.hero p{
+    margin-top:8px;
+    color:#999;
+}
+
+.live-box{
+    padding:12px 20px;
+    border-radius:40px;
+    background:#181818;
+    border:1px solid rgba(255,255,255,.08);
+    font-size:13px;
+    letter-spacing:2px;
+}
+
+.live-dot{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    background:#00ff4c;
+    border-radius:50%;
+    margin-right:10px;
+}
+
+
+/* =====================================================
+                    TABLE
+===================================================== */
+
+.premium-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:black;
+
+    color:white;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+}
+
+.premium-table th{
+
+    background:black;
+
+    color:#9d9d9d;
+
+    font-size:14px;
+
+    letter-spacing:1px;
+
+    padding:18px;
+
+    text-align:center;   /* كانت left */
+
+
+}
+
+
+.premium-table td{
+
+    padding:18px;
+
+    border-bottom:1px solid #161616;
+
+    text-align:center;
+
+}
+
+.premium-table tbody tr{
+
+    transition:.3s;
+
+}
+
+.premium-table tbody tr:hover{
+
+    background:#181818;
+
+}
+
+.place{
+
+    font-size:18px;
+    font-weight:500;
+
+}
+
+
+/* =====================================================
+                CLUB CARD
+===================================================== */
+
+.club-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    justify-content:flex-start;
+
+}
+
+.club-card img{
+
+    width:34px;
+
+    height:34px;
+
+    object-fit:contain;
+
+    filter: drop-shadow(0 0 8px rgba(255,255,255,.15));
+
+}
+
+.club-card a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+.club-card a:hover{
+
+    color:#ff0000;
+
+}
+
+
+/* =====================================================
+                BADGES
+===================================================== */
+
+.badge-gold{
+
+    
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:46px;
+
+    padding:8px 12px;
+
+    border-radius:12px;
+
+    font-weight:300;
+
+    font-size:18px;
+
+    
+
+}
+
+.badge-gold{
+
+    color:#ff0000;
+
+}
+
+
+/* =====================================================
+                ZONE HIGHLIGHTING
+===================================================== */
+
+.zone-ucl{
+
+    border-left:4px solid rgb(4, 0, 255);
+
+}
+
+.zone-uel{
+
+    border-left:4px solid #ff4800;
+
+}
+
+.zone-relegation{
+
+    border-left:4px solid #ff0000;
+
+}
+
+
+/* =====================================================
+                LEGEND
+===================================================== */
+
+.legend{
+
+    display:flex;
+
+    gap:30px;
+
+    margin-top:25px;
+
+    padding:20px 30px;
+
+    background:#111;
+
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:#bbb;
+
+    font-size:13px;
+
+}
+
+.legend-dot{
+
+    width:12px;
+
+    height:12px;
+
+    border-radius:3px;
+
+}
+
+.legend-dot.ucl{ background:#0014c8; }
+.legend-dot.uel{ background:#ff4800; }
+.legend-dot.relegation{ background:#ff0000;}
+
+
+
+/* =====================================================
+                QUICK STATS CARDS
+===================================================== */
+
+.quick-cards{
+
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:20px;
+
+    margin-bottom:35px;
+
+}
+
+.quick-card{
+
+    background: linear-gradient(135deg, #111, #1b1b1b);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.4);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.quick-card-title{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:#999;
+
+    margin-bottom:16px;
+
+}
+
+.quick-icon{
+    font-size:16px;
+}
+
+.quick-logos{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+
+}
+
+.quick-logos img{
+
+    width:42px;
+    height:42px;
+    object-fit:contain;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,.15));
+    transition:.25s;
+
+}
+
+.quick-logos img:hover{
+    transform:scale(1.15);
+}
+
+/* المتصدر شعاره أكبر شوي بما إنه لحاله */
+.leader-card .quick-logos img{
+    width:64px;
+    height:64px;
+}
+
+
+/* card accents */
+
+.top4-card{
+    border-top:3px solid rgb(4, 0, 255);
+}
+
+.relegation-card{
+    border-top:3px solid #ff0000;
+}
+
+.leader-card{
+    border-top:3px solid gold;
+}
+
+
+
+.leader-name{
+
+    margin-top:16px;
+    font-size:15px;
+    font-weight:800;
+    color:white;
+
+}
+
+
+
+.logo-link{
+    color: inherit;
+    text-decoration: none;
+}
+
+.logo-link:hover{
+    opacity: .85;
+}
+
+
+@media (max-width:1000px){
+
+    html, body{
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .standings-page{
+        width: 100%;
+        margin: 15px auto;
+        padding: 0 12px;
+        box-sizing: border-box;
+    }
+
+    .site-header{
+        display: none;
+    }
+
+    /* ===== HERO ===== */
+
+    .hero{
+        width: 100%;
+        padding: 15px 18px;
+        margin: 0 0 20px 0;
+        flex-wrap: wrap;
+        gap: 12px;
+        box-sizing: border-box;
+    }
+
+    .hero-left{
+        gap: 12px;
+    }
+
+    .league-logo{
+        width: 50px;
+        height: 50px;
+    }
+
+    .hero h1{
+        font-size: 18px;
+    }
+
+    .hero p{
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .live-box{
+        padding: 8px 14px;
+        font-size: 11px;
+    }
+
+    /* ===== QUICK CARDS ===== */
+
+    .quick-cards{
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 0 0 20px 0;
+    }
+
+    .quick-card{
+        padding: 10px;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .quick-card-title{
+        font-size: 10px;
+        gap: 4px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .quick-icon{
+        font-size: 12px;
+    }
+
+    .quick-logos{
+        gap: 6px;
+    }
+
+    .quick-logos img{
+        width: 26px;
+        height: 26px;
+    }
+
+    .leader-card .quick-logos img{
+        width: 36px;
+        height: 36px;
+    }
+
+    .leader-name{
+        font-size: 11px;
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    /* ===== TABLE ===== */
+
+    .premium-table{
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .premium-table th{
+        padding: 8px 4px;
+        font-size: 10px;
+    }
+
+    .premium-table td{
+        padding: 10px 4px;
+        font-size: 13px;
+    }
+
+    .place{
+        font-size: 13px;
+    }
+
+    .apps-titles{
+        display: none;
+    }
+
+    /* ===== CLUB CARD ===== */
+
+    .club-card{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .club-card img{
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .club-card a{
+        font-size: 12px;
+        font-weight: 100;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .player-title,
+    .premium-table td:nth-child(2){
+        width: 30%;
+        max-width: 0;
+        text-align: left !important;
+    }
+
+    .badge-gold{
+        font-size: 14px;
+    }
+
+    .goals-diff{
+        font-size: 13px;
+    }
+
+    /* ===== LEGEND ===== */
+
+    .legend{
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .legend-item{
+        font-size: 11px;
+    }
+
+}
+
+
+
+
+
+/* ===== THREE-COLUMN EUROPEAN STANDINGS LAYOUT ===== */
+
+
+/* ===== SIDEBARS + CENTER CONTENT ===== */
+
+.standings-layout {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.72fr) minmax(0, 2.5fr) minmax(190px, 0.72fr);
+    align-items: start;
+    gap: 18px;
+    width: 100%;
+}
+
+.standings-main {
+    min-width: 0;
+    width: 100%;
+}
+
+.standings-main .premium-table {
+    width: 100%;
+}
+
+.standings-side {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+
+.standings-main .quick-cards {
+    margin-top: 0;
+}
+
+.standings-side {
+    min-width: 0;
+    padding: 20px 16px;
+    background: linear-gradient(145deg, #111, #191919);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    color: #eee;
+    overflow-wrap: anywhere;
+}
+
+.analysis-panel {
+    border-top: 3px solid #5148ff;
+}
+
+.guide-panel {
+    border-top: 3px solid #ff3030;
+}
+
+.side-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 14px;
+}
+
+.side-heading h2 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.side-heading-icon {
+    font-size: 21px;
+}
+
+.side-description {
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 0 0 18px;
+}
+
+.analysis-highlight {
+    text-align: center;
+    padding: 18px 12px;
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+}
+
+.analysis-label {
+    display: block;
+    color: #ffd84a;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.analysis-highlight > img {
+    display: block;
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    margin: 14px auto 8px;
+}
+
+.analysis-highlight h3 {
+    margin: 0;
+    color: white;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.analysis-points {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    margin: 10px 0 16px;
+}
+
+.analysis-points strong {
+    color: #ffd84a;
+    font-size: 27px;
+}
+
+.analysis-points span {
+    color: #999;
+    font-size: 12px;
+}
+
+.analysis-mini-stats {
+    display: grid;
+    gap: 8px;
+    text-align: left;
+}
+
+.analysis-mini-stats div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #252525;
+    font-size: 11px;
+}
+
+.analysis-mini-stats span {
+    color: #999;
+}
+
+.analysis-mini-stats strong {
+    color: #fff;
+}
+
+.analysis-note {
+    margin-top: 16px;
+    padding: 14px 12px;
+    background: rgba(255,255,255,.025);
+    border-radius: 12px;
+}
+
+.analysis-note h3,
+.guide-table-key h3 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 13px;
+}
+
+.analysis-note p {
+    margin: 0;
+    color: #aaa;
+    font-size: 12px;
+    line-height: 1.9;
+}
+
+.guide-item {
+    display: flex;
+    gap: 11px;
+    padding: 15px 0;
+    border-bottom: 1px solid #292929;
+}
+
+.guide-number {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9px;
+    background: rgba(255,48,48,.12);
+    color: #ff5555;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.guide-item h3 {
+    margin: 0 0 6px;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.guide-item p {
+    margin: 0;
+    color: #aaa;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.guide-table-key {
+    margin-top: 18px;
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: #0b0b0b;
+}
+
+.guide-table-key p {
+    margin: 7px 0;
+    color: #aaa;
+    font-size: 12px;
+}
+
+.guide-table-key strong {
+    color: #ff5555;
+}
+
+/* ===== TABLET ===== */
+
+
+@media (max-width: 1250px) and (min-width: 701px) {
+    .standings-layout {
+        grid-template-columns: minmax(155px, 0.65fr) minmax(0, 2.2fr) minmax(155px, 0.65fr);
+        gap: 10px;
+    }
+
+    .standings-side {
+        padding: 14px 10px;
+    }
+
+    .side-heading h2 {
+        font-size: 14px;
+    }
+
+    .standings-main .premium-table th {
+        padding: 12px 5px;
+        font-size: 11px;
+    }
+
+    .standings-main .premium-table td {
+        padding: 12px 5px;
+    }
+
+    .standings-main .club-card {
+        gap: 6px;
+    }
+
+    .standings-main .club-card img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .standings-main .club-card a {
+        font-size: 12px;
+    }
+}
+
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 700px) {
+    .standings-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .standings-main {
+        order: 0;
+        width: 100%;
+    }
+
+    .analysis-panel {
+        order: 1;
+        width: 100%;
+    }
+
+    .guide-panel {
+        order: 2;
+        width: 100%;
+    }
+
+    .standings-side {
+        box-sizing: border-box;
+        padding: 17px 14px;
+    }
+}
+
+
+</style>
+
+{% endblock %}

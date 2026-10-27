@@ -14,10 +14,17 @@
     <meta name="keywords" content="football, live football scores, football fixtures, match results, league standings, team statistics, player statistics, football teams, football players, EURFOT">
     {% endblock meta_keywords %}
 
-    <!-- SEO: Robots -->
-    {% block meta_robots %}
-    <meta name="robots" content="index, follow">
-    {% endblock meta_robots %}
+    
+<!-- SEO: Robots -->
+{% block meta_robots %}
+<meta name="robots" content="index, follow">
+{% endblock meta_robots %}
+
+<!-- SEO: Canonical URL -->
+{% block canonical_url %}
+<link rel="canonical" href="https://eurfot.com{{ request.path }}">
+{% endblock canonical_url %}
+
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'image/android-chrome-512x512.png' %}">
@@ -43,6 +50,8 @@
 
     <!-- Additional Head Content -->
     {% block extra_head %}{% endblock extra_head %}
+
+    
 </head>
 
 <body>

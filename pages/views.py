@@ -3779,6 +3779,8 @@ def competition(request, code, matchday=None):
 
     config = LEAGUES[code]
 
+    
+
     return render(
 
         request,
@@ -3800,6 +3802,7 @@ def competition(request, code, matchday=None):
             "previous_matchday": max(1, matchday - 1),
 
             "next_matchday": min(config["max_matchday"], matchday + 1),
+
 
         }
 
