@@ -4388,13 +4388,14 @@ def analysis_list(request, code=None):
     if code:
         qs = qs.filter(league_code=code)
     return render(request, "pages/analysis_list.html", {
-        "articles": qs[:60], "code": code, "competitions": LEAGUES,
+        "articles": _with_logo(qs[:60]), "code": code, "competitions": LEAGUES,
     })
 
 
 def analysis_detail(request, slug):
     article = get_object_or_404(AnalysisArticle, slug=slug)
-    related = (
+    article.display_logo = article.image_url or LEAGUES.get(article.league_code, {}).get("logo", "")
+    related = _with_logo(
         AnalysisArticle.objects
         .filter(league_code=article.league_code)
         .exclude(id=article.id)[:4]
@@ -6550,6 +6551,85 @@ def build_daily_summary(grouped_matches, featured_matches, mini_standings, targe
 
 
 
+
+
+# ================= HOME ANALYSIS BOX (مقالات اليوم) =================
+TOP_TEAM_ORDER = [529, 541, 40]        # برشلونة، ريال مدريد، ليفربول
+AFTER_PL_TEAM_ORDER = [157, 33, 42]    # بايرن، يونايتد، أرسنال
+NOT_PLAYED = ("PST", "CANC", "ABD", "AWD", "WO")
+
+
+def team_tier(team_id, league_code):
+    """رقم أصغر = أولوية أعلى"""
+    if team_id in TOP_TEAM_ORDER:
+        return TOP_TEAM_ORDER.index(team_id)
+    if league_code == "PL":
+        return 3
+    if team_id in AFTER_PL_TEAM_ORDER:
+        return 4 + AFTER_PL_TEAM_ORDER.index(team_id)
+    if league_code in FEATURED_ORDER:
+        return 7 + FEATURED_ORDER.index(league_code)
+    return 7 + len(FEATURED_ORDER)
+
+
+def match_priority(match, league_code, ranks=None):
+    ranks = ranks or {}
+    home_id = match["homeTeam"]["id"]
+    away_id = match["awayTeam"]["id"]
+
+    tier = min(team_tier(home_id, league_code), team_tier(away_id, league_code))
+
+    importance = ranks.get(home_id, 20) + ranks.get(away_id, 20)
+    if _is_rivalry(match):
+        importance -= 30
+
+    return (tier, importance, str(match.get("utcDate") or ""))
+
+
+def ranked_today_matches(grouped_matches):
+    """[(أولوية, مباراة, بطولة)] مرتبة من الأهم"""
+    items = []
+    for group in grouped_matches:
+        ranks = _featured_rank_map(group["code"])
+        for m in group["matches"]:
+            if m["status"] in NOT_PLAYED:
+                continue
+            items.append((match_priority(m, group["code"], ranks), m, group))
+    items.sort(key=lambda x: x[0])
+    return items
+
+
+def _with_logo(articles):
+    items = list(articles)
+    for a in items:
+        a.display_logo = a.image_url or LEAGUES.get(a.league_code, {}).get("logo", "")
+    return items
+
+
+def get_home_analysis(grouped_matches, limit=6):
+    try:
+        ranked = ranked_today_matches(grouped_matches)
+        order = {f"tp-{m['id']}": i for i, (_, m, _) in enumerate(ranked)}
+
+        articles = []
+        if order:
+            found = AnalysisArticle.objects.filter(key__in=list(order))
+            articles = sorted(found, key=lambda a: order[a.key])
+
+        # إذا قلّت معاينات اليوم نكمّل بآخر المقالات
+        if len(articles) < limit:
+            taken = [a.id for a in articles]
+            articles += list(
+                AnalysisArticle.objects.exclude(id__in=taken)[: limit - len(articles)]
+            )
+
+        return _with_logo(articles[:limit])
+
+    except Exception as e:
+        print("home analysis error:", repr(e))
+        return []
+
+
 def today_matches_view(request):
 
     date_param = request.GET.get("date")
@@ -6575,7 +6655,7 @@ def today_matches_view(request):
         "prev_date": target_date - timedelta(days=1),
         "next_date": target_date + timedelta(days=1),
         "is_today": target_date == date_cls.today(),
-        "latest_analysis": AnalysisArticle.objects.all()[:2],
+        "latest_analysis": get_home_analysis(grouped_matches),
     }
 
     return render(request, "pages/today_matches.html", context)

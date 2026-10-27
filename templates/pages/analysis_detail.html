@@ -9,8 +9,9 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "{{ article.title|escapejs }}",
+  "description": "{{ article.summary|escapejs }}",
   "datePublished": "{{ article.created_at|date:'c' }}",
-  "image": "{{ article.image_url }}",
+  "image": "{{ article.display_logo }}",
   "publisher": {"@type": "Organization", "name": "EURFOT", "url": "https://eurfot.com/"}
 }
 </script>
@@ -21,20 +22,34 @@
     <a href="{% url 'matches' %}" class="an-back">← EURFOT</a>
 
     <article class="an-article">
-        {% if article.image_url %}
-        <img class="an-img" src="{{ article.image_url }}" alt="{{ article.title }}">
+        {% if article.display_logo %}
+        <img class="an-img" src="{{ article.display_logo }}" alt="{{ article.title }}">
         {% endif %}
         <h1>{{ article.title }}</h1>
         <div class="an-date">{{ article.created_at|date:"j F Y" }}</div>
+
         {% for para in article.paragraphs %}
-        <p>{{ para }}</p>
+            {% if para|slice:":3" == "## " %}
+            <h2>{{ para|slice:"3:" }}</h2>
+            {% else %}
+            <p>{{ para }}</p>
+            {% endif %}
         {% endfor %}
+
+        {% if article.key|slice:":3" == "tp-" %}
+        <a class="an-match-link" href="{% url 'match_detail' article.key|slice:'3:' %}">
+            Open the match page: lineups, live score and statistics →
+        </a>
+        {% endif %}
     </article>
 
     {% if related %}
     <h2 class="an-related-title">More analysis</h2>
     {% for a in related %}
-    <a class="an-related" href="{{ a.get_absolute_url }}">{{ a.title }}</a>
+    <a class="an-related" href="{{ a.get_absolute_url }}">
+        {% if a.display_logo %}<img src="{{ a.display_logo }}" alt="" width="32" height="32" loading="lazy">{% endif %}
+        <span>{{ a.title }}</span>
+    </a>
     {% endfor %}
     {% endif %}
 </div>
@@ -43,13 +58,17 @@
 body{background:#080808;margin:0}
 .an-wrap{max-width:760px;margin:0 auto;padding:20px;color:white;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 .an-back{color:white;text-decoration:none;font-weight:800}
-.an-article{background:#111;border:1px solid ;border-radius:16px;padding:20px;margin-top:14px}
+.an-article{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:20px;margin-top:14px}
 .an-img{display:block;margin:0 auto 14px;max-height:120px;object-fit:contain}
 .an-article h1{font-size:24px;line-height:1.35;margin:0 0 6px}
+.an-article h2{font-size:17px;margin:24px 0 8px;padding-left:10px;border-left:3px solid red;color:white}
 .an-date{color:#888;font-size:12px;margin-bottom:16px}
-.an-article p{color:#ccc;line-height:1.75;font-size:15px}
+.an-article p{color:#ccc;line-height:1.75;font-size:15px;margin:0 0 12px}
+.an-match-link{display:inline-block;margin-top:14px;padding:10px 16px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:white;text-decoration:none;font-weight:700;font-size:14px}
+.an-match-link:hover{background:red;border-color:red}
 .an-related-title{font-size:16px;margin:22px 0 8px}
-.an-related{display:block;padding:10px 14px;margin-bottom:8px;background:#0e0e0e;border-left:3px solid red;color:#ddd;text-decoration:none;border-radius:0 8px 8px 0}
+.an-related{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:8px;background:#0e0e0e;border-left:3px solid red;color:#ddd;text-decoration:none;border-radius:0 8px 8px 0}
+.an-related img{width:32px;height:32px;object-fit:contain;flex-shrink:0}
 .an-related:hover{color:#ff0000}
 </style>
 {% endblock %}
