@@ -6554,7 +6554,7 @@ def build_daily_summary(grouped_matches, featured_matches, mini_standings, targe
 
 
 # ================= HOME ANALYSIS BOX (مقالات اليوم) =================
-TOP_TEAM_ORDER = [529, 541, 40]        # برشلونة، ريال مدريد، ليفربول
+TOP_TEAM_ORDER = [541, 529, 40]        # برشلونة، ريال مدريد، ليفربول
 AFTER_PL_TEAM_ORDER = [157, 33, 42]    # بايرن، يونايتد، أرسنال
 NOT_PLAYED = ("PST", "CANC", "ABD", "AWD", "WO")
 
@@ -6607,38 +6607,58 @@ def _with_logo(articles):
 
 
 # أولوية المقالات في الواجهة: الرقم الأصغر يظهر أولاً
+# أولوية المقالات في الواجهة: الرقم الأصغر يظهر أولاً
 HOME_TEAM_TIERS = [
-    (0, ["barcelona"]),
-    (1, ["real madrid"]),
+    (0, ["real madrid"]),
+    (1, ["barcelona"]),
     (2, ["liverpool"]),
     (3, ["man city", "man united", "arsenal", "chelsea", "bayern", "psg",
          "inter milan", "juventus", "ac milan", "atletico madrid",
          "dortmund", "tottenham", "napoli"]),
 ]
 HOME_LEAGUE_TIER = {"PL": 4, "UCL": 5, "PD": 6, "SA": 7, "BL1": 8, "FL1": 9}
+HOME_MAX_BIG_OTHERS = 2   # أقصى عدد للأندية الكبيرة الأخرى (المستوى 3) في الصندوق
+
+
+def _home_club(a):
+    """(المستوى، اسم النادي) للنادي الأهم في عنوان المقالة، أو None"""
+    title = a.title.lower()
+    found = []
+    for tier, words in HOME_TEAM_TIERS:
+        for w in words:
+            pos = title.find(w)
+            if pos != -1:
+                found.append((tier, pos, w))
+    if not found:
+        return None
+    best = min(found)
+    return best[0], best[2]
 
 
 def _home_tier(a):
-    title = a.title.lower()
-    for tier, words in HOME_TEAM_TIERS:
-        if any(w in title for w in words):
-            return tier
+    club = _home_club(a)
+    if club:
+        return club[0]
     return HOME_LEAGUE_TIER.get(a.league_code, 10)
 
 
-def get_home_analysis(grouped_matches, limit=6):
+def get_home_analysis(grouped_matches, limit=8):
+    today_keys = {f"tp-{m['id']}" for g in grouped_matches for m in g["matches"]}
+    ck = f"home_analysis_v5_{limit}_{min(today_keys) if today_keys else 'none'}"
+
+    cached = cache.get(ck)
+    if cached is not None:
+        return cached
+
     try:
-        today_keys = {f"tp-{m['id']}" for g in grouped_matches for m in g["matches"]}
         cutoff = timezone.now() - timedelta(days=3)
 
         pool, seen = [], set()
-        # الأحدث أولاً، ونأخذ أحدث مقالة فقط لكل (فريق / مقارنة / جولة / مباراة)
         for a in AnalysisArticle.objects.order_by("-created_at")[:400]:
             group = a.key if a.key.startswith("tp-") else a.key.rsplit("_", 1)[0]
             if group in seen:
                 continue
             seen.add(group)
-            # مقالات المباريات القديمة (غير مباريات اليوم) نستبعدها
             if a.kind == "match" and a.key not in today_keys and a.created_at < cutoff:
                 continue
             pool.append(a)
@@ -6649,11 +6669,33 @@ def get_home_analysis(grouped_matches, limit=6):
             return {"team": 1, "compare": 2}.get(a.kind, 4)
 
         pool.sort(key=lambda a: (_home_tier(a), kind_rank(a), -a.created_at.timestamp()))
-        return _with_logo(pool[:limit])
+
+        # مقال واحد لكل نادي
+        picked, clubs_used, big_others = [], set(), 0
+        for a in pool:
+            club = _home_club(a)
+            if club:
+                tier, name = club
+                if name in clubs_used:
+                    continue
+                if tier == 3:
+                    if big_others >= HOME_MAX_BIG_OTHERS:
+                        continue
+                    big_others += 1
+                clubs_used.add(name)
+            picked.append(a)
+            if len(picked) >= limit:
+                break
+
+        result = _with_logo(picked)
 
     except Exception as e:
         print("home analysis error:", repr(e))
-        return []
+        return cache.get(ck + "_stale") or []
+
+    cache.set(ck, result, 300)
+    cache.set(ck + "_stale", result, 60 * 60 * 24 * 7)
+    return result
 
 def today_matches_view(request):
 
