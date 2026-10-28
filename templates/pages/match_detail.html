@@ -814,6 +814,35 @@ No matches available
 
     </div>
 
+  {% elif preview %}
+
+  <article class="preview">
+
+    <p class="preview-note">
+      Live match statistics appear here once the game kicks off.
+      Until then, here is our data-driven preview of {{ game.home_name }} vs {{ game.away_name }}.
+    </p>
+
+    <h2 class="preview-title">{{ preview.title }}</h2>
+
+    {% for para in preview.paragraphs %}
+      {% if para|slice:":3" == "## " %}
+      <h3>{{ para|slice:"3:" }}</h3>
+      {% else %}
+      <p>{{ para }}</p>
+      {% endif %}
+    {% endfor %}
+
+    {% if preview.faq %}
+    <h3>Frequently asked questions</h3>
+    {% for item in preview.faq %}
+    <h4>{{ item.q }}</h4>
+    <p>{{ item.a }}</p>
+    {% endfor %}
+    {% endif %}
+
+  </article>
+
   {% else %}
 
 <p class="stats-empty">Statistics are currently unavailable for this match</p>
@@ -4107,6 +4136,61 @@ margin-left: -2%;
 .lineup-info .lineup-prev{
     font-size: 12px;
     color: #888;
+}
+
+
+
+
+
+
+/* ================= MATCH PREVIEW ================= */
+.preview{
+    text-align: left;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.preview-note{
+    background: #111;
+    border-left: 3px solid #ff0000;
+    border-radius: 0 10px 10px 0;
+    color: #b5b5b5;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 10px 14px;
+    margin: 0 0 18px;
+}
+
+.preview-title{
+    font-size: 22px;
+    line-height: 1.35;
+    margin: 0 0 14px;
+    color: white;
+}
+
+.preview h3{
+    font-size: 17px;
+    margin: 24px 0 8px;
+    padding-left: 10px;
+    border-left: 3px solid #ff0000;
+    color: white;
+}
+
+.preview h4{
+    font-size: 15px;
+    margin: 14px 0 4px;
+    color: #ddd;
+}
+
+.preview p{
+    color: #ccc;
+    line-height: 1.75;
+    font-size: 15px;
+    margin: 0 0 12px;
+}
+
+/* صفحة المباراة على الجوال مصغّرة بـ zoom:55%، فنكبّر النص ليُقرأ */
+@media (max-width: 1000px){
+    .preview{ zoom: 170%; }
 }
 
 

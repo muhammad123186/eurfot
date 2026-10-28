@@ -3,6 +3,8 @@
 """
 from datetime import date, datetime, timedelta
 
+import re
+
 import requests
 from django.core.cache import cache
 from django.utils.text import slugify
@@ -323,7 +325,7 @@ def _split_para(name, prof, home_today):
     if len(side) >= 2:
         w, d, _, _, _ = _rec(side)
         text += (
-            f" Today's game is {'at home' if home_today else 'away'}, "
+            f" This game is {'at home' if home_today else 'away'}, "
             f"where they have taken {w * 3 + d} points from {len(side)} league games."
         )
     return text
@@ -638,3 +640,251 @@ def run_team_articles(days=1, force=False):
                 done.append(AnalysisArticle.objects.create(key=key, **data))
 
     return done
+
+
+
+
+# ================================================================
+# معاينة المباراة الكاملة (تبويب Statistics قبل بداية المباراة)
+# ================================================================
+def _league_code_from_logo(logo):
+    """نستخرج رقم البطولة من رابط الشعار (…/leagues/39.png) فلا نحتاج تغيير كاش المباراة"""
+    m = re.search(r"/leagues/(\d+)\.png", logo or "")
+    if not m:
+        return ""
+    lid = int(m.group(1))
+    for code, info in LEAGUES.items():
+        if info["id"] == lid:
+            return code
+    return ""
+
+
+def _round_text(round_name):
+    if not round_name:
+        return ""
+    m = re.match(r"Regular Season - (\d+)$", round_name)
+    return f"matchday {m.group(1)}" if m else round_name
+
+
+def _per_game(prof):
+    a = prof["row"]["all"]
+    n = a["played"]
+    if not n:
+        return None
+    return {
+        "ppg": prof["row"]["points"] / n,
+        "gf": a["goals"]["for"] / n,
+        "ga": a["goals"]["against"] / n,
+        "clean": sum(1 for r in prof["results"] if r["ga"] == 0),
+        "games": len(prof["results"]),
+    }
+
+
+def _compare_para(home, away, ph, pa):
+    """فقرتان: مقارنة عامة، ثم هجوم ضد دفاع"""
+    if not ph or not pa:
+        return []
+
+    h, a = _per_game(ph), _per_game(pa)
+    if not h or not a:
+        return []
+
+    first = (
+        f"Side by side, {home} average {h['ppg']:.2f} points, {h['gf']:.2f} goals scored and "
+        f"{h['ga']:.2f} conceded per league game, against {a['ppg']:.2f}, {a['gf']:.2f} and "
+        f"{a['ga']:.2f} for {away}."
+    )
+
+    if ph["code"] == pa["code"]:
+        rh, ra = ph["row"]["rank"], pa["row"]["rank"]
+        if rh != ra:
+            higher, lower = (home, away) if rh < ra else (away, home)
+            gap = abs(rh - ra)
+            diff = abs(ph["row"]["points"] - pa["row"]["points"])
+            first += f" {higher} are {gap} {'place' if gap == 1 else 'places'} above {lower} in the table, "
+            first += (
+                f"{diff} {'point' if diff == 1 else 'points'} clear."
+                if diff else "level on points and ahead on the tie-break."
+            )
+    else:
+        first += (
+            f" They play in different leagues ({LEAGUES[ph['code']]['name']} and "
+            f"{LEAGUES[pa['code']]['name']}), so these numbers are not directly comparable."
+        )
+
+    second = (
+        f"Attack against defence: {home} score {h['gf']:.2f} goals per game and meet a side conceding "
+        f"{a['ga']:.2f}; {away} score {a['gf']:.2f} and meet a defence that concedes {h['ga']:.2f}."
+    )
+    if h["games"] >= 3 and a["games"] >= 3:
+        second += (
+            f" {home} have kept {h['clean']} clean sheets in {h['games']} league games, "
+            f"{away} {a['clean']} in {a['games']}."
+        )
+
+    return [first, second]
+
+
+def _stake_para(home, away, home_id, away_id, ph, pa, code, comp):
+    if code in DOMESTIC and ph and pa:
+        ph_pts, pa_pts = ph["row"]["points"], pa["row"]["points"]
+        return (
+            f"This is a league fixture, so the result goes straight into the table. A win would take "
+            f"{home} to {ph_pts + 3} points and {away} to {pa_pts + 3}, while a draw would leave them "
+            f"on {ph_pts + 1} and {pa_pts + 1} respectively."
+        )
+
+    if code in EUROPE:
+        table = _get_api_standings(code) or []
+        parts = []
+        for nm, tid in ((home, home_id), (away, away_id)):
+            row = next((r for r in table if r["team"]["id"] == tid), None)
+            if row:
+                parts.append(
+                    f"{nm} are {_ordinal(row['rank'])} in the {comp} standings with {row['points']} points "
+                    f"from {row['all']['played']} games"
+                )
+        if parts:
+            return (
+                ". ".join(parts)
+                + ". Domestic league numbers above are context rather than a direct predictor of this result."
+            )
+
+    return (
+        f"{comp} is a different competition from the league, so the league statistics above are "
+        f"context rather than a direct predictor of the result."
+    )
+
+
+def _build_full_preview(game, code, team_index):
+    home_id, away_id = game["home_id"], game["away_id"]
+    home, away = game["home_name"], game["away_name"]
+    comp = (game.get("competition") or {}).get("name", "")
+
+    kick = _parse_dt(game.get("utcDate")) or datetime.now()
+    date_text = f"{kick.strftime('%A')} {kick.day} {kick.strftime('%B %Y')}"
+    time_text = kick.strftime("%H:%M")
+    venue, city = game.get("venue"), game.get("venue_city")
+    round_txt = _round_text(game.get("round"))
+
+    ph = _team_profile(home_id, team_index)
+    pa = _team_profile(away_id, team_index)
+    h2h_rows = _h2h(home_id, away_id)
+
+    where = ""
+    if venue:
+        where = f" at {venue}" + (f", {city}" if city else "")
+    rnd = f" ({round_txt})" if round_txt else ""
+
+    paras = [
+        f"{home} host {away} in {_the(comp)}{rnd} on {date_text}{where}. Kick-off is at {time_text} "
+        f"Saudi time (UTC+3). This preview brings together the recent form, league position, home and "
+        f"away records, goals, key players, head-to-head history and what is at stake for both clubs, "
+        f"using the data available before kick-off."
+    ]
+
+    def section(heading, *texts):
+        texts = [t for t in texts if t]
+        if texts:
+            paras.append(f"## {heading}")
+            paras.extend(texts)
+
+    for name, prof, is_home in ((home, ph, True), (away, pa, False)):
+        if not prof:
+            continue
+        league = LEAGUES[prof["code"]]["name"]
+        section(f"{name}: recent form", _form_para(name, prof))
+        section(f"{name} in {_the(league)}", _position_para(name, prof))
+        section(f"{name}: {'home' if is_home else 'away'} and overall record", _split_para(name, prof, is_home))
+        section(f"{name}: goals and scoring trends", _goals_para(name, prof), _halftime_para(name, prof))
+        section(f"{name}: players to watch", _players_para(name, prof))
+
+    section("Side by side", *_compare_para(home, away, ph, pa))
+    section(f"Head-to-head: {home} vs {away}", _h2h_para(home, away, home_id, h2h_rows))
+    section("What is at stake", _stake_para(home, away, home_id, away_id, ph, pa, code, comp))
+    section("Club pedigree", _honours_para(home_id, home, away_id, away))
+    section(
+        "Fixtures ahead",
+        _next_para(home, ph, game["id"]) if ph else None,
+        _next_para(away, pa, game["id"]) if pa else None,
+    )
+
+    body = [p for p in paras if not p.startswith("## ")]
+    if len(body) < 6:
+        return None
+
+    section(
+        "Lineups, live events and statistics",
+        "Confirmed lineups are usually released about an hour before kick-off and appear in the Lineups tab. "
+        "Live events, match statistics and the final score will update on this page once the game starts.",
+    )
+
+    # ---------------- الأسئلة الشائعة (كلها من بيانات حقيقية) ----------------
+    faq = [{
+        "q": f"When is {home} vs {away}?",
+        "a": f"{home} vs {away} is scheduled for {date_text} at {time_text} Saudi time (UTC+3) in {_the(comp)}.",
+    }]
+
+    if venue:
+        faq.append({
+            "q": f"Where is {home} vs {away} being played?",
+            "a": f"The match is at {venue}" + (f" in {city}" if city else "") + f", with {home} as the home side.",
+        })
+
+    forms = []
+    for name, prof in ((home, ph), (away, pa)):
+        if prof and len(prof["results"]) >= 3:
+            forms.append(f"{name}: " + "-".join(r["res"] for r in prof["results"][-5:]))
+    if forms:
+        faq.append({
+            "q": f"What is the recent form of {home} and {away}?",
+            "a": "Last league results, oldest to newest: " + "; ".join(forms) + ".",
+        })
+
+    if ph and pa and ph["code"] == pa["code"]:
+        league = LEAGUES[ph["code"]]["name"]
+        faq.append({
+            "q": f"Who is higher in the table, {home} or {away}?",
+            "a": (
+                f"{home} are {_ordinal(ph['row']['rank'])} on {ph['row']['points']} points and {away} are "
+                f"{_ordinal(pa['row']['rank'])} on {pa['row']['points']} points in {_the(league)}."
+            ),
+        })
+
+    if len(h2h_rows) >= 2:
+        hw = sum(1 for r in h2h_rows if r["hg"] != r["ag"]
+                 and (r["home_id"] if r["hg"] > r["ag"] else r["away_id"]) == home_id)
+        dr = sum(1 for r in h2h_rows if r["hg"] == r["ag"])
+        aw = len(h2h_rows) - hw - dr
+        faq.append({
+            "q": f"What is the head-to-head record between {home} and {away}?",
+            "a": f"In their last {len(h2h_rows)} meetings {home} have won {hw}, {away} have won {aw} and {dr} ended level.",
+        })
+
+    return {
+        "title": f"{home} vs {away}: Preview, Form, Head-to-Head and Key Stats",
+        "paragraphs": paras,
+        "faq": faq,
+    }
+
+
+def get_match_preview(game):
+    """معاينة صفحة المباراة. تُخزَّن في كاش Django ولا تُكتب في قاعدة البيانات (لحماية حصة Neon)."""
+    if not game or not game.get("id"):
+        return None
+
+    key = f"match_preview_v1_{game['id']}"
+    cached = cache.get(key)
+    if cached is not None:
+        return cached or None
+
+    code = _league_code_from_logo((game.get("competition") or {}).get("logo"))
+
+    try:
+        data = _build_full_preview(game, code, _build_team_index())
+    except Exception as e:
+        print("match preview error:", repr(e))
+        data = None
+
+    cache.set(key, data or {}, 60 * 20 if data else 300)
+    return data

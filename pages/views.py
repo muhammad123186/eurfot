@@ -2446,6 +2446,17 @@ def match_detail(request, id):
 
     statistics = stats_cached["statistics"]
 
+
+    # ================= PREVIEW (قبل المباراة، حين لا توجد إحصائيات) =================
+    preview = None
+
+    if not statistics and match_status in ("NS", "TBD"):
+        try:
+            from .team_analysis import get_match_preview
+            preview = get_match_preview(game)
+        except Exception as e:
+            print("match preview error:", repr(e))
+
     # ================= CONTEXT =================
 
     context = {
@@ -2473,6 +2484,8 @@ def match_detail(request, id):
         "away_scorers": away_scorers,
 
         "h2h": h2h,
+
+        "preview": preview,
     }
 
     return render(
