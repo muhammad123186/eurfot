@@ -4253,6 +4253,17 @@ def submit_prediction(request, match_id):
     )
 
 
+
+PREDICTION_LEAGUES = ["PL", "PD", "SA", "BL1", "FL1"]
+
+
+def get_prediction_leagues():
+    return [
+        {"code": c, "name": LEAGUES[c]["name"], "logo": LEAGUES[c]["logo"]}
+        for c in PREDICTION_LEAGUES
+    ]
+
+
 def predictions_page(request, code, matchday=None):
 
     if code not in LEAGUES:
@@ -4313,6 +4324,14 @@ def predictions_page(request, code, matchday=None):
     previous_matchday = matchday - 1 if matchday > 1 else None
     next_matchday = matchday + 1 if matchday < max_matchday else None
 
+
+    # الجولة الحالية تُعرَّف برابطها الثابت، وبقية الجولات برابطها الرقمي
+    canonical_path = (
+        f"/competition/{code}/predictions/"
+        if matchday == get_current_matchday(code)
+        else f"/competition/{code}/predictions/{matchday}/"
+    )
+
     context = {
 
         **get_common_context(),
@@ -4330,6 +4349,10 @@ def predictions_page(request, code, matchday=None):
         "next_matchday": next_matchday,
 
         "user_stats": user_stats,
+
+        "prediction_leagues": get_prediction_leagues(),
+        
+        "canonical_path": canonical_path,
 
     }
 

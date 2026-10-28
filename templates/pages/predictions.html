@@ -1,102 +1,94 @@
 {% extends 'base.html' %}
+
+{% block title %}{{ competition.name }} Predictions - Matchweek {{ matchday }} | Eurfot{% endblock %}
+
+{% block meta_description %}Predict the score of every {{ competition.name }} match in Matchweek {{ matchday }}. Earn points for correct predictions and climb the global leaderboard on EURFOT.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": "https://eurfot.com{{ canonical_path }}#webpage",
+      "url": "https://eurfot.com{{ canonical_path }}",
+      "name": "{{ competition.name|escapejs }} Predictions - Matchweek {{ matchday }}",
+      "description": "Predict the score of every {{ competition.name|escapejs }} match in Matchweek {{ matchday }} and climb the EURFOT leaderboard.",
+      "inLanguage": "en",
+      "isPartOf": {"@id": "https://eurfot.com/#website"},
+      "breadcrumb": {"@id": "https://eurfot.com{{ canonical_path }}#breadcrumb"},
+      "mainEntity": {"@id": "https://eurfot.com{{ canonical_path }}#fixtures"}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://eurfot.com{{ canonical_path }}#breadcrumb",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://eurfot.com/"},
+        {"@type": "ListItem", "position": 2, "name": "{{ competition.name|escapejs }} Predictions", "item": "https://eurfot.com{{ canonical_path }}"}
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://eurfot.com{{ canonical_path }}#fixtures",
+      "name": "{{ competition.name|escapejs }} Matchweek {{ matchday }} fixtures",
+      "numberOfItems": {{ matches|length }},
+      "itemListElement": [
+        {% for game in matches %}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.counter }},
+          "url": "https://eurfot.com/match/{{ game.id }}/",
+          "name": "{{ game.homeTeam.name|escapejs }} vs {{ game.awayTeam.name|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+  ]
+}
+</script>
+{% endblock structured_data %}
+
 {% block content %}
 
 <body class="body">
 
-
 <div class="site-header">
 
-
-
     <div class="logo-box">
-
-
-
-        <h1>EUR<span>FOT</span></h1>
-
-
-
+        <a href="{% url 'matches' %}" class="logo-text" aria-label="EURFOT home">EUR<span>FOT</span></a>
     </div>
-
-
 
     <div class="header-right">
 
-
-
         {% if user.is_authenticated %}
-
-
-
-<a href="{% url 'profile' %}" class="profile-btn">
-
-
-
-👤 {{ user.username }}
-
-
-
-</a>
-
-
-
-
-
-{% else %}
-       
-
+        <a href="{% url 'profile' %}" class="profile-btn">👤 {{ user.username }}</a>
+        {% else %}
         <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
-
         {% endif %}
 
-
-
         <form action="{% url 'search' %}" method="GET" class="search-box">
-
             <input type="text" name="q" placeholder="Search">
-
             <button type="submit">🔍</button>
-
         </form>
 
         <button type="button" class="mobile-search-btn" onclick="openMobileSearch()">🔍</button>
 
-
-
-
-    </div>
-
-
-
-</div>
-
-
-
-<!-- زر البحث للهاتف بس -->
-        
-
     </div>
 
 </div>
-
-
 
 <!-- ================= MOBILE SEARCH OVERLAY ================= -->
-
 <div id="mobile-search-overlay" class="mobile-search-overlay">
 
     <div class="mobile-search-header">
-
         <button type="button" class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
-
     </div>
 
     <form action="{% url 'search' %}" method="GET" class="mobile-search-form">
         <input type="text" name="q" placeholder="Search" autofocus>
         <button type="submit">🔍</button>
     </form>
-
-</div>
 
 </div>
 
@@ -185,14 +177,26 @@
     <div class="main-content">
 
 
-        <!-- COMPETITION LOGO -->
+            <!-- PAGE HEADING -->
+        <header class="pred-hero">
+            <img class="pred-logo" src="{{ competition.logo|default:'' }}" alt="{{ competition.name }} logo" width="72" height="72">
+            <h1>{{ competition.name }} Predictions</h1>
+            <p class="pred-sub">Matchweek {{ matchday }}</p>
+            <p class="pred-intro">
+                Predict the final score of every {{ competition.name }} match in Matchweek {{ matchday }}.
+                Earn points for each correct prediction and climb the Eurfot leaderboard.
+            </p>
+        </header>
 
-        <div style="text-align:center;margin:20px;">
-
-            <img
-            src="{{ competition.logo|default:'' }}" class="competition-logo">
-
-        </div>
+        <!-- LEAGUE TABS -->
+        <nav class="pred-leagues" aria-label="Football predictions by league">
+            {% for l in prediction_leagues %}
+            <a href="{% url 'predictions_current' l.code %}" class="pred-league{% if l.code == code %} active{% endif %}"{% if l.code == code %} aria-current="page"{% endif %}>
+                <img src="{{ l.logo }}" alt="" width="24" height="24">
+                <span>{{ l.name }}</span>
+            </a>
+            {% endfor %}
+        </nav>
 
 
 
@@ -280,17 +284,15 @@
 
 
 
-        {% for game in matches %}
+               {% for game in matches %}
 
 <div class="match-card">
 
     <div class="team home">
-
         <a href="{% url 'team_detail' game.homeTeam.id %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <img src="{{ game.homeTeam.crest }}">
+            <img src="{{ game.homeTeam.crest }}" alt="{{ game.homeTeam.name }}" width="45" height="45" loading="lazy">
             <span>{{ game.homeTeam.name }}</span>
         </a>
-
     </div>
 
     <div style="display:flex;align-items:center;justify-content:center;">
@@ -298,19 +300,17 @@
         {% if user.is_authenticated %}
 
             <a href="{% url 'submit_prediction' game.id %}" style="background:rgb(255, 0, 0);color:white;padding:8px 18px;border-radius:15px;text-decoration:none;font-size:13px;white-space:nowrap;">
-
                 {% if game.prediction %}
-                    {{ game.prediction.predicted_home_score }}-{{ game.prediction.predicted_away_score }} (تعديل)
+                    {{ game.prediction.predicted_home_score }}-{{ game.prediction.predicted_away_score }} (edit)
                 {% else %}
-                    توقع النتيجة
+                    Predict score
                 {% endif %}
-
             </a>
 
         {% else %}
 
             <a href="{% url 'login' %}" style="color:#00ff88;font-size:13px;white-space:nowrap;">
-                سجل دخولك للتوقع
+                Log in to predict
             </a>
 
         {% endif %}
@@ -318,23 +318,39 @@
     </div>
 
     <div class="team away">
-
         <a href="{% url 'team_detail' game.awayTeam.id %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
             <span>{{ game.awayTeam.name }}</span>
-            <img src="{{ game.awayTeam.crest }}">
+            <img src="{{ game.awayTeam.crest }}" alt="{{ game.awayTeam.name }}" width="45" height="45" loading="lazy">
         </a>
-
     </div>
 
 </div>
 
-{% empty %}
+        {% empty %}
 
-<h3 style="color:white;">
-    لا توجد مباريات
-</h3>
+<p style="color:#aaa;">No matches scheduled for this matchweek.</p>
 
-{% endfor %}
+        {% endfor %}
+
+
+        <!-- MORE PREDICTIONS -->
+        <section class="pred-more">
+            <h2>More football predictions</h2>
+
+            <div class="pred-more-grid">
+                {% for l in prediction_leagues %}
+                {% if l.code != code %}
+                <a href="{% url 'predictions_current' l.code %}" class="pred-more-card">
+                    <img src="{{ l.logo }}" alt="{{ l.name }} logo" width="40" height="40" loading="lazy">
+                    <strong>{{ l.name }} predictions</strong>
+                    <small>Predict this week's scores →</small>
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            <a href="{% url 'matches' %}" class="pred-home-link">← Today's football matches and live scores</a>
+        </section>
 
 
 
@@ -1204,6 +1220,152 @@ margin-left: -2%;
         font-size: 11px !important;
     }
 
+}
+
+
+
+/* ================= LOGO (رابط للرئيسية) ================= */
+.logo-text{
+    display: block;
+    margin: 0;
+    font-size: 38px;
+    font-weight: 1000;
+    letter-spacing: 4px;
+    color: rgb(255, 0, 0);
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+}
+.logo-text span{ color: white; }
+.logo-text:hover{ opacity: .85; }
+
+/* ================= PREDICTIONS HERO ================= */
+.pred-hero{
+    text-align: center;
+    margin: 20px 0 6px;
+    max-width: 700px;
+}
+.pred-logo{
+    display: block;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin: 0 auto 10px;
+}
+.pred-hero h1{
+    margin: 0;
+    font-size: 28px;
+    color: white;
+}
+.pred-sub{
+    margin: 6px 0 0;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.pred-intro{
+    margin: 12px auto 0;
+    max-width: 560px;
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+/* ================= LEAGUE TABS ================= */
+.pred-leagues{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0 4px;
+    max-width: 760px;
+}
+.pred-league{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 999px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .25s;
+}
+.pred-league img{
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+.pred-league:hover{
+    border-color: #ff0000;
+    color: white;
+}
+.pred-league.active{
+    background: linear-gradient(135deg, #ff0000, #990000);
+    border-color: #ff0000;
+    color: white;
+}
+
+/* ================= MORE PREDICTIONS ================= */
+.pred-more{
+    width: 700px;
+    max-width: 100%;
+    margin: 30px 0 70px;
+}
+.pred-more h2{
+    margin: 0 0 12px;
+    text-align: center;
+    color: white;
+    font-size: 18px;
+}
+.pred-more-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.pred-more-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 10px;
+    text-align: center;
+    background: linear-gradient(180deg, #2a0000, #111 45%);
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    color: white;
+    text-decoration: none;
+    transition: .25s;
+}
+.pred-more-card img{
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+.pred-more-card strong{ font-size: 14px; }
+.pred-more-card small{ color: #aaa; font-size: 12px; }
+.pred-more-card:hover{
+    border-color: #ff0000;
+    transform: translateY(-3px);
+}
+.pred-home-link{
+    display: block;
+    margin-top: 16px;
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+    text-decoration: none;
+}
+.pred-home-link:hover{ color: #ff0000; }
+
+@media (max-width: 1000px){
+    .logo-text{ font-size: 22px; }
+    .pred-hero h1{ font-size: 22px; }
+    .pred-more{ width: 100%; }
 }
 
 

@@ -137,6 +137,13 @@ urlpatterns = [
 
 
     path(
+    "competition/<str:code>/predictions/",
+    views.predictions_page,
+    name="predictions_current"
+    ),
+
+
+    path(
     "leaderboard/",
     views.leaderboard,
     name="leaderboard"
