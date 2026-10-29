@@ -329,3 +329,70 @@ class AnalysisArticle(models.Model):
 
     def get_absolute_url(self):
         return reverse("analysis_detail", args=[self.slug])
+
+
+
+
+
+
+
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+class SignUpForm(UserCreationForm):
+    password1 = forms.CharField(
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput,
+    )
+
+    password2 = forms.CharField(
+        label="Confirm password",
+        strip=False,
+        widget=forms.PasswordInput,
+    )
+
+    class Meta:
+        model = User
+        fields = ("username",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["username"].help_text = ""
+        self.fields["password1"].help_text = ""
+        self.fields["password2"].help_text = ""
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                "كلمتا المرور غير متطابقتين."
+            )
+
+        if password1 == "" or password2 == "":
+            raise forms.ValidationError(
+                "كلمة المرور مطلوبة."
+            )
+
+        return password2
+
+    def _post_clean(self):
+        super(UserCreationForm, self)._post_clean()
+
+    def validate_unique(self):
+        super().validate_unique()
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+
+        if commit:
+            user.save()
+
+        return user
+

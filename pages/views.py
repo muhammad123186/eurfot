@@ -22,6 +22,8 @@ from django.http import Http404
 from datetime import datetime
 from django.conf import settings
 import time
+from .forms import SignUpForm
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 
@@ -4105,12 +4107,18 @@ def signup(request):
 
 
 
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
+
+
 @login_required
 def submit_prediction(request, match_id):
-
     game = None
     match_status = None
 
+    # جلب بيانات المباراة من API
     try:
         response = requests.get(
             "https://v3.football.api-sports.io/fixtures",
@@ -4118,13 +4126,13 @@ def submit_prediction(request, match_id):
             params={"id": match_id},
             timeout=15,
         )
+        response.raise_for_status()
 
         data = response.json()
         fixtures = data.get("response", [])
 
         if fixtures:
             f = fixtures[0]
-
             match_status = f["fixture"]["status"]["short"]
 
             game = {
@@ -4138,51 +4146,35 @@ def submit_prediction(request, match_id):
                 "status": match_status,
             }
 
-    except requests.RequestException:
+    except (requests.RequestException, ValueError, KeyError, IndexError):
         game = None
 
-    # الحالات التي تعني أن المباراة بدأت بالفعل
+    # حالات المباراة التي تمنع التوقع
     started_statuses = {
-        "1H",
-        "HT",
-        "2H",
-        "ET",
-        "BT",
-        "P",
+        "1H", "HT", "2H", "ET", "BT", "P",
     }
 
-    # الحالات التي تعني أن المباراة انتهت أو أصبحت غير قابلة للتوقع
     finished_statuses = {
-        "FT",
-        "AET",
-        "PEN",
-        "PST",
-        "CANC",
-        "ABD",
-        "AWD",
-        "WO",
+        "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO",
     }
 
-    # منع التوقع إذا كانت المباراة بدأت أو انتهت
     locked_statuses = started_statuses | finished_statuses
 
+    # منع التوقع إذا بدأت المباراة أو انتهت
     if match_status in locked_statuses:
-
         if match_status in started_statuses:
             message = "لا يمكنك توقع نتيجة المباراة بعد أن بدأت."
-
         else:
             message = "لا يمكنك توقع نتيجة مباراة انتهت بالفعل."
 
         return render(
             request,
             "pages/predict_error.html",
-            {
-                "message": message,
-            },
+            {"message": message},
             status=403,
         )
 
+    # جلب التوقع السابق للمستخدم
     existing_prediction = Prediction.objects.filter(
         user=request.user,
         match_id=match_id,
@@ -4190,44 +4182,39 @@ def submit_prediction(request, match_id):
 
     if request.method == "POST":
 
-        # إعادة التحقق مرة أخرى قبل حفظ التوقع
-        # حتى لو بدأت المباراة أثناء وجود المستخدم في صفحة التوقع
+        # التحقق من حالة المباراة قبل الحفظ
         if match_status in locked_statuses:
-
             if match_status in started_statuses:
                 message = "لا يمكنك توقع نتيجة المباراة بعد أن بدأت."
-
             else:
-                message = "لا يمكنك توقع نتيجة هذه المباراة بعد انتهائها"
+                message = "لا يمكنك توقع نتيجة هذه المباراة بعد انتهائها."
+
             return render(
                 request,
                 "pages/predict_error.html",
-                {
-                    "message": message,
-                },
+                {"message": message},
                 status=403,
             )
 
-        home_score = request.POST.get("home_score")
-        away_score = request.POST.get("away_score")
-
+        # التحقق من النتيجة المدخلة
         try:
-            home_score = int(home_score)
-            away_score = int(away_score)
+            home_score = int(request.POST.get("home_score"))
+            away_score = int(request.POST.get("away_score"))
 
             if home_score < 0 or away_score < 0:
                 raise ValueError
 
         except (TypeError, ValueError):
-
             return render(
                 request,
                 "pages/predict_error.html",
                 {
-                    "message": "الرجاء إدخال أرقام صحيحة وموجبة للنتيجة",
+                    "message": "الرجاء إدخال أرقام صحيحة وموجبة للنتيجة."
                 },
+                status=400,
             )
 
+        # حفظ التوقع أو تحديثه
         Prediction.objects.update_or_create(
             user=request.user,
             match_id=match_id,
@@ -4237,10 +4224,18 @@ def submit_prediction(request, match_id):
             },
         )
 
-        return redirect(
-            "match_detail",
-            id=match_id,
-        )
+        # العودة إلى صفحة التوقعات السابقة إذا كان الرابط آمنًا
+        next_url = request.POST.get("next", "")
+
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            return redirect(next_url)
+
+        # الوجهة الافتراضية إذا لم يوجد رابط عودة صالح
+        return redirect("matches")
 
     return render(
         request,
@@ -4251,6 +4246,7 @@ def submit_prediction(request, match_id):
             "existing_prediction": existing_prediction,
         },
     )
+
 
 
 
@@ -4359,19 +4355,30 @@ def predictions_page(request, code, matchday=None):
     return render(request, "pages/predictions.html", context)
 
 
-def leaderboard(request):
 
+from django.contrib.auth.models import User
+from django.db.models import Sum, Count, Q, Value, IntegerField
+from django.db.models.functions import Coalesce
+from django.shortcuts import render
+
+
+def leaderboard(request):
     users = (
         User.objects
         .annotate(
-            total_points=Sum("predictions__points_earned"),
+            total_points=Coalesce(
+                Sum("predictions__points_earned"),
+                Value(0),
+                output_field=IntegerField(),
+            ),
             total_predictions=Count(
                 "predictions",
-                filter=Q(predictions__points_earned__isnull=False)
+                filter=Q(
+                    predictions__points_earned__isnull=False
+                ),
             ),
         )
-        .exclude(total_points__isnull=True)
-        .order_by("-total_points")
+        .order_by("-total_points", "-total_predictions", "username")
     )
 
     return render(
@@ -4379,8 +4386,9 @@ def leaderboard(request):
         "pages/leaderboard.html",
         {
             "users": users,
-        }
+        },
     )
+
 
 
 def news_list(request, code=None, team_id=None):

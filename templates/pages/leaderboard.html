@@ -1,53 +1,95 @@
+
 {% extends 'base.html' %}
+
+{% block title %}Prediction Leaderboard | Eurfot{% endblock %}
+
 {% block content %}
 
-<body style="background: linear-gradient(90deg,black,black);">
+<body style="background:linear-gradient(90deg,black,black);">
 
+<div style="max-width:800px;width:95%;margin:25px auto;padding:20px;font-family:Arial,sans-serif;color:white;box-sizing:border-box;">
 
-<div style="max-width:600px;margin:40px auto;padding:20px;font-family:Arial;color:white;">
+    <!-- BACK TO MATCHES -->
+    <div style="margin-bottom:25px;">
+        <a href="{% url 'matches' %}"
+           style="display:inline-block;padding:12px 22px;background:#b90000;color:white;text-decoration:none;border-radius:9px;font-weight:bold;transition:0.3s;">
+            &#8592; Back to Matches
+        </a>
+    </div>
 
-    <h2 style="text-align:center;">ترتيب المتوقعين</h2>
+    <!-- PAGE TITLE -->
+    <h2 style="text-align:center;margin-bottom:10px;">
+        Global Prediction Leaderboard
+    </h2>
 
-    {% if users %}
+    <p style="text-align:center;color:#aaa;margin-bottom:25px;line-height:1.6;">
+        Compete with other users, earn points, and climb the rankings.
+    </p>
 
-        <table style="width:100%;border-collapse:collapse;background:black;border-radius:15px;overflow:hidden;">
+    <!-- LEADERBOARD TABLE -->
+    <div style="overflow-x:auto;border-radius:15px;">
+
+        <table style="width:100%;border-collapse:collapse;background:#080808;">
 
             <thead>
-                <tr style="background:#222;">
-                    <th style="padding:12px;">#</th>
-                    <th style="padding:12px;">المستخدم</th>
-                    <th style="padding:12px;">عدد التوقعات المحسوبة</th>
-                    <th style="padding:12px;">مجموع النقاط</th>
+                <tr style="background: linear-gradient(-100deg,rgb(76, 0, 255),rgb(0, 162, 255));">
+                    <th style="padding:14px 10px;text-align:center;">Rank</th>
+                    <th style="padding:14px 10px;text-align:center;">User</th>
+                    <th style="padding:14px 10px;text-align:center;">Scored Predictions</th>
+                    <th style="padding:14px 10px;text-align:center;">Total Points</th>
                 </tr>
             </thead>
 
             <tbody>
 
-            {% for u in users %}
+                {% for u in users %}
 
-                <tr style="border-bottom:1px solid white;{% if u == request.user %}background:rgba(0,255,34,0.1);{% endif %}">
+                <tr style="border-bottom:1px solid #333;{% if request.user.is_authenticated and u.id == request.user.id %}background:rgba(0,255,34,0.12);{% endif %}">
 
-                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;">{{ forloop.counter }}</td>
-                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;font-weight:bold;color:white;">{{ u.username }}</td>
-                    <td style="padding:10px;text-align:center;center;font-weight:bold;color:white;">{{ u.total_predictions }}</td>
-                    <td style="padding:10px;text-align:center;font-weight:bold;color:white;">{{ u.total_points }}</td>
+                    <!-- RANK -->
+                    <td style="padding:13px 10px;text-align:center;font-weight:bold;color:#FFD700;">
+                        {{ forloop.counter }}
+                    </td>
+
+                    <!-- USERNAME -->
+                    <td style="padding:13px 10px;text-align:center;font-weight:bold;color:white;">
+                        {{ u.username }}
+
+                        {% if request.user.is_authenticated and u.id == request.user.id %}
+                            <span style="color:#00ff88;font-size:12px;">(You)</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- SCORED PREDICTIONS -->
+                    <td style="padding:13px 10px;text-align:center;color:#ddd;">
+                        {{ u.total_predictions|default_if_none:0 }}
+                    </td>
+
+                    <!-- TOTAL POINTS -->
+                    <td style="padding:13px 10px;text-align:center;font-weight:bold;color:#00ff88;">
+                        {{ u.total_points|default_if_none:0 }}
+                    </td>
 
                 </tr>
 
-            {% endfor %}
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" style="padding:25px;text-align:center;color:#aaa;">
+                        No registered users on the leaderboard yet.
+                    </td>
+                </tr>
+
+                {% endfor %}
 
             </tbody>
 
         </table>
 
-    {% else %}
-
-        <p style="text-align:center;color:#888;">
-            لا توجد نقاط محسوبة بعد
-        </p>
-
-    {% endif %}
+    </div>
 
 </div>
+
+</body>
 
 {% endblock %}
