@@ -1262,17 +1262,17 @@ No matches available
 
     </div>
 
-    <div class="h2h-list">
+        <div class="h2h-list">
 
         {% for m in h2h.matches %}
 
-        <div class="h2h-row">
+        <{% if m.is_current %}div{% else %}a href="{% url 'match_detail' m.id %}" title="{{ m.home_name }} {{ m.home_goals }}-{{ m.away_goals }} {{ m.away_name }} - {{ m.competition }}, {{ m.date|date:'d/m/Y' }}"{% endif %} class="h2h-row{% if m.is_current %} current{% endif %}">
 
             <div class="h2h-date">{{ m.date|date:"d/m/Y" }}</div>
 
             <div class="h2h-team home">
                 <span>{{ m.home_name }}</span>
-                <img src="{{ m.home_logo }}">
+                <img src="{{ m.home_logo }}" alt="{{ m.home_name }}">
             </div>
 
             <div class="h2h-score">
@@ -1280,13 +1280,13 @@ No matches available
             </div>
 
             <div class="h2h-team away">
-                <img src="{{ m.away_logo }}">
+                <img src="{{ m.away_logo }}" alt="{{ m.away_name }}">
                 <span>{{ m.away_name }}</span>
             </div>
 
             <div class="h2h-competition">{{ m.competition }}</div>
 
-        </div>
+        </{% if m.is_current %}div{% else %}a{% endif %}>
 
         {% empty %}
 
@@ -3659,7 +3659,7 @@ margin-left: -2%;
     .bench-container{
         zoom: 105%;
         gap: 100px;
-        margin-left: -5%;
+        margin-left: -6.5%;
         width: 110%;
     }
 
@@ -4196,6 +4196,24 @@ margin-left: -2%;
 /* صفحة المباراة على الجوال مصغّرة بـ zoom:55%، فنكبّر النص ليُقرأ */
 @media (max-width: 1000px){
     .preview{ zoom: 140%; }
+}
+
+
+
+a.h2h-row{
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s;
+}
+
+a.h2h-row:hover{
+    background: #161616;
+    transform: translateY(-2px);
+}
+
+.h2h-row.current{
+    border-color: #ff0000;
+    opacity: .85;
 }
 
 

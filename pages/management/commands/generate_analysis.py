@@ -5,9 +5,16 @@ from pages.analysis import run_all
 class Command(BaseCommand):
     help = "Generate data-driven analysis articles"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--rebuild",
+            action="store_true",
+            help="Rewrite existing articles in place with the latest content",
+        )
+
     def handle(self, *args, **options):
-        created = run_all()
-        if not created:
+        made = run_all(force=options["rebuild"])
+        if not made:
             self.stdout.write("no new articles")
-        for art in created:
-            self.stdout.write(f"created: {art.title}")
+        for art in made:
+            self.stdout.write(f"saved: {art.title}")

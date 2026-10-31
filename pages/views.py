@@ -1379,7 +1379,7 @@ def match_detail(request, id):
             return FINISHED_CACHE_TTL
         return LIVE_STATUS_CACHE_TTL
 
-    core_cache_key = f"match_core_v3_{id}"
+    core_cache_key = f"match_core_v4_{id}"
     live_cache_key = f"match_live_v3_{id}"
     lineups_cache_key = f"match_lineups_v4_{id}"
     events_cache_key = f"match_events_v3_{id}"
@@ -1561,6 +1561,8 @@ def match_detail(request, id):
 
                 try:
                     matches.append({
+                        "id": m["fixture"]["id"],
+                        "is_current": m["fixture"]["id"] == int(id),
                         "date": datetime.fromisoformat(
                             m["fixture"]["date"].replace("Z", "+00:00")
                         ),
@@ -1598,10 +1600,12 @@ def match_detail(request, id):
             "h2h": h2h,
         }
 
+        core_ttl = 60 * 60 * 24 if game["status"] in FINISHED_STATUSES else STATIC_CACHE_TTL
+
         cache.set(
             core_cache_key,
             core_data,
-            STATIC_CACHE_TTL
+            core_ttl
         )
 
     # ================= LIVE MATCH STATUS (كل دقيقة) =================
@@ -3885,6 +3889,7 @@ def league_statistics(request, code):
                 "player_name": player.get("name"),
                 "player_photo": player.get("photo"),
                 "team_name": clean_team_name(team.get("name", "")),
+                "team_id": team.get("id"),
                 "team_logo": team.get("logo"),
                 "goals": stats.get("goals", {}).get("total") or 0,
                 "assists": stats.get("goals", {}).get("assists") or 0,

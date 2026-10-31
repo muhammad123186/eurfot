@@ -53,6 +53,23 @@
 
 <div class="statistics-page">
 
+    <!-- ================= BREADCRUMB ================= -->
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+
+        <a href="{{ home_url }}">Home</a>
+
+        <span>›</span>
+
+        <a href="{% if competition.max_matchday %}{% url 'competition' code %}{% else %}{% url 'cup_competition' code %}{% endif %}">{{ competition.name }}</a>
+
+        <span>›</span>
+
+        <span>Statistics</span>
+
+    </nav>
+
+
     <!-- ================= HERO ================= -->
 
     <section class="hero">
@@ -89,6 +106,29 @@
     </section>
 
 
+    <!-- ================= COMPETITION LINKS ================= -->
+
+    <nav class="comp-links" aria-label="{{ competition.name }} pages">
+
+        <a href="{% if competition.max_matchday %}{% url 'competition' code %}{% else %}{% url 'cup_competition' code %}{% endif %}">
+            {{ competition.name }} Fixtures &amp; Results
+        </a>
+
+        {% if competition.standings_template %}
+        <a href="{% url 'competition_standings' code %}">
+            {{ competition.name }} Table
+        </a>
+        {% endif %}
+
+        {% if competition.max_matchday %}
+        <a href="{% url 'league_history' code %}">
+            {{ competition.name }} History
+        </a>
+        {% endif %}
+
+    </nav>
+
+
     <!-- ================= QUICK CARDS ================= -->
 
     <section class="quick-grid">
@@ -109,13 +149,15 @@
             <img class="quick-photo"
                  src="{{ p.player_photo }}" alt="{{ p.player_name }}">
 
-            <h3 class="quick-name">{{ p.player_name }}</h3>
+            <h3 class="quick-name">
+                <a class="link-reset" {% if p.player_id %}href="{% url 'player_detail' p.player_id %}"{% endif %}>{{ p.player_name }}</a>
+            </h3>
 
             <div class="quick-team">
 
                 <img src="{{ p.team_logo }}" alt="{{ p.team_name }}">
 
-                {{ p.team_name }}
+                <a class="link-reset" {% if p.team_id %}href="{% url 'team_detail' p.team_id %}"{% endif %}>{{ p.team_name }}</a>
 
             </div>
 
@@ -146,13 +188,15 @@
             <img class="quick-photo"
                  src="{{ p.player_photo }}" alt="{{ p.player_name }}">
 
-            <h3 class="quick-name">{{ p.player_name }}</h3>
+            <h3 class="quick-name">
+                <a class="link-reset" {% if p.player_id %}href="{% url 'player_detail' p.player_id %}"{% endif %}>{{ p.player_name }}</a>
+            </h3>
 
             <div class="quick-team">
 
                 <img src="{{ p.team_logo }}" alt="{{ p.team_name }}">
 
-                {{ p.team_name }}
+                <a class="link-reset" {% if p.team_id %}href="{% url 'team_detail' p.team_id %}"{% endif %}>{{ p.team_name }}</a>
 
             </div>
 
@@ -185,7 +229,7 @@
 
             <h3 class="quick-name">
 
-                {{ c.team.name }}
+                <a class="link-reset" {% if c.team.id %}href="{% url 'team_detail' c.team.id %}"{% endif %}>{{ c.team.name }}</a>
 
             </h3>
 
@@ -218,7 +262,7 @@
 
             <h3 class="quick-name">
 
-                {{ c.team.name }}
+                <a class="link-reset" {% if c.team.id %}href="{% url 'team_detail' c.team.id %}"{% endif %}>{{ c.team.name }}</a>
 
             </h3>
 
@@ -337,13 +381,9 @@
 
                                 <h4>
 
-                                    {{ player.player_name }}
+                                    <a class="link-reset" {% if player.player_id %}href="{% url 'player_detail' player.player_id %}"{% endif %}>{{ player.player_name }}</a>
 
                                 </h4>
-
-                                
-
-                                
 
                             </div>
 
@@ -357,7 +397,7 @@
 
                             <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
-                            {{ player.team_name }}
+                            <a class="link-reset" {% if player.team_id %}href="{% url 'team_detail' player.team_id %}"{% endif %}>{{ player.team_name }}</a>
 
                         </div>
 
@@ -410,11 +450,8 @@
                 <th class="rank-title">#</th>
                 <th class="player-title">PLAYER</th>
                 <th class="team-title">TEAM</th>
-                <th class="goals-title">GOALS</th>
+                <th class="goals-title">ASSISTS</th>
                 <th class="apps-title">APPS</th>
-
-                
-
 
             </tr>
 
@@ -448,9 +485,9 @@
 
                     <div>
 
-                        <h4>{{ player.player_name }}</h4>
-
-                        
+                        <h4>
+                            <a class="link-reset" {% if player.player_id %}href="{% url 'player_detail' player.player_id %}"{% endif %}>{{ player.player_name }}</a>
+                        </h4>
 
                     </div>
 
@@ -464,7 +501,7 @@
 
                     <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
-                    {{ player.team_name }}
+                    <a class="link-reset" {% if player.team_id %}href="{% url 'team_detail' player.team_id %}"{% endif %}>{{ player.team_name }}</a>
 
                 </div>
 
@@ -545,9 +582,10 @@
 
                     <div>
 
-                        <h4>{{ player.player_name }}</h4>
+                        <h4>
+                            <a class="link-reset" {% if player.player_id %}href="{% url 'player_detail' player.player_id %}"{% endif %}>{{ player.player_name }}</a>
+                        </h4>
 
-                        
                     </div>
 
                 </div>
@@ -560,7 +598,7 @@
 
                     <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
-                    {{ player.team_name }}
+                    <a class="link-reset" {% if player.team_id %}href="{% url 'team_detail' player.team_id %}"{% endif %}>{{ player.team_name }}</a>
 
                 </div>
 
@@ -630,9 +668,9 @@
 
                     <div>
 
-                        <h4>{{ player.player_name }}</h4>
-
-                        
+                        <h4>
+                            <a class="link-reset" {% if player.player_id %}href="{% url 'player_detail' player.player_id %}"{% endif %}>{{ player.player_name }}</a>
+                        </h4>
 
                     </div>
 
@@ -646,7 +684,7 @@
 
                     <img src="{{ player.team_logo }}" alt="{{ player.team_name }}">
 
-                    {{ player.team_name }}
+                    <a class="link-reset" {% if player.team_id %}href="{% url 'team_detail' player.team_id %}"{% endif %}>{{ player.team_name }}</a>
 
                 </div>
 
@@ -700,11 +738,7 @@
 
                 <td class="place">
 
-                    
-                    
                     {{ forloop.counter }}
-                    
-
 
                 </td>
                 <td>
@@ -713,7 +747,7 @@
 
                         <img src="{{ club.team.logo }}" alt="{{club.team.name}}">
 
-                        {{ club.team.name }}
+                        <a class="link-reset" {% if club.team.id %}href="{% url 'team_detail' club.team.id %}"{% endif %}>{{ club.team.name }}</a>
 
                     </div>
 
@@ -777,7 +811,7 @@
 
                         <img src="{{ club.team.logo }}" alt="{{ club.team.name }}">
 
-                        {{ club.team.name }}
+                        <a class="link-reset" {% if club.team.id %}href="{% url 'team_detail' club.team.id %}"{% endif %}>{{ club.team.name }}</a>
 
                     </div>
 
@@ -803,7 +837,147 @@
 
 </div>
 
+
+<!-- ================= ALL COMPETITIONS ================= -->
+
+<nav class="stats-nav" aria-label="Statistics by competition">
+
+    <h2 class="stats-nav-title">Statistics by competition</h2>
+
+    <div class="stats-nav-grid">
+
+        {% for c, info in competitions.items %}
+
+        <a href="{% url 'league_statistics' c %}"
+           class="stats-nav-chip{% if c == code %} active{% endif %}"
+           {% if c == code %}aria-current="page"{% endif %}>
+
+            <img src="{{ info.logo }}" alt="{{ info.name }}" width="26" height="26" loading="lazy">
+
+            <span>{{ info.name }} Statistics</span>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</nav>
+
 </div>
+
+
+<style>
+
+.link-reset{
+    color: inherit;
+    text-decoration: none;
+}
+
+.link-reset:hover{
+    color: #ff0000;
+    text-decoration: underline;
+}
+
+.crumbs{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 14px;
+    color: #888;
+    font-size: 13px;
+}
+
+.crumbs a{
+    color: #bbb;
+    text-decoration: none;
+}
+
+.crumbs a:hover{
+    color: #ff0000;
+}
+
+.comp-links{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 20px;
+}
+
+.comp-links a{
+    padding: 9px 16px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #ddd;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .25s;
+}
+
+.comp-links a:hover{
+    border-color: #ff0000;
+    color: #fff;
+}
+
+.stats-nav{
+    margin: 40px 0 30px;
+    padding: 18px;
+    background: linear-gradient(180deg, #2a0000, #111 6%);
+    border: 1px solid #ff0000;
+    border-radius: 16px;
+}
+
+.stats-nav-title{
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.stats-nav-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+}
+
+.stats-nav-chip{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #0b0b0b;
+    border: 1px solid #222;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .25s;
+}
+
+.stats-nav-chip img{
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.stats-nav-chip:hover{
+    border-color: #ff0000;
+    background: #141414;
+}
+
+.stats-nav-chip.active{
+    border-color: #ff0000;
+    background: linear-gradient(135deg, #8b0000, #1a0000);
+}
+
+</style>
+
 
 
 
@@ -1546,6 +1720,12 @@
     .quick-title{
         font-size: 16px;
     }
+
+    .statistics-page{
+        margin-right: 5%;
+    }
+
+    
 }
 /* =====================================================
                 RESPONSIVE
