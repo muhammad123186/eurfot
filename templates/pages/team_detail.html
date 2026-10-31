@@ -110,14 +110,6 @@
         <button class="tab-btn" data-tab="player-stats">Team Leaders</button>
         <button class="tab-btn" data-tab="trophies">Trophies</button>
 
-
-   
-    
-
-   
- 
-       
-
     </div>
 
     <br>
@@ -277,7 +269,9 @@
     {% for game in last_matches %}
 
 
-        <div class="result-card">
+        <a href="{% url 'match_detail' game.fixture.id %}"
+           class="result-card"
+           title="{{ game.teams.home.name }} {{ game.goals.home }}-{{ game.goals.away }} {{ game.teams.away.name }} - {{ game.league.name }}">
 
 
             <div class="result-status">
@@ -319,7 +313,7 @@
 
             <div class="result-team home">
 
-                <img src="{{ game.teams.home.logo }}">
+                <img src="{{ game.teams.home.logo }}" alt="{{ game.teams.home.name }}">
 
                 <span>
                     {{ game.teams.home.name }}
@@ -347,7 +341,7 @@
 
             <div class="result-team away">
 
-                <img src="{{ game.teams.away.logo }}">
+                <img src="{{ game.teams.away.logo }}" alt="{{ game.teams.away.name }}">
 
                 <span>
                     {{ game.teams.away.name }}
@@ -356,7 +350,7 @@
             </div>
 
 
-        </div>
+        </a>
 
 
     {% endfor %}
@@ -378,8 +372,6 @@
 
 
 
-    <!-- ================= SEASON FIXTURES ================= -->
-
 <!-- ================= SEASON FIXTURES ================= -->
 <div id="season-fixtures" class="tab-content" style="display:none;">
 
@@ -387,7 +379,9 @@
 
         {% for game in season_fixtures %}
 
-        <div class="fixture-card">
+        <a href="{% url 'match_detail' game.fixture.id %}"
+           class="fixture-card"
+           title="{{ game.teams.home.name }} vs {{ game.teams.away.name }} - {{ game.league.name }}, {{ game.fixture.date|slice:'0:10' }}">
 
             <!-- League logo -->
             <div class="fixture-league">
@@ -396,56 +390,43 @@
                      loading="lazy">
             </div>
 
-            <!-- Home team: logo then name -->
-            
-<!-- Home: name first, logo beside the score -->
-<div class="fixture-home">
-    <span title="{{ game.teams.home.name }}">
-        {{ game.teams.home.name }}
-    </span>
-    <img src="{{ game.teams.home.logo }}"
-         alt="{{ game.teams.home.name }}"
-         loading="lazy">
-</div>
+            <!-- Home: name, then logo next to the score -->
+            <div class="fixture-home">
+                <span title="{{ game.teams.home.name }}">{{ game.teams.home.name }}</span>
+                <img src="{{ game.teams.home.logo }}"
+                     alt="{{ game.teams.home.name }}"
+                     loading="lazy">
+            </div>
 
-<!-- Score in the center -->
+            <!-- Score / status in the center -->
+            <div class="fixture-score">
+                {% if game.fixture.status.short == "NS" or game.fixture.status.short == "TBD" %}
+                    <span class="score-box score-upcoming">VS</span>
+                {% else %}
+                    <span class="score-box {{ game.score_color }}">
+                        {% if game.goals.home != None and game.goals.away != None %}
+                            {{ game.goals.home }} - {{ game.goals.away }}
+                        {% else %}
+                            VS
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </div>
 
-
-<!-- Score -->
-
-<!-- Score -->
-
-<div class="fixture-score">
-    {% if game.fixture.status.short == "NS" or game.fixture.status.short == "TBD" %}
-        <span class="score-box score-upcoming">VS</span>
-    {% else %}
-        <span class="score-box {{ game.score_color }}">
-            {% if game.goals.home != None and game.goals.away != None %}
-                {{ game.goals.home }} - {{ game.goals.away }}
-            {% else %}
-                VS
-            {% endif %}
-        </span>
-    {% endif %}
-</div>
-
-
-<!-- Away: logo then name -->
-<div class="fixture-away">
-    <img src="{{ game.teams.away.logo }}"
-         alt="{{ game.teams.away.name }}"
-         loading="lazy">
-    <span title="{{ game.teams.away.name }}">
-        {{ game.teams.away.name }}
-    </span>
-</div>
+            <!-- Away: logo next to the score, then name -->
+            <div class="fixture-away">
+                <img src="{{ game.teams.away.logo }}"
+                     alt="{{ game.teams.away.name }}"
+                     loading="lazy">
+                <span title="{{ game.teams.away.name }}">{{ game.teams.away.name }}</span>
+            </div>
 
             <!-- Match date -->
             <div class="fixture-date">
                 {{ game.fixture.date|slice:"0:10" }}
             </div>
 
-        </div>
+        </a>
 
         {% empty %}
 
@@ -458,7 +439,7 @@
     </div>
 </div>
 
-    
+
     <!-- ================= STANDINGS ================= -->
 
     <div id="standings" class="tab-content" style="display:none;">
@@ -596,7 +577,7 @@
 
 
 
-<div id="trophies" class="tab-content"style="display:none;">
+<div id="trophies" class="tab-content" style="display:none;">
 
 
     <div class="trophies-box">
@@ -686,7 +667,7 @@
 
 
 <!-- ================= SQUAD ================= -->
-<div id="squad" class="tab-content"style="display:none;">
+<div id="squad" class="tab-content" style="display:none;">
 
 <div class="squad-section">
 
@@ -935,7 +916,7 @@
 
 
 <!-- ================= TEAM STATISTICS ================= -->
-<div id="team-stats" class="tab-content"style="display:none;">
+<div id="team-stats" class="tab-content" style="display:none;">
 
     <div class="team-stats-grid">
 
@@ -1023,7 +1004,7 @@
 
 
 <!-- ================= TEAM LEADERS ================= -->
-<div id="player-stats" class="tab-content"style="display:none;">
+<div id="player-stats" class="tab-content" style="display:none;">
 
 <div class="leaders-grid">
 
@@ -1199,9 +1180,7 @@
 </div>
 
 </div>
-
-
-
+</div>
 
 
 
@@ -2651,7 +2630,7 @@ res · CSS
     }
  
     .fixture-home img{
-        margin-left: 50%;
+        margin-left: 0 !important;       
         width:30px;
         height:30px;
     }
@@ -2846,6 +2825,176 @@ res · CSS
 }
 
 
+
+/* ================= روابط المباريات ================= */
+
+a.fixture-card,
+a.result-card{
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: .25s;
+}
+
+/* ================= صف المباراة (Fixtures) ================= */
+
+/* شبكة متماثلة: الشعار | المضيف | النتيجة | الضيف | التاريخ */
+#season-fixtures .fixture-card{
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 70px minmax(0, 1fr) 84px;
+    align-items: center;
+    column-gap: 10px;
+}
+
+#season-fixtures .fixture-league{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#season-fixtures .fixture-league img{
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* المضيف والضيف: نفس المسافة من النتيجة */
+#season-fixtures .fixture-home{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+    padding: 0;
+}
+
+#season-fixtures .fixture-away{
+    justify-content: flex-start;
+    text-align: left;
+    gap: 14px;
+}
+
+#season-fixtures .fixture-home{
+    justify-content: flex-end;
+    text-align: right;
+}
+
+#season-fixtures .fixture-away{
+    justify-content: flex-start;
+    text-align: left;
+}
+
+#season-fixtures .fixture-home img,
+#season-fixtures .fixture-away img{
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* الأسماء الطويلة تنقص بنقاط (...) */
+#season-fixtures .fixture-home span{
+    margin-left: 5%;
+    
+}
+
+#season-fixtures .fixture-score{
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+#season-fixtures .fixture-date{
+    text-align: right;
+    white-space: nowrap;
+}
+
+
+/* ================= النتائج الأخيرة (Overview) ================= */
+
+.results-list .result-team{
+    min-width: 0;
+    overflow: hidden;
+}
+
+.results-list .result-team span{
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 1000px){
+
+    #season-fixtures .fixture-card{
+        grid-template-columns: 26px minmax(0, 1fr) 60px minmax(0, 1fr);
+        column-gap: 6px;
+    }
+
+    #season-fixtures .fixture-date{
+        display: none;
+    }
+   
+
+}
+
+
+/* MOBILE - MOVE THE WHOLE FIXTURE GROUP */
+
+@media (max-width: 1000px){
+
+    #season-fixtures .fixture-home,
+    #season-fixtures .fixture-score,
+    #season-fixtures .fixture-away{
+        transform: translateX(-15px) !important;
+    }
+
+    #season-fixtures .fixture-home{
+        justify-content: flex-start !important;
+        gap: 3px !important;
+    }
+
+    #season-fixtures .fixture-home span{
+        margin-left: 0 !important;
+        text-align: left !important;
+    }
+
+    #season-fixtures .fixture-home img{
+        margin-left: 0 !important;
+    }
+
+    #season-fixtures .fixture-home{
+    gap: 0px !important;
+    }
+
+    #season-fixtures .fixture-home span{
+    margin-right: -24px !important;
+    } 
+
+}
+
+
+@media (max-width: 1000px){
+
+    #season-fixtures .fixture-home{
+        flex-direction: row !important;
+        justify-content: flex-end !important;
+        gap: 2px !important;
+    }
+
+    #season-fixtures .fixture-home img{
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    #season-fixtures .fixture-home span{
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: right !important;
+    }
+
+}
 
 </style>
 
