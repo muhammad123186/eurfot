@@ -6698,14 +6698,12 @@ def _with_logo(articles):
     return items
 
 
-# أولوية المقالات في الواجهة: الرقم الأصغر يظهر أولاً
-# أولوية المقالات في الواجهة: الرقم الأصغر يظهر أولاً
 HOME_TEAM_TIERS = [
-    (0, ["real madrid"]),
+    (0, ["inter milan"]),
     (1, ["barcelona"]),
     (2, ["liverpool"]),
     (3, ["man city", "man united", "arsenal", "chelsea", "bayern", "psg",
-         "inter milan", "juventus", "ac milan", "atletico madrid",
+         "real madrid", "juventus", "ac milan", "atletico madrid",
          "dortmund", "tottenham", "napoli"]),
 ]
 HOME_LEAGUE_TIER = {"PL": 4, "UCL": 5, "PD": 6, "SA": 7, "BL1": 8, "FL1": 9}
