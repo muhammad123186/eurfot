@@ -1430,7 +1430,7 @@ def match_detail(request, id):
             },
             "status": f["fixture"]["status"]["short"],
             "elapsed": f["fixture"]["status"].get("elapsed"),
-            "utcDate": to_mecca_time(f["fixture"]["date"]),
+            "utcDate": f["fixture"]["date"],
             "schema_start_date": f["fixture"]["date"],
             "competition": {
                 "name": f["league"]["name"],
@@ -2503,7 +2503,7 @@ def match_detail(request, id):
 # ================= TEAM DETAIL (تفاصيل الفريق - 45 دقيقة) =================
 def team_detail(request, id):
 
-    cache_key = f"team_detail_v4_{id}"
+    cache_key = f"team_detail_v5_{id}"
 
     cached = cache.get(cache_key)
 
@@ -3188,6 +3188,36 @@ def team_detail(request, id):
 
         }
 
+
+            # بطاقات القادة (تُستخدم في Overview وتبويب Team Leaders)
+    leader_defs = [
+        ("top_scorer", "Top Scorer", "⚽", "goals", " Goals"),
+        ("top_assists", "Top Assists", "🎯", "assists", " Assists"),
+        ("highest_rating", "Best Rating", "⭐", "rating", ""),
+        ("most_minutes", "Minutes", "", "minutes", " Min"),
+        ("most_shots", "Most Shots", "", "shots", " Shots"),
+        ("most_shots_on_target", "Shots On Target", "", "shots_on", " On Target"),
+        ("most_key_passes", "Key Passes", "", "key_passes", ""),
+        ("most_passes", "Passes", "", "passes", ""),
+        ("most_yellow_cards", "Yellow Cards", "", "yellow", ""),
+        ("most_red_cards", "Red Cards", "", "red", ""),
+    ]
+
+    leader_cards = []
+
+    for key, title, icon, field, suffix in leader_defs:
+        p = team_leaders.get(key)
+        if not p or not p.get("id"):
+            continue
+        leader_cards.append({
+            "title": title,
+            "icon": icon,
+            "id": p["id"],
+            "name": p.get("name"),
+            "photo": p.get("photo"),
+            "value": f"{p.get(field)}{suffix}",
+        })
+
     context = {
 
         "team": team,
@@ -3231,6 +3261,8 @@ def team_detail(request, id):
         "losses_last5": losses,
 
         "next_match": next_match,
+
+        "leader_cards": leader_cards,
 
     }
 
@@ -6081,6 +6113,16 @@ def cup_competition(request, code):
 
 
 
+
+def _kickoff_hm(iso_string):
+    """HH:MM بتوقيت UTC (نص احتياطي للزواحف ومن يعطّل JavaScript)"""
+    try:
+        dt = datetime.fromisoformat(iso_string.replace("Z", "+00:00"))
+        return dt.astimezone(ZoneInfo("UTC")).strftime("%H:%M")
+    except (ValueError, TypeError, AttributeError):
+        return ""
+
+
 from datetime import date as date_cls, timedelta, datetime
 
 
@@ -6091,7 +6133,7 @@ def get_today_matches(target_date=None):
 
     date_str = target_date.isoformat()
 
-    cache_key = f"matches_by_date_v4_{date_str}" 
+    cache_key = f"matches_by_date_v5_{date_str}" 
 
     cached = cache.get(cache_key)
 
@@ -6162,6 +6204,7 @@ def get_today_matches(target_date=None):
             "status": f["fixture"]["status"]["short"],
             "elapsed": f["fixture"]["status"].get("elapsed"),
             "utcDate": f["fixture"]["date"],
+            "kickoff_hm": _kickoff_hm(f["fixture"]["date"]),
         })
 
     # حافظ على ترتيب البطولات كما هو معرّف بقاموس LEAGUES

@@ -173,9 +173,11 @@
         </div>
 
     <div class="featured-center">
-    {% if m.status == "NS" or m.status == "TBD" %}
-        <div class="featured-vs">VS</div>
-        <div class="featured-time">{{ m.utcDate|date:"H:i" }}</div>
+    {% if m.status == "NS" %}
+        <time class="local-time featured-time" datetime="{{ m.utcDate }}">{{ m.kickoff_hm }} UTC</time>
+
+    {% elif m.status == "TBD" %}
+        <div class="featured-state">Time TBD</div>
 
     {% elif m.status == "1H" or m.status == "2H" or m.status == "ET" or m.status == "BT" or m.status == "P" or m.status == "LIVE" %}
         <div class="featured-state live">{{ m.elapsed }}'</div>
@@ -429,35 +431,45 @@
                     </div>
                 </div>
 
-                <div class="score-board">
+                                <div class="score-board">
 
-                    <div class="score-status">
-                        {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
-                            {{ game.elapsed }}'
-                        {% elif game.status == "HT" %}
-                            Half Time
-                        {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
-                            FULL TIME
-                        {% elif game.status == "NS" %}
-                            {{ game.utcDate|date:"H:i" }}
-                        {% elif game.status == "PST" %}
-                            Postponed
-                        {% elif game.status == "CANC" %}
-                            Cancelled
-                        {% else %}
-                            {{ game.status }}
-                        {% endif %}
-                    </div>
+                    {% if game.status == "NS" %}
 
-                    <div class="score-value">
-                        {% if game.status == "NS" %}
-                            <span class="vs">VS</span>
-                        {% else %}
-                            <span>{{ game.score.fullTime.home }}</span>
-                            <b>-</b>
-                            <span>{{ game.score.fullTime.away }}</span>
-                        {% endif %}
-                    </div>
+                        <time class="local-time score-time" datetime="{{ game.utcDate }}">{{ game.kickoff_hm }}</time>
+
+                    {% else %}
+
+                        <div class="score-status">
+                            {% if game.status == "1H" or game.status == "2H" or game.status == "ET" %}
+                                {{ game.elapsed }}'
+                            {% elif game.status == "HT" %}
+                                Half Time
+                            {% elif game.status == "FT" or game.status == "AET" or game.status == "PEN" %}
+                                FULL TIME
+                            {% elif game.status == "PST" %}
+                                Postponed
+                            {% elif game.status == "CANC" %}
+                                Cancelled
+                            {% elif game.status == "TBD" %}
+                                TBD
+                            {% else %}
+                                {{ game.status }}
+                            {% endif %}
+                        </div>
+
+                        <div class="score-value">
+                            {% if game.score.fullTime.home is not None %}
+                                <span>{{ game.score.fullTime.home }}</span>
+                                <b>-</b>
+                                <span>{{ game.score.fullTime.away }}</span>
+                            {% else %}
+                                <span>-</span>
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
+
+                
 
                 </div>
 
@@ -2220,6 +2232,14 @@ html, body{
 .news-text h3{ margin: 0 0 6px; font-size: 14px; line-height: 1.4; }
 .news-text p{ margin: 0; font-size: 12px; color: #aaa; line-height: 1.5; }
 
+
+.score-board .score-time{
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
 </style>
 
 
@@ -2343,6 +2363,24 @@ function closeMobileSearch(){
         slides[index].classList.add("active");
     });
 })();
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    try {
+        var fmt = new Intl.DateTimeFormat("en-GB", {
+            hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+        });
+        var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+        document.querySelectorAll("time.local-time").forEach(function (el) {
+            var d = new Date(el.getAttribute("datetime"));
+            if (isNaN(d.getTime())) return;
+            el.textContent = fmt.format(d);
+            el.title = "Kick-off in your local time" + (tz ? " (" + tz + ")" : "");
+        });
+    } catch (e) {}
+});
 
 </script>
 

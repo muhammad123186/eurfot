@@ -161,7 +161,7 @@
 
 <!-- ================= TEAM LEADERS PREVIEW ================= -->
 
-{% if team_leaders %}
+{% if leader_cards %}
 
 <div class="leaders-preview">
 
@@ -169,87 +169,33 @@
         Team Leaders
     </div>
 
-
     <div class="leaders-preview-grid">
 
+        {% for c in leader_cards|slice:":3" %}
+        <a href="{% url 'player_detail' c.id %}" class="preview-card">
 
-        <!-- Top Scorer -->
+            <div class="preview-label">{% if c.icon %}{{ c.icon }} {% endif %}{{ c.title }}</div>
 
-        <div class="preview-card">
+            <img src="{{ c.photo }}" alt="{{ c.name }}" loading="lazy">
 
-            <div class="preview-label">
-                ⚽ Top Scorer
-            </div>
+            <h3>{{ c.name }}</h3>
 
-            <img src="{{ team_leaders.top_scorer.photo }}">
+            <span>{{ c.value }}</span>
 
-            <h3>
-                {{ team_leaders.top_scorer.name }}
-            </h3>
-
-            <span>
-                {{ team_leaders.top_scorer.goals }} Goals
-            </span>
-
-        </div>
-
-
-
-        <!-- Top Assists -->
-
-        <div class="preview-card">
-
-            <div class="preview-label">
-                🎯 Top Assists
-            </div>
-
-            <img src="{{ team_leaders.top_assists.photo }}">
-
-            <h3>
-                {{ team_leaders.top_assists.name }}
-            </h3>
-
-            <span>
-                {{ team_leaders.top_assists.assists }} Assists
-            </span>
-
-        </div>
-
-
-
-
-        <!-- Highest Rating -->
-
-        <div class="preview-card">
-
-            <div class="preview-label">
-                ⭐ Highest Rating
-            </div>
-
-            <img src="{{ team_leaders.highest_rating.photo }}">
-
-            <h3>
-                {{ team_leaders.highest_rating.name }}
-            </h3>
-
-            <span>
-                {{ team_leaders.highest_rating.rating }}
-            </span>
-
-        </div>
-
+        </a>
+        {% endfor %}
 
     </div>
-
 
     <a href="#player-stats" class="leaders-link">
         View Full Team Leaders →
     </a>
 
-
 </div>
 
 {% endif %}
+
+
 
 
 <!-- ================= RECENT RESULTS ================= -->
@@ -364,6 +310,54 @@
 {% endif %}
 
 
+{% if scheduled_matches %}
+
+<div class="recent-results upcoming-results">
+
+    <div class="recent-title">
+        Upcoming Matches
+    </div>
+
+    <div class="results-list">
+
+    {% for game in scheduled_matches %}
+
+        <a href="{% url 'match_detail' game.fixture.id %}"
+           class="result-card"
+           title="{{ game.teams.home.name }} vs {{ game.teams.away.name }} - {{ game.league.name }}, {{ game.fixture.date|slice:'0:10' }}">
+
+            <div class="upcoming-date">
+                {{ game.fixture.date|slice:"0:10" }}
+            </div>
+
+            <div class="result-team home">
+                <img src="{{ game.teams.home.logo }}" alt="{{ game.teams.home.name }}" loading="lazy">
+                <span>{{ game.teams.home.name }}</span>
+            </div>
+
+            <div class="result-score">
+                <strong>
+                    <time class="local-time" datetime="{{ game.fixture.date }}">{{ game.fixture.date|slice:"11:16" }} UTC</time>
+                </strong>
+                <small>{{ game.league.name }}</small>
+            </div>
+
+            <div class="result-team away">
+                <img src="{{ game.teams.away.logo }}" alt="{{ game.teams.away.name }}" loading="lazy">
+                <span>{{ game.teams.away.name }}</span>
+            </div>
+
+        </a>
+
+    {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
 
 
 </div>
@@ -444,135 +438,62 @@
 
     <div id="standings" class="tab-content" style="display:none;">
 
-
     <table class="standings-table">
 
-
         <thead>
-
             <tr>
-
                 <th>#</th>
-
                 <th>Team</th>
-
                 <th>P</th>
-
                 <th>W</th>
-
                 <th>D</th>
-
                 <th>L</th>
-
                 <th>GF</th>
-
                 <th class="ga-title">GA</th>
-
                 <th>GD</th>
-
                 <th>Pts</th>
-
             </tr>
-
         </thead>
-
-
 
         <tbody>
 
-
         {% for row in standings %}
 
+            <tr{% if row.team.id == team.id %} class="current-team"{% endif %}>
 
-            <tr>
-
-
-                <td>
-                    {{ row.rank }}
-                </td>
-
-
+                <td>{{ row.rank }}</td>
 
                 <td>
-
-
-                    <div class="standing-team">
-
-
-                        <img 
-                        src="{{ row.team.logo }}"
-                        >
-
-
-                        <span>
-                            {{ row.team.name }}
-                        </span>
-
-
-                    </div>
-
-
+                    <a href="{% url 'team_detail' row.team.id %}" class="standing-team" title="{{ row.team.name }} fixtures, results and squad">
+                        <img src="{{ row.team.logo }}" alt="{{ row.team.name }}" width="32" height="32" loading="lazy">
+                        <span>{{ row.team.name }}</span>
+                    </a>
                 </td>
 
-
-
-                <td>
-                    {{ row.all.played }}
-                </td>
-
-
-                <td>
-                    {{ row.all.win }}
-                </td>
-
-
-                <td>
-                    {{ row.all.draw }}
-                </td>
-
-
-                <td>
-                    {{ row.all.lose }}
-                </td>
-
-
-                <td>
-                    {{ row.all.goals.for }}
-                </td>
-
-
-                <td class="ga-title">
-                    {{ row.all.goals.against }}
-                </td>
-
-
-                <td>
-                    {{ row.goalsDiff }}
-                </td>
-
-
-                <td>
-                    {{ row.points }}
-                </td>
-
-
+                <td>{{ row.all.played }}</td>
+                <td>{{ row.all.win }}</td>
+                <td>{{ row.all.draw }}</td>
+                <td>{{ row.all.lose }}</td>
+                <td>{{ row.all.goals.for }}</td>
+                <td class="ga-title">{{ row.all.goals.against }}</td>
+                <td>{{ row.goalsDiff }}</td>
+                <td>{{ row.points }}</td>
 
             </tr>
 
-
         {% endfor %}
-
 
         </tbody>
 
-
     </table>
 
+    {% if standings and team_league_code %}
+    <a href="{% url 'competition_standings' team_league_code %}" class="standings-more">
+        View the full league table →
+    </a>
+    {% endif %}
 
 </div>
-
-
-
 
 
 
@@ -1006,182 +927,27 @@
 <!-- ================= TEAM LEADERS ================= -->
 <div id="player-stats" class="tab-content" style="display:none;">
 
-<div class="leaders-grid">
+    <div class="leaders-grid">
 
-    <div class="leader-card">
+        {% for c in leader_cards %}
+        <a href="{% url 'player_detail' c.id %}" class="leader-card">
 
-        <div class="leader-title">
-            Top Scorer
-        </div>
+            <div class="leader-title">{{ c.title }}</div>
 
-        <img src="{{ team_leaders.top_scorer.photo }}">
+            <img src="{{ c.photo }}" alt="{{ c.name }}" loading="lazy">
 
-        <h3>{{ team_leaders.top_scorer.name }}</h3>
+            <h3>{{ c.name }}</h3>
 
-        <span>
-            {{ team_leaders.top_scorer.goals }} Goals
-        </span>
+            <span>{{ c.value }}</span>
 
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Top Assists
-        </div>
-
-        <img src="{{ team_leaders.top_assists.photo }}">
-
-        <h3>{{ team_leaders.top_assists.name }}</h3>
-
-        <span>
-            {{ team_leaders.top_assists.assists }} Assists
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            best Rating
-        </div>
-
-        <img src="{{ team_leaders.highest_rating.photo }}">
-
-        <h3>{{ team_leaders.highest_rating.name }}</h3>
-
-        <span>
-            {{ team_leaders.highest_rating.rating }}
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Minutes
-        </div>
-
-        <img src="{{ team_leaders.most_minutes.photo }}">
-
-        <h3>{{ team_leaders.most_minutes.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_minutes.minutes }} Min
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Most Shots
-        </div>
-
-        <img src="{{ team_leaders.most_shots.photo }}">
-
-        <h3>{{ team_leaders.most_shots.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_shots.shots }} Shots
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Shots On Target
-        </div>
-
-        <img src="{{ team_leaders.most_shots_on_target.photo }}">
-
-        <h3>{{ team_leaders.most_shots_on_target.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_shots_on_target.shots_on }} On Target
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Key Passes
-        </div>
-
-        <img src="{{ team_leaders.most_key_passes.photo }}">
-
-        <h3>{{ team_leaders.most_key_passes.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_key_passes.key_passes }}
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Passes
-        </div>
-
-        <img src="{{ team_leaders.most_passes.photo }}">
-
-        <h3>{{ team_leaders.most_passes.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_passes.passes }}
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Yellow Cards
-        </div>
-
-        <img src="{{ team_leaders.most_yellow_cards.photo }}">
-
-        <h3>{{ team_leaders.most_yellow_cards.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_yellow_cards.yellow }}
-        </span>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <div class="leader-title">
-            Red Cards
-        </div>
-
-        <img src="{{ team_leaders.most_red_cards.photo }}">
-
-        <h3>{{ team_leaders.most_red_cards.name }}</h3>
-
-        <span>
-            {{ team_leaders.most_red_cards.red }}
-        </span>
+        </a>
+        {% endfor %}
 
     </div>
 
 </div>
 
-</div>
-</div>
-
+</div> 
 
 
 <!-- ================= CSS ================= -->
@@ -2994,6 +2760,58 @@ a.result-card{
         text-align: right !important;
     }
 
+}
+
+
+
+/* ================= روابط داخلية ================= */
+a.standing-team{
+    text-decoration: none;
+}
+
+a.standing-team:hover span{
+    color: #ff0000;
+}
+
+
+
+.standings-more{
+    display: block;
+    width: max-content;
+    margin: 18px auto 0;
+    padding: 10px 24px;
+    border-radius: 25px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,.12);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: .25s;
+}
+
+.standings-more:hover{
+    border-color: #ff0000;
+}
+
+a.leader-card,
+a.preview-card{
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+
+
+.upcoming-results{
+    min-height: 0;
+}
+
+.upcoming-date{
+    min-width: 76px;
+    color: #aaa;
+    font-size: 12px;
+    text-align: center;
 }
 
 </style>

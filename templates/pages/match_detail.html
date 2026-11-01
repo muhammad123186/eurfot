@@ -189,7 +189,45 @@ Follow {{ game.home_name }} vs {{ game.away_name }} on EURFOT. Check the match d
                 <h1>VS</h1>
             {% endif %}
 
-            <div class="status">{{ game.status }}</div>
+            <div class="status{% if game.status == '1H' or game.status == '2H' or game.status == 'ET' or game.status == 'HT' or game.status == 'BT' or game.status == 'P' or game.status == 'LIVE' %} status-live{% endif %}">
+
+                {% if game.status == "1H" or game.status == "2H" or game.status == "LIVE" %}
+                    LIVE{% if game.elapsed %} · {{ game.elapsed }}'{% endif %}
+                {% elif game.status == "ET" %}
+                    Extra Time{% if game.elapsed %} · {{ game.elapsed }}'{% endif %}
+                {% elif game.status == "HT" %}
+                    Half Time
+                {% elif game.status == "BT" %}
+                    Break Time
+                {% elif game.status == "P" %}
+                    Penalty Shootout
+                {% elif game.status == "FT" %}
+                    Full Time
+                {% elif game.status == "AET" %}
+                    After Extra Time
+                {% elif game.status == "PEN" %}
+                    After Penalties
+                {% elif game.status == "NS" %}
+                    <time class="local-time" datetime="{{ game.schema_start_date }}">
+                        {{ game.schema_start_date|slice:"11:16" }}
+                    </time>
+                {% elif game.status == "TBD" %}
+                    Time TBD
+                {% elif game.status == "PST" %}
+                    Postponed
+                {% elif game.status == "CANC" %}
+                    Cancelled
+                {% elif game.status == "SUSP" %}
+                    Suspended
+                {% elif game.status == "INT" %}
+                    Interrupted
+                {% elif game.status == "ABD" %}
+                    Abandoned
+                {% else %}
+                    {{ game.status }}
+                {% endif %}
+
+            </div>
 
         </div>
 
@@ -231,11 +269,9 @@ Follow {{ game.home_name }} vs {{ game.away_name }} on EURFOT. Check the match d
 </span>
 
 
-<strong>
-
-{{ game.utcDate|date:"d/m/Y" }}
-
-</strong>
+<time class="local-date" datetime="{{ game.schema_start_date }}">
+    {{ game.schema_start_date|slice:":10" }}
+</time>
 
 
 </div>
@@ -1349,9 +1385,11 @@ function showTab(tabId, button){
 
 /* ================= PLAYER STATS ================= */
 
-const allPlayerStats = JSON.parse(
-    document.getElementById('player-stats-data').textContent
-);
+const playerStatsElement = document.getElementById('player-stats-data');
+
+const allPlayerStats = playerStatsElement
+    ? JSON.parse(playerStatsElement.textContent)
+    : {};
 
 function openPlayerStats(playerId, playerName) {
 
@@ -1404,6 +1442,39 @@ function openPlayerStats(playerId, playerName) {
 
     document.getElementById('player-stats-overlay').classList.add('active');
 }
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".local-time, .local-date").forEach(element => {
+
+        const dateValue = element.getAttribute("datetime");
+        if (!dateValue) return;
+
+        const utcDate = new Date(dateValue);
+        if (isNaN(utcDate.getTime())) return;
+
+        if (element.classList.contains("local-time")) {
+            element.textContent = utcDate.toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            });
+        }
+
+        if (element.classList.contains("local-date")) {
+            const day = String(utcDate.getDate()).padStart(2, "0");
+            const month = String(utcDate.getMonth() + 1).padStart(2, "0");
+            const year = utcDate.getFullYear();
+
+        element.textContent = `${day}/${month}/${year}`;
+        
+        }
+
+    });
+
+});
 
 </script>
 
@@ -3490,7 +3561,7 @@ margin-left: -2%;
 
 
     .mini-matches{
-        gap: 21px;
+        gap: 23px;
     }
 
 
@@ -3864,8 +3935,9 @@ margin-left: -2%;
 
 
     .status{
-        background: red;
+        background: #222;
     }
+
 
 
     .player-stats-overlay{
@@ -4124,8 +4196,6 @@ margin-left: -2%;
     padding:40px 0;
 }
 
-}
-
 
 .lineup-note{
     background: #111;
@@ -4216,6 +4286,25 @@ a.h2h-row:hover{
     opacity: .85;
 }
 
+}
+
+.status.status-live{
+    background: #e10600;
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse{
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: .7; }
+}
+
+
+.local-time{
+    color: #aaa;
+    font-size: 18px;
+    font-weight: 600;
+    
+}
 
 </style>
 
