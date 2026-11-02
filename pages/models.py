@@ -396,3 +396,18 @@ class SignUpForm(UserCreationForm):
 
         return user
 
+
+
+
+class MatchXG(models.Model):
+    fixture_id = models.PositiveBigIntegerField(unique=True)
+    league_code = models.CharField(max_length=10, db_index=True)
+    season = models.PositiveSmallIntegerField()
+    played_at = models.DateTimeField(null=True, blank=True)
+    home_id = models.PositiveIntegerField()
+    away_id = models.PositiveIntegerField()
+    home_xg = models.FloatField(null=True, blank=True)
+    away_xg = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.fixture_id}: {self.home_xg} - {self.away_xg}"

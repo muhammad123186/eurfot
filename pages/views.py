@@ -24,6 +24,7 @@ from django.conf import settings
 import time
 from .forms import SignUpForm
 from django.utils.http import url_has_allowed_host_and_scheme
+from .models import MatchXG
 
 
 
@@ -1383,7 +1384,7 @@ def match_detail(request, id):
     live_cache_key = f"match_live_v3_{id}"
     lineups_cache_key = f"match_lineups_v4_{id}"
     events_cache_key = f"match_events_v3_{id}"
-    stats_cache_key = f"match_stats_v4_{id}"
+    stats_cache_key = f"match_stats_v5_{id}"
 
     # ================= CORE (Overview + Comparison + H2H) =================
 
@@ -3860,6 +3861,78 @@ def competition(request, code, matchday=None):
     )
 
 
+
+
+
+
+
+XG_TABLE_CODES = {"PL", "PD", "SA", "BL1", "FL1"}
+
+
+def build_xg_table(code):
+    if code not in XG_TABLE_CODES:
+        return []
+
+    cache_key = f"xg_table_v2_{code}_{SEASON}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    table = []
+    ok = True
+
+    try:
+        rows = list(
+            MatchXG.objects
+            .filter(
+                league_code=code,
+                season=SEASON,
+                home_xg__isnull=False,
+                away_xg__isnull=False,
+            )
+            .values("home_id", "away_id", "home_xg", "away_xg")
+        )
+
+        agg = {}
+        for m in rows:
+            for tid, xg in ((m["home_id"], m["home_xg"]), (m["away_id"], m["away_xg"])):
+                a = agg.setdefault(tid, {"played": 0, "xg": 0.0})
+                a["played"] += 1
+                a["xg"] += xg
+
+        teams = {
+            r["team"]["id"]: r["team"]
+            for r in get_standings(code)
+            if r.get("team")
+        }
+
+        if agg and not teams:
+            ok = False          # فشل الترتيب: لا تخزّن النتيجة
+
+        for tid, a in agg.items():
+            team = teams.get(tid)
+            if not team:
+                continue
+            table.append({
+                "team": team,
+                "played": a["played"],
+                "xg": round(a["xg"], 2),
+                "avg": round(a["xg"] / a["played"], 2),
+            })
+
+        table.sort(key=lambda r: (-r["xg"], -r["avg"], r["team"]["name"]))
+
+        for i, r in enumerate(table, start=1):
+            r["rank"] = i
+
+    except Exception as e:
+        print("xg table error:", repr(e))
+        ok = False
+        table = []
+
+    # الفارغ أو الفاشل يُخزَّن دقيقة فقط، حتى تظهر البيانات فور وصولها
+    cache.set(cache_key, table, 60 * 10 if (ok and table) else 60)
+    return table
 # ================= LEAGUE STATISTICS (إحصائيات البطولة - نصف ساعة) =================
 def league_statistics(request, code):
 
@@ -3872,7 +3945,7 @@ def league_statistics(request, code):
 
     league_id = LEAGUES[code]["id"]
 
-    cache_key = f"league_statistics_v2_{code}_{SEASON}"
+    cache_key = f"league_statistics_v4_{code}_{SEASON}"
 
     cached = cache.get(cache_key)
 
@@ -3880,7 +3953,7 @@ def league_statistics(request, code):
         return render(
             request,
             "pages/league_statistics.html",
-            cached
+            {**cached, "xg_table": build_xg_table(code)}
         )
 
     def fetch_player_leaders(endpoint):
@@ -3953,6 +4026,8 @@ def league_statistics(request, code):
         key=lambda row: row.get("all", {}).get("goals", {}).get("against", 0)
     )[:10]
 
+    
+
     context = {
 
         "competition": LEAGUES[code],
@@ -3976,6 +4051,8 @@ def league_statistics(request, code):
     }
 
     cache.set(cache_key, context, LEAGUE_STATS_CACHE_TTL)
+
+    context["xg_table"] = build_xg_table(code)
 
     return render(
 

@@ -326,6 +326,14 @@
 
         </button>
 
+        <button class="tab-btn"
+                data-tab="xg-ranking">
+
+            xG Teams
+
+        </button>
+        
+
     </section>
 
 
@@ -838,6 +846,94 @@
 </div>
 
 
+
+
+
+<!-- ================= XG ================= -->
+<div id="xg-ranking" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th class="rank-title">#</th>
+                <th class="team-title">Team</th>
+                <th class="num-col">Matches</th>
+                <th class="num-col">xG</th>
+                <th class="num-col">xG / MATCH</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for row in xg_table %}
+
+            <tr>
+
+                <td class="place">
+
+                    {{ row.rank }}
+
+                </td>
+
+                <td>
+
+                    <div class="club-card">
+
+                        <img src="{{ row.team.logo }}" alt="{{ row.team.name }}">
+
+                        <a class="link-reset" href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
+
+                    </div>
+
+                </td>
+
+                <td class="num-col">
+
+                    {{ row.played }}
+
+                </td>
+
+                <td class="num-col">
+
+                    <span class="badge blue">
+
+                        {{ row.xg|floatformat:2 }}
+
+                    </span>
+
+                </td>
+
+                <td class="num-col">
+
+                    <span class="badge gold">
+
+                        {{ row.avg|floatformat:2 }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <p class="xg-note">
+        Expected goals (xG) are summed from the {{ competition.name }} matches that have xG data,
+        so "Played" can be lower than the matches in the league table.
+    </p>
+
+</div>
+
+
 <!-- ================= ALL COMPETITIONS ================= -->
 
 <nav class="stats-nav" aria-label="Statistics by competition">
@@ -976,6 +1072,19 @@
     background: linear-gradient(135deg, #8b0000, #1a0000);
 }
 
+
+
+.premium-table .num-col{
+    text-align: center;
+}
+
+.xg-note{
+    margin: 14px 4px 0;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
 </style>
 
 
@@ -1006,7 +1115,8 @@
 #top-yellow,
 #top-red,
 #top-scoring-teams,
-#best-defense-teams{
+#best-defense-teams,
+#xg-ranking{
 
     width:min(1550px,94%);
 
@@ -1519,7 +1629,7 @@
 
 .badge.gold{
 
-    background: linear-gradient(-45deg, black, black,black,black,black, #ff0000);
+    background: linear-gradient(-45deg, black, black,black,black,black);
 
 }
 
@@ -1527,7 +1637,7 @@
 
 .badge.blue{
 
-    background: linear-gradient(-45deg, black, black,black,black,black, #00e1ff);
+    background: linear-gradient(-45deg, black, black,black,black,black);
 
 }
 
@@ -1535,7 +1645,7 @@
 
 .badge.red{
 
-    background: linear-gradient(-45deg, black, black,black,black,black, #ff5252);
+    background: linear-gradient(-45deg, black, black,black,black,black);
 
 }
 
@@ -1543,7 +1653,7 @@
 
 .badge.yellow{
 
-    background: linear-gradient(-45deg, black, black,black,black,black, #eeff00);
+    background: linear-gradient(-45deg, black, black,black,black,black);
 
     color:black;
 
@@ -1553,7 +1663,7 @@
 
 .badge.green{
 
-    background: linear-gradient(-45deg, black, black,black,black,black, #00e600);
+    background: linear-gradient(-45deg, black, black,black,black,black);
 
 }
 
