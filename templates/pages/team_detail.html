@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-
 {% block title %}{{ team.name }} | Fixtures, Results, Squad & Stats - Eurfot{% endblock %}
 
 {% block meta_description %}Explore {{ team.name }} on EURFOT. Follow fixtures, match results, squad players, league standings, team statistics, top performers and club trophies.{% endblock %}
@@ -894,16 +893,31 @@
                 {{ team_statistics.goals_against }}</h2>
         </div>
 
-        
+        {% if team_statistics.xg_matches %}
+
         <div class="team-stat-card">
-            <div class="leader-title">Clean Sheet</div>
-            <h2 class = "team-stat-value">{{ team_statistics.clean_sheets }}</h2>
+            <div class="leader-title">xG</div>
+            <h2 class="team-stat-value">{{ team_statistics.xg_for|floatformat:2 }}</h2>
+            <small style="color:#888;">{{ team_statistics.xg_matches }} / {{ team_statistics.played }} matches</small>
         </div>
 
+        <div class="team-stat-card">
+            <div class="leader-title">xGA</div>
+            <h2 class="team-stat-value">{{ team_statistics.xg_against|floatformat:2 }}</h2>
+            <small style="color:#888;">{{ team_statistics.xg_matches }} / {{ team_statistics.played }} matches</small>
+        </div>
+
+        {% endif %}
 
         <div class="team-stat-card">
             <div class="leader-title">Avg Goals</div>
             <h2 class = "team-stat-value">{{ team_statistics.average_goals }}</h2>
+        </div>
+
+        
+        <div class="team-stat-card">
+            <div class="leader-title">Clean Sheet</div>
+            <h2 class = "team-stat-value">{{ team_statistics.clean_sheets }}</h2>
         </div>
 
 
@@ -1009,9 +1023,9 @@
 
     position:absolute;
 
-    top:5%;
+    top:4%;
 
-    left:20px;
+    left:0.1%;
 
     background:#ff0000;
 

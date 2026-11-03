@@ -10,13 +10,48 @@ from pages.models import MatchXG
 
 BASE = "https://v3.football.api-sports.io"
 DONE = ("FT", "AET", "PEN")
-CODES = ["PL", "PD", "SA", "BL1", "FL1"]
+
+# الدوريات المحلية (موجودة في v.LEAGUES)
+LEAGUE_CODES = ["PL", "PD", "SA", "BL1", "FL1"]
+
+# البطولات الإضافية: الكود المحلي -> رقم البطولة في API-Sports
+EXTRA = {
+    # أوروبا
+    "UCL": 2,
+    "UEL": 3,
+    "UECL": 848,
+    # إنجلترا
+    "FAC": 45,
+    "ELCUP": 48,
+    # إسبانيا
+    "CDR": 143,
+    "SC": 556,
+    # إيطاليا
+    "COP": 137,
+    "DSC": 547,
+    # ألمانيا
+    "DFB": 81,
+    "DSUP": 529,
+    # فرنسا
+    "CDF": 66,
+    "TDC": 526,
+}
+
+CODES = LEAGUE_CODES + list(EXTRA)
+
 PAUSE = 0.4                 # ثوانٍ بين الطلبات (حماية من حد الطلبات بالدقيقة)
 MAX_FAILS_IN_ROW = 3        # بعدها نتوقف (غالبًا انتهت الحصة)
 
 
 class ApiFailure(Exception):
     pass
+
+
+def competition_id(code):
+    """يرجع رقم البطولة للدوريات المحلية والكؤوس، أو None إن كان الكود مجهولًا."""
+    if code in v.LEAGUES:
+        return v.LEAGUES[code]["id"]
+    return EXTRA.get(code)
 
 
 def api(path, **params):
@@ -53,9 +88,13 @@ class Command(BaseCommand):
     help = "Store expected goals (xG) for finished matches"
 
     def add_arguments(self, parser):
-        parser.add_argument("--league", help="PL / PD / SA / BL1 / FL1 (default: all)")
+        parser.add_argument(
+            "--league",
+            help="PL / PD / SA / BL1 / FL1 / UCL / UEL / UECL / FAC / ELCUP / CDR / SC / "
+                 "COP / DSC / DFB / DSUP / CDF / TDC (default: all)"
+        )
         parser.add_argument("--limit", type=int, default=60,
-                            help="max statistics requests per league in one run")
+                            help="max statistics requests per competition in one run")
         parser.add_argument("--force", action="store_true",
                             help="re-check old matches that had no xG")
 
@@ -64,12 +103,14 @@ class Command(BaseCommand):
         recent = timezone.now() - timedelta(days=3)
 
         for code in codes:
-            if code not in v.LEAGUES:
-                self.stderr.write(f"{code}: unknown league")
+            comp_id = competition_id(code)
+
+            if not comp_id:
+                self.stderr.write(f"{code}: unknown competition")
                 continue
 
             try:
-                fixtures = api("fixtures", league=v.LEAGUES[code]["id"], season=v.SEASON)
+                fixtures = api("fixtures", league=comp_id, season=v.SEASON)
             except ApiFailure as e:
                 self.stderr.write(f"{code}: fixtures request FAILED -> {e}")
                 self.stderr.write("Stopping: probably daily quota or rate limit.")

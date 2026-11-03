@@ -133,12 +133,12 @@ def is_friendly_stat(stat):
     league = stat.get("league", {}) or {}
     league_type = (league.get("type") or "").strip().lower()
     league_name = (league.get("name") or "").strip().lower()
-    return league_type == "friendlies" or "friendlies" in league_name
+    return "friendl" in league_type or "friendl" in league_name
 
 
 # ================= CACHE DURATION =================
 # مدة موحدة افتراضية لبقية الكاش بالمشروع: 24 ساعة بالثواني
-CACHE_TTL = 90
+CACHE_TTL = 90  
 
 
 # ================= SPECIFIC CACHE TTLs (حسب طلب التحديث) =================
@@ -2501,10 +2501,48 @@ def match_detail(request, id):
         context
     )
 
+
+
+
+
+from django.db.models import Q
+
+def get_team_xg(team_id):
+    team_id = int(team_id)
+
+    rows = (
+        MatchXG.objects
+        .filter(
+            season=SEASON,
+            home_xg__isnull=False,
+            away_xg__isnull=False,
+        )
+        .filter(Q(home_id=team_id) | Q(away_id=team_id))
+        .values("home_id", "home_xg", "away_xg")
+    )
+
+    xg_for = xg_against = 0.0
+    matches = 0
+
+    for m in rows:
+        if m["home_id"] == team_id:
+            xg_for += m["home_xg"]
+            xg_against += m["away_xg"]
+        else:
+            xg_for += m["away_xg"]
+            xg_against += m["home_xg"]
+        matches += 1
+
+    return {
+        "xg_for": round(xg_for, 2),
+        "xg_against": round(xg_against, 2),
+        "xg_matches": matches,
+    }
+
 # ================= TEAM DETAIL (تفاصيل الفريق - 45 دقيقة) =================
 def team_detail(request, id):
 
-    cache_key = f"team_detail_v5_{id}"
+    cache_key = f"team_detail_v6_{id}"
 
     cached = cache.get(cache_key)
 
@@ -2589,13 +2627,11 @@ def team_detail(request, id):
 
         return fixtures
 
-    season_fixtures = fetch_fixtures(
-        {}
-    )
+    season_fixtures = fetch_fixtures({})
 
     season_fixtures = [
         f for f in season_fixtures
-        if (f.get("league", {}).get("name") or "").strip().lower() != "friendlies"
+        if not is_friendly_stat(f)
     ]
 
     season_fixtures.sort(
@@ -2803,6 +2839,8 @@ def team_detail(request, id):
     else:
         team_statistics["average_goals"] = 0
         team_statistics["win_rate"] = 0
+
+    team_statistics.update(get_team_xg(id))
 
     team_league_code = None
 
@@ -3286,7 +3324,7 @@ def team_detail(request, id):
 
 def get_team_stats_full(team_id, season=SEASON):
 
-    cache_key = f"compare_team_full_v1_{team_id}_{season}"
+    cache_key = f"compare_team_full_v2_{team_id}_{season}"
 
     cached = cache.get(cache_key)
 
@@ -3352,7 +3390,7 @@ def get_team_stats_full(team_id, season=SEASON):
     # ===== استبعاد المباريات الودية =====
     fixtures = [
         f for f in fixtures
-        if (f.get("league", {}).get("name") or "").strip().lower() != "friendlies"
+        if not is_friendly_stat(f)
     ]
     team_statistics = {
 
@@ -5016,7 +5054,7 @@ def profile(request):
 # ================= PLAYER DETAIL (تفاصيل اللاعب - ساعة واحدة) =================
 def player_detail(request, id):
 
-    cache_key = f"player_detail_v3_{id}"
+    cache_key = f"player_detail_v4_{id}"
 
     cached = cache.get(cache_key)
 

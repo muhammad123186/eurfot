@@ -79,10 +79,10 @@ BLOCKED_IP_NETWORKS = [
 # ==========================================
 # حدود طلبات صفحات اللاعبين
 # ==========================================
-IP_PLAYER_LIMIT = 3
+IP_PLAYER_LIMIT = 10
 IP_PLAYER_WINDOW = 60
 
-PLAYER_REQUEST_LIMIT = 3
+PLAYER_REQUEST_LIMIT = 10
 PLAYER_REQUEST_WINDOW_SECONDS = 60
 
 
