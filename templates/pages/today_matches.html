@@ -149,11 +149,15 @@
 
         <div class="featured-nav">
             <button type="button" class="featured-btn" id="featuredPrev" aria-label="Previous match">◀</button>
-            <span class="featured-counter" id="featuredCounter">1 / {{ featured_matches|length }}</span>
+            <span class="featured-counter" id="featuredCounter">
+                1 / {{ top_matches|length }}
+            </span>
             <button type="button" class="featured-btn" id="featuredNext" aria-label="Next match">▶</button>
         </div>
 
-        {% for m in featured_matches %}
+        {% if top_matches %}
+
+        {% for m in top_matches %}
         <a href="{% url 'match_detail' m.id %}" class="featured-slide{% if forloop.first %} active{% endif %}">
 
     <div class="featured-league">
@@ -205,6 +209,12 @@
 
 </a>
         {% endfor %}
+
+        {% else %}
+    <div class="featured-empty">
+        No top matches available today.
+    </div>
+{% endif %}
 
     </div>
 

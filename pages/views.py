@@ -6641,6 +6641,71 @@ def get_featured_matches(grouped_matches):
 
 
 
+
+def _is_summit(match):
+    """قمة: ديربي/كلاسيكو معروف، أو مباراة بين ناديين كبيرين"""
+    home_id = match["homeTeam"]["id"]
+    away_id = match["awayTeam"]["id"]
+
+    return _is_rivalry(match) or (
+        home_id in BIG_TEAM_IDS and away_id in BIG_TEAM_IDS
+    )
+
+
+def get_top_matches(grouped_matches):
+    """
+    صندوق Top Matches:
+    - إذا فيه دوري أبطال اليوم: أهم 3 مباريات (القمة أولًا).
+    - غير ذلك: أهم مباراة واحدة (القمة أولًا إن وُجدت).
+    القمة من أي بطولة تتقدم على غيرها.
+    """
+
+    ucl_today = any(
+        g["code"] == "UCL" and g["matches"]
+        for g in grouped_matches
+    )
+
+    pool = []
+
+    for group in grouped_matches:
+
+        code = group["code"]
+        ranks = _featured_rank_map(code)
+
+        for m in group["matches"]:
+
+            if m["status"] in NOT_PLAYED:
+                continue
+
+            summit = _is_summit(m)
+
+            # في يوم الأبطال: نأخذ مباريات الأبطال + أي قمة من بطولة أخرى فقط
+            if ucl_today and code != "UCL" and not summit:
+                continue
+
+            base = (
+                _match_importance(m, ranks)
+                - (30 if _is_rivalry(m) else 0)
+                + LEAGUE_WEIGHT.get(code, 20)
+            )
+
+            pool.append({
+                **m,
+                "league": {
+                    "code": code,
+                    "name": group["name"],
+                    "logo": group["logo"],
+                },
+                "is_summit": summit,
+                "_sort": (0 if summit else 1, base, str(m.get("utcDate") or "")),
+            })
+
+    pool.sort(key=lambda m: m["_sort"])
+
+    return pool[:3] if ucl_today else pool[:5]
+
+
+
 # ================= MINI STANDINGS (ترتيب مصغّر) =================
 MINI_STANDINGS_ORDER = ["PL", "PD", "SA", "BL1", "FL1"]
 
@@ -7122,6 +7187,7 @@ def today_matches_view(request):
         "next_date": target_date + timedelta(days=1),
         "is_today": target_date == date_cls.today(),
         "latest_analysis": get_home_analysis(grouped_matches),
+        "top_matches": get_top_matches(grouped_matches),
     }
 
     return render(request, "pages/today_matches.html", context)
