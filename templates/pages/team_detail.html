@@ -107,6 +107,7 @@
         <button class="tab-btn" data-tab="squad">Squad</button>
         <button class="tab-btn" data-tab="team-stats">Team Statistics</button>
         <button class="tab-btn" data-tab="player-stats">Team Leaders</button>
+        <button class="tab-btn" data-tab="transfers">Transfers</button>
         <button class="tab-btn" data-tab="trophies">Trophies</button>
 
     </div>
@@ -958,6 +959,67 @@
         {% endfor %}
 
     </div>
+
+</div>
+
+
+
+
+
+<!-- ================= TRANSFERS ================= -->
+<!-- ================= TRANSFERS ================= -->
+<div id="transfers" class="tab-content" style="display:none;">
+
+    {% if transfers %}
+
+    <div class="tr-list">
+
+        {% for t in transfers %}
+
+        <div class="tr-row">
+
+            <!-- النادي اللي راح منه اللاعب -->
+            <div class="tr-club" title="{{ t.from.name }}">
+                
+                <img src="{{ t.from.logo }}" alt="{{ t.from.name }}" loading="lazy">
+                
+                <span>{{ t.from.name }}</span>
+            </div>
+
+            <div class="tr-arrow tr-arrow-out">➜</div>
+
+            <!-- اللاعب -->
+            <a href="{% url 'player_detail' t.player_id %}" class="tr-player">
+                <img src="https://media.api-sports.io/football/players/{{ t.player_id }}.png"
+                     alt="{{ t.player_name }}" loading="lazy">
+                <span>{{ t.player_name }}</span>
+            </a>
+
+            <div class="tr-arrow tr-arrow-in">➜</div>
+
+            <!-- النادي اللي رايح عليه -->
+            <div class="tr-club" title="{{ t.to.name }}">
+                
+                <img src="{{ t.to.logo }}" alt="{{ t.to.name }}" loading="lazy">
+                
+                <span>{{ t.to.name }}</span>
+            </div>
+
+            <div class="tr-fee">{{ t.fee }}</div>
+
+            <div class="tr-date">{{ t.date }}</div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="no-trophies">No recent transfers found.</div>
+
+    {% endif %}
 
 </div>
 
@@ -2826,6 +2888,119 @@ a.preview-card{
     color: #aaa;
     font-size: 12px;
     text-align: center;
+}
+
+
+
+
+.tr-list { display:flex; flex-direction:column; gap:8px; }
+
+.tr-row {
+    display:grid;
+    grid-template-columns: 70px 28px minmax(110px,1fr) 28px 70px 95px 85px;
+    align-items:center;
+    gap:8px;
+    background:#111;
+    border:1px solid #222;
+    border-radius:10px;
+    padding:10px 14px;
+    color:#fff;
+    font-size:13px;
+}
+
+.tr-club {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    text-align:center;
+    min-width:0;
+}
+
+.tr-club img { width:52px; height:52px; object-fit:contain; }
+
+.tr-club span {
+    font-size:10px;
+    color:#aaa;
+    max-width:70px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.tr-arrow { text-align:center; font-size:20px; font-weight:700; }
+.tr-arrow-out { color:#e0202b; }   /* خروج: أحمر */
+.tr-arrow-in  { color:#1db954; }   /* دخول: أخضر */
+
+.tr-player {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    text-decoration:none;
+    color:#fff;
+    min-width:0;
+}
+
+.tr-player img {
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#222;
+}
+
+.tr-player span { font-weight:700; text-align:center; }
+
+.tr-fee  { color:#f5c400; text-align:center; font-weight:700; }
+.tr-date { color:#777; text-align:right; font-size:12px; }
+
+@media (max-width:100px) {
+    .tr-row { grid-template-columns: 52px 18px 1fr 18px 52px; }
+    .tr-fee, .tr-date { display:none; }
+}
+
+
+/* ===============================
+   RESPONSIVE TEAM TABS
+================================ */
+
+@media (max-width: 1000px) {
+
+    .team-tabs {
+        display: flex;
+        width: 100%;
+        max-width: 100%;
+
+        flex-wrap: nowrap;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+
+        scroll-behavior: smooth;
+        scroll-snap-type: x proximity;
+    }
+
+    .team-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .team-tabs .tab-btn {
+        flex: 0 0 auto;
+
+        width: auto;
+        min-width: max-content;
+
+        white-space: nowrap;
+
+        padding: 12px 14px;
+
+        scroll-snap-align: start;
+    }
+
 }
 
 </style>

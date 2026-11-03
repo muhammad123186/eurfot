@@ -1348,6 +1348,67 @@ def safe_api_get(url, headers, params, timeout=15, max_retries=5):
     return response
 
 
+
+
+
+
+def _pct(value):
+    try:
+        return int(str(value).replace("%", "").strip())
+    except (TypeError, ValueError):
+        return 0
+
+
+def get_match_prediction(fixture_id):
+    cache_key = f"match_prediction_v1_{fixture_id}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/predictions",
+            headers=headers,
+            params={"fixture": fixture_id},
+            timeout=15
+        )
+        data = response.json()
+
+    except (requests.RequestException, ValueError):
+        return {}
+
+    items = data.get("response") or []
+
+    if data.get("errors") or not items:
+        cache.set(cache_key, {}, 60 * 30)
+        return {}
+
+    item = items[0]
+    pred = item.get("predictions") or {}
+    percent = pred.get("percent") or {}
+    teams = item.get("teams") or {}
+
+    home_name = (teams.get("home") or {}).get("name") or "Home"
+    away_name = (teams.get("away") or {}).get("name") or "Away"
+
+    result = {
+        "home": _pct(percent.get("home")),
+        "draw": _pct(percent.get("draw")),
+        "away": _pct(percent.get("away")),
+        "home_name": clean_team_name(home_name),
+        "away_name": clean_team_name(away_name),
+        "favourite": (pred.get("winner") or {}).get("name"),
+    }
+
+    if not (result["home"] + result["draw"] + result["away"]):
+        result = {}
+
+    cache.set(cache_key, result, 60 * 60 * 3)
+
+    return result
+
+
 def match_detail(request, id):
 
     # ================= CACHE TTLs =================
@@ -1443,6 +1504,8 @@ def match_detail(request, id):
             "venue_city": (f["fixture"].get("venue") or {}).get("city"),
             "referee": f["fixture"].get("referee")
         }
+
+        
 
         cache.set(
             live_cache_key,
@@ -1655,6 +1718,11 @@ def match_detail(request, id):
     game = live_game
 
     match_status = game.get("status", "NS")
+
+    prediction = {}
+    
+    if match_status in ("NS", "TBD"):
+        prediction = get_match_prediction(id)
 
     dynamic_cache_ttl = get_match_ttl(match_status)
 
@@ -2493,6 +2561,8 @@ def match_detail(request, id):
         "h2h": h2h,
 
         "preview": preview,
+
+        "prediction": prediction
     }
 
     return render(
@@ -2539,10 +2609,130 @@ def get_team_xg(team_id):
         "xg_matches": matches,
     }
 
+
+
+
+from datetime import date, timedelta
+
+
+def transfer_label(raw):
+    raw = str(raw or "").strip()
+
+    if not raw or raw.upper() in ("N/A", "NULL", "NONE"):
+        return "Undisclosed"
+
+    if raw.lower() in ("free", "free transfer"):
+        return "Free Transfer"
+
+    if raw.lower() == "loan":
+        return "Loan"
+
+    return raw
+
+
+
+def get_team_transfers(team_id, years=2, limit=40):
+    cache_key = f"team_transfers_v4_{team_id}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    try:
+        response = requests.get(
+            "https://v3.football.api-sports.io/transfers",
+            headers=headers,
+            params={"team": team_id},
+            timeout=15
+        )
+        data = response.json()
+
+    except (requests.RequestException, ValueError):
+        return []   # لا نخزّن الفشل في الكاش
+
+    if data.get("errors"):
+        return []
+
+    team_id = int(team_id)
+    since = (date.today() - timedelta(days=365 * years)).isoformat()
+
+    rows = []
+    seen = set()
+
+    def club(team):
+        name = team.get("name")
+        return {
+            "id": team.get("id"),
+            "name": clean_team_name(name) if name else "Unknown",
+            "logo": team.get("logo"),
+        }
+
+    for item in data.get("response", []):
+
+        player = item.get("player") or {}
+
+        if not player.get("id"):
+            continue
+
+        for t in item.get("transfers", []):
+
+            tdate = t.get("date") or ""
+
+            if tdate < since:
+                continue
+
+            teams = t.get("teams") or {}
+            t_in = teams.get("in") or {}
+            t_out = teams.get("out") or {}
+
+            if t_in.get("id") == team_id:
+                direction = "in"
+
+            elif t_out.get("id") == team_id:
+                direction = "out"
+
+            else:
+                continue
+
+            key = (
+                player.get("id"),
+                tdate,
+                t_out.get("id"),
+                t_in.get("id"),
+                t.get("type"),
+            )
+
+            if key in seen:
+                continue
+
+            seen.add(key)
+
+            rows.append({
+                "player_id": player.get("id"),
+                "player_name": player.get("name"),
+                "date": tdate,
+                "direction": direction,
+                "fee": transfer_label(t.get("type")),
+                "from": club(t_out),
+                "to": club(t_in),
+            })
+
+            print(
+                "PLAYER:", player.get("name"),
+                "| TYPE:", repr(t.get("type")),
+                "| TRANSFER:", t
+            )
+
+    rows.sort(key=lambda r: r["date"], reverse=True)
+    rows = rows[:limit]
+
+    cache.set(cache_key, rows, 60 * 60 * 12)
+
+    return rows
 # ================= TEAM DETAIL (تفاصيل الفريق - 45 دقيقة) =================
 def team_detail(request, id):
 
-    cache_key = f"team_detail_v6_{id}"
+    cache_key = f"team_detail_v8_{id}"
 
     cached = cache.get(cache_key)
 
@@ -3257,6 +3447,8 @@ def team_detail(request, id):
             "value": f"{p.get(field)}{suffix}",
         })
 
+    transfers = get_team_transfers(id)
+
     context = {
 
         "team": team,
@@ -3302,6 +3494,8 @@ def team_detail(request, id):
         "next_match": next_match,
 
         "leader_cards": leader_cards,
+    
+        "transfers": transfers,
 
     }
 

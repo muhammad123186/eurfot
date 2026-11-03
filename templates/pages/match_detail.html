@@ -431,15 +431,35 @@ H2H
 
 
 
-<div 
-id="overview"
-class="tab-content active"
->
+<div id="overview" class="tab-content active">
 
+{% if prediction %}
+
+<div class="pred-box">
+
+    <div class="pred-title">Match Prediction</div>
+
+    <div class="pred-bar">
+        <div class="pred-seg pred-home" style="width:{{ prediction.home }}%"></div>
+        <div class="pred-seg pred-draw" style="width:{{ prediction.draw }}%"></div>
+        <div class="pred-seg pred-away" style="width:{{ prediction.away }}%"></div>
+    </div>
+
+    <div class="pred-labels">
+        <span>{{ prediction.home_name }} {{ prediction.home }}%</span>
+        <span>Draw {{ prediction.draw }}%</span>
+        <span>{{ prediction.away_name }} {{ prediction.away }}%</span>
+    </div>
+
+    {% if prediction.favourite %}
+    <div class="pred-fav">Favourite: {{ prediction.favourite }}</div>
+    {% endif %}
+
+</div>
+
+{% endif %}
 
 <div class="form-container">
-
-
 
 <!-- HOME LAST 5 -->
 <div class="team-form">
@@ -3542,7 +3562,7 @@ margin-left: -2%;
     flex-direction:row;
     gap:37px;
     margin-top:30px;
-    margin-left: 5px;
+    margin-left: 18px;
     
     }
 
@@ -3561,7 +3581,7 @@ margin-left: -2%;
 
 
     .mini-matches{
-        gap: 23px;
+        gap: 28px;
     }
 
 
@@ -4319,6 +4339,20 @@ a.h2h-row:hover{
 .h2h-list a.h2h-row * {
     text-decoration: none !important;
 }
+
+
+
+
+.pred-box { background:#111; border:1px solid #222; border-top:3px solid #e00; border-radius:14px; padding:16px; margin:0 0 18px; color:#fff; width: 92%; box-sizing: border-box; margin: 30px auto 0; }
+.pred-title { text-align:center; font-weight:700; margin-bottom:12px; }
+.pred-bar { display:flex; height:12px; border-radius:6px; overflow:hidden; background:#222; }
+.pred-home { background:#e00; }
+.pred-draw { background:#777; }
+.pred-away { background:#39e42a; }
+.pred-labels { display:flex; justify-content:space-between; margin-top:8px; font-size:13px; color:#ccc; }
+.pred-fav { text-align:center; margin-top:10px; font-size:13px; color:white; }
+
+
 
 </style>
 
