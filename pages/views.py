@@ -1388,6 +1388,7 @@ def get_match_prediction(fixture_id):
     pred = item.get("predictions") or {}
     percent = pred.get("percent") or {}
     teams = item.get("teams") or {}
+   
 
     home_name = (teams.get("home") or {}).get("name") or "Home"
     away_name = (teams.get("away") or {}).get("name") or "Away"
