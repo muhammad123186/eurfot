@@ -3982,13 +3982,11 @@ def _compute_standings(code, api_table):
     return table
 
 
+
 def get_standings(code):
 
-    api_table = _get_api_standings(code)
-
-    # الكؤوس والبطولات الأوروبية: جدول API فقط
     if code not in COMPUTED_STANDINGS_CODES:
-        return api_table
+        return _get_api_standings(code)
 
     cache_key = f"standings_final_v1_{code}_{SEASON}"
 
@@ -3996,23 +3994,14 @@ def get_standings(code):
     if cached is not None:
         return cached
 
-    computed = _compute_standings(code, api_table)
+    computed = _compute_standings(code, [])
 
     if not computed:
-        return api_table
+        return []
 
-    def total_played(table):
-        return sum((r.get("all") or {}).get("played", 0) for r in table)
+    cache.set(cache_key, computed, STANDINGS_COMPUTED_TTL)
 
-    # إذا لحق API (أو سبقنا) نعتمد جدوله الرسمي لأنه أدق
-    if api_table and total_played(api_table) >= total_played(computed):
-        result = api_table
-    else:
-        result = computed
-
-    cache.set(cache_key, result, STANDINGS_COMPUTED_TTL)
-
-    return result
+    return computed
 
 
 def competition_standings(request, code):
@@ -6516,15 +6505,25 @@ def get_today_matches(target_date=None):
             "kickoff_hm": _kickoff_hm(f["fixture"]["date"]),
         })
 
-    # حافظ على ترتيب البطولات كما هو معرّف بقاموس LEAGUES
+        # ترتيب البطولات: دوري أبطال أوروبا أولاً إذا لديه مباريات اليوم
     grouped = [
         grouped_map[code]
         for code in LEAGUES.keys()
         if code in grouped_map
     ]
 
-    cache.set(cache_key, grouped, TODAY_MATCHES_CACHE_TTL)
+    ucl_group = [
+        group for group in grouped
+        if group["code"] == "UCL"
+    ]
 
+    if ucl_group:
+        grouped = ucl_group + [
+            group for group in grouped
+            if group["code"] != "UCL"
+    ]
+
+    cache.set(cache_key, grouped, 90)
     return grouped
 
 
@@ -6543,13 +6542,15 @@ def _featured_rank_map(code):
     """ترتيب الفرق في الجدول (مخزّن مؤقتًا أصلًا في get_standings)"""
     if code not in FEATURED_ORDER:
         return {}
+
     try:
         table = get_standings(code)
     except Exception:
         return {}
+
     return {
         row["team"]["id"]: row.get("rank", 20)
-        for row in table
+        for row in (table or [])
     }
 
 
@@ -6599,10 +6600,10 @@ def get_featured_matches(grouped_matches):
 
     featured = []
 
-    for group in grouped_matches:
+    for group in (grouped_matches or []):
 
         candidates = [
-            m for m in group["matches"]
+            m for m in (group.get("matches") or [])
             if m["status"] not in ("PST", "CANC", "ABD", "AWD", "WO")
         ]
 
@@ -6660,19 +6661,21 @@ def get_top_matches(grouped_matches):
     القمة من أي بطولة تتقدم على غيرها.
     """
 
+    groups = grouped_matches or []
+
     ucl_today = any(
-        g["code"] == "UCL" and g["matches"]
-        for g in grouped_matches
+        g["code"] == "UCL" and (g.get("matches") or [])
+        for g in groups
     )
 
     pool = []
 
-    for group in grouped_matches:
+    for group in groups:
 
         code = group["code"]
         ranks = _featured_rank_map(code)
 
-        for m in group["matches"]:
+        for m in (group.get("matches") or []):
 
             if m["status"] in NOT_PLAYED:
                 continue
@@ -6922,13 +6925,17 @@ def _describe_fixture(m, mini_standings):
 def build_daily_summary(grouped_matches, featured_matches, mini_standings, target_date):
     """فقرة يومية احترافية من بيانات اليوم. تعيد None إذا لا توجد مباريات."""
 
-    all_matches = [m for g in grouped_matches for m in g["matches"]]
+    all_matches = [
+        m
+        for g in (grouped_matches or [])
+        for m in (g.get("matches") or [])
+    ]
     total = len(all_matches)
 
     if total == 0:
         return None
 
-    comp_count = len(grouped_matches)
+    comp_count = len(grouped_matches or [])
     date_text = f"{target_date.strftime('%A')}, {target_date.day} {target_date.strftime('%B %Y')}"
 
     finished = sum(1 for m in all_matches if m["status"] in ("FT", "AET", "PEN"))
@@ -6948,7 +6955,7 @@ def build_daily_summary(grouped_matches, featured_matches, mini_standings, targe
     # أهم مباراتين من بطولتين مختلفتين إن أمكن
     picks = []
     seen_leagues = set()
-    for m in featured_matches:
+    for m in (featured_matches or []):
         if m["league"]["code"] not in seen_leagues:
             picks.append(m)
             seen_leagues.add(m["league"]["code"])
@@ -6960,7 +6967,11 @@ def build_daily_summary(grouped_matches, featured_matches, mini_standings, targe
 
     # أسماء بقية البطولات
     picked_leagues = {p["league"]["name"] for p in picks}
-    others = [g["name"] for g in grouped_matches if g["name"] not in picked_leagues][:3]
+    others = [
+        g["name"]
+        for g in (grouped_matches or [])
+        if g["name"] not in picked_leagues
+    ][:3]
     if len(others) > 1:
         others_text = ", ".join(others[:-1]) + " and " + others[-1]
     elif others:
@@ -7107,7 +7118,11 @@ def _home_tier(a):
 
 
 def get_home_analysis(grouped_matches, limit=8):
-    today_keys = {f"tp-{m['id']}" for g in grouped_matches for m in g["matches"]}
+    today_keys = {
+        f"tp-{m['id']}"
+        for g in (grouped_matches or [])
+        for m in (g.get("matches") or [])
+    }
     ck = f"home_analysis_v5_{limit}_{min(today_keys) if today_keys else 'none'}"
 
     cached = cache.get(ck)

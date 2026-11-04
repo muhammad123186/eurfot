@@ -434,12 +434,12 @@
 
             <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
 
-                <div class="team home">
-                    <div class="team-name">
-                        <img src="{{ game.homeTeam.crest }}" alt="{{ game.homeTeam.name }}" width="32" height="32" loading="lazy">
-                        <span>{{ game.homeTeam.name }}</span>
-                    </div>
-                </div>
+<div class="team home">
+    <div class="team-name">
+        <span>{{ game.homeTeam.name }}</span>
+        <img src="{{ game.homeTeam.crest }}" alt="{{ game.homeTeam.name }}" width="32" height="32" loading="lazy">
+    </div>
+</div>
 
                                 <div class="score-board">
 
@@ -483,12 +483,12 @@
 
                 </div>
 
-                <div class="team away">
-                    <div class="team-name">
-                        <span>{{ game.awayTeam.name }}</span>
-                        <img src="{{ game.awayTeam.crest }}" alt="{{ game.awayTeam.name }}" width="32" height="32" loading="lazy">
-                    </div>
-                </div>
+<div class="team away">
+    <div class="team-name">
+        <img src="{{ game.awayTeam.crest }}" alt="{{ game.awayTeam.name }}" width="32" height="32" loading="lazy">
+        <span>{{ game.awayTeam.name }}</span>
+    </div>
+</div>
 
             </div>
 
@@ -797,7 +797,7 @@ body{
     align-items:center;
     gap:15px;
 
-    background: linear-gradient(90deg,black,black,rgba(255, 0, 0, 0.534));
+    background: linear-gradient(90deg,#111,#111);
     border-radius:10px;
 
     padding:14px 20px;
@@ -822,7 +822,7 @@ body{
 
 .match-card{
     width:100%;
-    background: linear-gradient(90deg,black);
+    background: black;
     border-radius:12px;
     margin:12px 0;
     display:flex;
@@ -832,6 +832,7 @@ body{
     height:70px;
     color:white;
     box-sizing:border-box;
+    gap:10px;
 }
 
 .match-card:hover{
@@ -1080,7 +1081,7 @@ body{
     width: 100%;
     max-width: 700px;
     margin: 0 1px 10px;
-    background: #111;
+    background: black;
     border: 1px solid #2a2a2a;
     border-radius: 16px;
     box-sizing: border-box;
@@ -1089,14 +1090,14 @@ body{
 .league-group-header{
     border-radius: 0;
     margin-bottom: 0;
-    border-left: 4px solid white;
+    border-left: 4px solid red;
     border-bottom: 1px solid black;
 }
 
 /* المباريات داخل البطاقة: بدون مربعات منفصلة */
 .league-group .match-card{
-    width: 100%;
-    margin: 0;
+    width: 68%;
+    margin-left: 15%;
     border-radius: 0;
     background: transparent;
     border-bottom: 1px solid #1d1d1d;
@@ -2244,6 +2245,67 @@ html, body{
     font-weight: 700;
     color: white;
     line-height: 1;
+}
+
+
+
+/* شعارات الفريقين بجانب لوحة النتيجة */
+.match-card .team.home{
+    justify-content: flex-end;
+}
+
+.match-card .team.home .team-name{
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.match-card .team.away{
+    justify-content: flex-start;
+}
+
+.match-card .team.away .team-name{
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.match-card .team-name{
+    min-width: 0;
+}
+
+.match-card .team-name span{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+@media (max-width: 768px) {
+
+    .match-card .team {
+        min-width: 0;
+    }
+
+    .match-card .team-name {
+        display: inline-flex;
+        max-width: 100%;
+        gap: 5px !important;
+        flex: 0 1 auto;
+    }
+
+    .match-card .team-name span {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .match-card .team-name img {
+        flex: 0 0 32px;
+        width: 32px;
+    }
 }
 
 </style>
