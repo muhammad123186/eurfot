@@ -432,7 +432,7 @@
 
             {% for game in group.matches %}
 
-            <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
+            <a href="{% url 'match_detail' game.id %}" class="match-card" title="{{ game.homeTeam.name }} vs {{ game.awayTeam.name }} - {{ group.name }}">
 
 <div class="team home">
     <div class="team-name">
@@ -490,7 +490,7 @@
     </div>
 </div>
 
-            </div>
+</a>
 
             {% endfor %}
 
@@ -2306,6 +2306,11 @@ html, body{
         flex: 0 0 32px;
         width: 32px;
     }
+}
+
+a.match-card{
+    text-decoration: none;
+    cursor: pointer;
 }
 
 </style>
