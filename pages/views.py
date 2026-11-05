@@ -7087,9 +7087,9 @@ def _with_logo(articles):
 
 
 HOME_TEAM_TIERS = [
-    (0, ["inter milan"]),
+    (0, ["liverpool"]),
     (1, ["barcelona"]),
-    (2, ["liverpool"]),
+    (2, ["inter milan"]),
     (3, ["man city", "man united", "arsenal", "chelsea", "bayern", "psg",
          "real madrid", "juventus", "ac milan", "atletico madrid",
          "dortmund", "tottenham", "napoli"]),
