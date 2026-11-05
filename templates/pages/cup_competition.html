@@ -222,7 +222,7 @@ Round {{ forloop.counter }}
   
 
         {% for game in round_data.matches %}
-        <div class="match-card" onclick="window.location='{% url 'match_detail' game.id %}';">
+<a href="{% url 'match_detail' game.id %}" class="match-card" title="{{ game.homeTeam.name }} vs {{ game.awayTeam.name }} - {{ group.name }}">
             
             <div class="team home">
         <img
@@ -253,7 +253,7 @@ Round {{ forloop.counter }}
         >
 </div>
 
-        </div>
+</a>
         {% endfor %}
 
 {% empty %}
@@ -1155,7 +1155,10 @@ box-shadow:0 0 15px var(--cup-color);
     
 }
     
-
+a.match-card{
+    text-decoration: none;
+    cursor: pointer;
+}
 
 </style>
 

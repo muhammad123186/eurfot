@@ -519,7 +519,7 @@
 
 
 
-        <div class="match-card" style="cursor:pointer;" onclick="window.location='{% url 'match_detail' game.id %}';">
+<a href="{% url 'match_detail' game.id %}" class="match-card" title="{{ game.homeTeam.name }} vs {{ game.awayTeam.name }} - {{ group.name }}">
 
 
 
@@ -613,7 +613,7 @@
     </div>
 </div>
 
-</div>
+</a>
 
 
 
@@ -838,16 +838,6 @@ body {
     margin-top: -2.5%;
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1356,7 +1346,7 @@ body {
 
 
 
-    height:45%;
+    height:90px;
 
 
 
@@ -2739,6 +2729,11 @@ margin-left: -2%;
 
 .matchweek{
     gap: 0.1%;
+}
+
+a.match-card{
+    text-decoration: none;
+    cursor: pointer;
 }
 
 </style>

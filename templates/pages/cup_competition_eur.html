@@ -307,8 +307,8 @@
                 </h3>
 
                 {% for game in round_data.matches %}
-                <div class="match-card"
-                     onclick="window.location='{% url 'match_detail' game.id %}';">
+<a href="{% url 'match_detail' game.id %}" class="match-card" title="{{ game.homeTeam.name }} vs {{ game.awayTeam.name }} - {{ group.name }}">
+
 
                     <div class="team home">
                         <img src="{{ game.homeTeam.crest }}"
@@ -347,7 +347,7 @@
                              alt="{{ game.awayTeam.name }}"
                              loading="lazy">
                     </div>
-                </div>
+                </a>
                 {% empty %}
                 <p class="no-matches">No matches available in this round.</p>
                 {% endfor %}
@@ -857,7 +857,7 @@ box-shadow:0 0 15px var(--cup-color);
 
 
 /* MATCH CARD */
-.match-card { width: 700px; height: 70px; background: #000; border-radius: 12px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; color: white; cursor: pointer; border: 1px solid #222; transition: .2s; }
+.match-card { width: 45%; height: 90px; background: #000; border-radius: 12px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; color: white; cursor: pointer; border: 1px solid #222; transition: .2s; }
 .match-card:hover { 
 
     transform:scale(1.01);
@@ -2064,6 +2064,11 @@ box-shadow:0 0 15px var(--cup-color);
 .mini-standings .standings-points,
 .mini-standings .standings-played {
     font-variant-numeric: tabular-nums;
+}
+
+a.match-card{
+    text-decoration: none;
+    cursor: pointer;
 }
 
 
