@@ -6506,22 +6506,24 @@ def get_today_matches(target_date=None):
             "kickoff_hm": _kickoff_hm(f["fixture"]["date"]),
         })
 
-        # ترتيب البطولات: دوري أبطال أوروبا أولاً إذا لديه مباريات اليوم
+        # ترتيب الأولوية حسب وجود مباريات اليوم
+    priority_codes = ["UCL", "UEL", "UECL"]
+
     grouped = [
         grouped_map[code]
         for code in LEAGUES.keys()
         if code in grouped_map
     ]
 
-    ucl_group = [
-        group for group in grouped
-        if group["code"] == "UCL"
+    priority_groups = [
+        grouped_map[code]
+        for code in priority_codes
+        if code in grouped_map
     ]
 
-    if ucl_group:
-        grouped = ucl_group + [
-            group for group in grouped
-            if group["code"] != "UCL"
+    grouped = priority_groups + [
+        group for group in grouped
+        if group["code"] not in priority_codes
     ]
 
     cache.set(cache_key, grouped, 90)
