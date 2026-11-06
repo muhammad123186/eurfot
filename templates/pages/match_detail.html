@@ -829,30 +829,43 @@ No matches available
 
 
 <!--statics-->
+<!--statics-->
 <div id="statistics" class="tab-content">
 
-  {% if statistics %}
-    <!-- رأس القسم: شعار واسم كل فريق -->
+  {% if stat_rows %}
+
     <div class="stats-header-container">
 
       <div class="stats-team-card">
-        <img src="{{ statistics.home.logo }}" alt="{{ statistics.home.team }}">
-        <span>{{ statistics.home.team }}</span>
+        <img src="{{ game.home_logo }}" alt="{{ game.home_name }}">
+        <span>{{ game.home_name }}</span>
       </div>
 
       <div class="stats-team-card">
-        <span>{{ statistics.away.team }}</span>
-        <img src="{{ statistics.away.logo }}" alt="{{ statistics.away.team }}">
+        <span>{{ game.away_name }}</span>
+        <img src="{{ game.away_logo }}" alt="{{ game.away_name }}">
       </div>
 
     </div>
 
-    <!-- قائمة الإحصائيات (مربعات بدون أشرطة) -->
+    {% if pre_adv %}
+    <p class="stats-subnote">
+      Season averages per match before kick-off, based on {{ pre_adv.home_n }} {{ game.home_name }}
+      and {{ pre_adv.away_n }} {{ game.away_name }} matches.
+    </p>
+    {% endif %}
+
+    <div class="stats-filter">
+      <button type="button" class="stats-filter-btn active" data-filter="all">All</button>
+      <button type="button" class="stats-filter-btn" data-filter="attack">Attacking</button>
+      <button type="button" class="stats-filter-btn" data-filter="defense">Defending</button>
+    </div>
+
     <div class="stats-list">
 
-      {% for row in statistics.comparison %}
+      {% for row in stat_rows %}
 
-        <div class="stats-row">
+        <div class="stats-row" data-cat="{{ row.cat|default:'general' }}">
 
           <div class="stats-box {% if row.away_pct > row.home_pct %}stats-box-behind{% else %}stats-box-lead{% endif %}">
             {{ row.home_display }}
@@ -870,7 +883,17 @@ No matches available
 
     </div>
 
-  {% elif preview %}
+    {% if statistics.has_advanced or pre_adv %}
+    <p class="stats-credit">Advanced metrics by <a href="https://pitchapi.dev" target="_blank" rel="noopener nofollow">PitchAPI</a></p>
+    {% endif %}
+
+  {% else %}
+
+    <p class="stats-note-empty"></p>
+
+  {% endif %}
+
+  {% if preview %}
 
   <article class="preview">
 
@@ -899,18 +922,30 @@ No matches available
 
   </article>
 
-  {% else %}
+  {% elif not stat_rows %}
 
-<p class="stats-empty">Statistics are currently unavailable for this match</p>
+  <p class="stats-empty">Statistics are currently unavailable for this match</p>
 
   {% endif %}
 
 </div>
 
-    
-    
+<script>
+document.querySelectorAll(".stats-filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+        var f = this.dataset.filter;
 
+        document.querySelectorAll(".stats-filter-btn").forEach(function (b) {
+            b.classList.remove("active");
+        });
+        this.classList.add("active");
 
+        document.querySelectorAll("#statistics .stats-row").forEach(function (row) {
+            row.style.display = (f === "all" || row.dataset.cat === f) ? "" : "none";
+        });
+    });
+});
+</script>
 <!-- ================= EVENTS ================= -->
 <div id="events" class="tab-content">
 
@@ -4353,6 +4388,53 @@ a.h2h-row:hover{
 .pred-fav { text-align:center; margin-top:10px; font-size:13px; color:white; }
 
 
+.stats-credit{
+    margin: 18px 0 0;
+    text-align: center;
+    color: #666;
+    font-size: 11px;
+}
+.stats-credit a{ color: #888; }
+
+.stats-filter{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 22px;
+}
+.stats-filter-btn{
+    padding: 9px 22px;
+    border: none;
+    border-radius: 999px;
+    background: #181818;
+    color: #aaa;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .25s;
+}
+.stats-filter-btn:hover{ color: white; }
+.stats-filter-btn.active{
+    background: linear-gradient(135deg, #ff0000, #990000);
+    color: white;
+}
+.stats-subnote{
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    margin: -15px 0 18px;
+}
+.stats-credit{
+    margin: 18px 0 0;
+    text-align: center;
+    color: #666;
+    font-size: 11px;
+}
+.stats-credit a{ color: #888; }
+
+@media (max-width: 1000px){
+    .stats-filter{ zoom: 130%; }
+}
 
 </style>
 

@@ -25,6 +25,7 @@ import time
 from .forms import SignUpForm
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import MatchXG
+from .models import MatchAdvanced
 
 
 
@@ -1410,6 +1411,252 @@ def get_match_prediction(fixture_id):
     return result
 
 
+
+
+# ================= ADVANCED STATS (PitchAPI) =================
+
+STAT_DISPLAY = {
+    "expected_goals": "xG",
+    "Shots insidebox": "Shots Inside Box",
+    "Shots outsidebox": "Shots Outside Box",
+    "Total passes": "Total Passes",
+    "Passes accurate": "Accurate Passes",
+    "Passes %": "Pass Accuracy",
+    "goals_prevented": "Goals Prevented",
+}
+
+STAT_CATEGORY = {
+    # هجوم وبناء لعب
+    "Ball Possession": "attack",
+    "xG": "attack",
+    "Total Shots": "attack",
+    "Shots on Goal": "attack",
+    "Shots off Goal": "attack",
+    "Shots Inside Box": "attack",
+    "Shots Outside Box": "attack",
+    "Blocked Shots": "attack",
+    "Corner Kicks": "attack",
+    "Offsides": "attack",
+    "Total Passes": "attack",
+    "Accurate Passes": "attack",
+    "Pass Accuracy": "attack",
+    "Shot Accuracy": "attack",
+    "Shots Inside Box %": "attack",
+    "xG per Shot": "attack",
+    # دفاع وانضباط
+    "Goalkeeper Saves": "defense",
+    "Goals Prevented": "defense",
+    "Fouls": "defense",
+    "Yellow Cards": "defense",
+    "Red Cards": "defense",
+}
+
+# (التسمية, المجموعة, الحقل, لاحقة, الأقل أفضل؟, التصنيف)
+ADV_ROWS = [
+    ("Big Chances", "shooting", "big_chances", "", False, "attack"),
+    ("Big Chances Missed", "shooting", "big_chances_missed", "", True, "attack"),
+    ("Field Tilt", "territory", "field_tilt", "%", False, "attack"),
+    ("Box Entries", "territory", "box_entries", "", False, "attack"),
+    ("Final Third Entries", "territory", "final_third_entries", "", False, "attack"),
+    ("xT (Expected Threat)", "possession_value", "xt_total", "", False, "attack"),
+    ("xAG (Expected Assists)", "creation", "xag", "", False, "attack"),
+    ("Shot-Creating Actions", "creation", "sca", "", False, "attack"),
+    ("Chances Created", "creation", "chances_created", "", False, "attack"),
+    ("Key Passes", "passing", "key_passes", "", False, "attack"),
+    ("Passes into Box", "passing", "passes_into_box", "", False, "attack"),
+    ("Crosses", "passing", "crosses", "", False, "attack"),
+    ("Progressive Passes", "passing", "progressive_passes", "", False, "attack"),
+    ("Progressive Carries", "carrying", "progressive_carries", "", False, "attack"),
+    ("Carries into Box", "carrying", "carries_into_box", "", False, "attack"),
+    ("PPDA (lower = more pressing)", "defending", "ppda", "", True, "defense"),
+    ("High Turnovers", "defending", "high_turnovers", "", False, "defense"),
+    ("Counterpress Regains", "defending", "counterpress_regains_5s", "", False, "defense"),
+    ("Tackles", "defending", "tackles", "", False, "defense"),
+    ("Interceptions", "defending", "interceptions", "", False, "defense"),
+    ("Clearances", "defending", "clearances", "", False, "defense"),
+    ("Duels Won", "defending", "duels_won", "", False, "defense"),
+    ("Aerials Won", "defending", "aerials_won", "", False, "defense"),
+]
+
+
+def _make_row(label, h, a, suffix="", lower_better=False, cat="general"):
+    total = h + a
+    if not total:
+        home_pct = 50
+    elif lower_better:
+        home_pct = round(a / total * 100, 1)      # الأقل هو المتفوق
+    else:
+        home_pct = round(h / total * 100, 1)
+
+    return {
+        "type": label,
+        "home_display": f"{round(h, 2):g}{suffix}",
+        "away_display": f"{round(a, 2):g}{suffix}",
+        "home_pct": home_pct,
+        "away_pct": round(100 - home_pct, 1),
+        "cat": cat,
+    }
+
+
+def get_advanced_rows(fixture_id):
+    """صفوف المقاييس المتقدمة لمباراة منتهية (من القاعدة)"""
+
+    try:
+        row = (
+            MatchAdvanced.objects
+            .filter(fixture_id=int(fixture_id))
+            .values("data")
+            .first()
+        )
+    except Exception as e:
+        print("advanced rows error:", repr(e))
+        return []
+
+    if not row or not row["data"]:
+        return []
+
+    data = row["data"]
+
+    home = data.get("home") or {}
+    away = data.get("away") or {}
+
+    rows = []
+
+    # ---- Big Chances من المصدر المستقل ----
+
+    big_chances = data.get("big_chances") or {}
+
+    chances_home = big_chances.get("home") or {}
+    chances_away = big_chances.get("away") or {}
+
+    chance_metrics = [
+        ("Big Chances", "big_chances", False),
+        ("Big Chances Missed", "big_chances_missed", True),
+    ]
+
+    for label, field, lower in chance_metrics:
+
+        h = chances_home.get(field)
+        a = chances_away.get(field)
+
+        if h is None or a is None:
+            continue
+
+        try:
+            h = float(h)
+            a = float(a)
+        except (TypeError, ValueError):
+            continue
+
+        rows.append(
+            _make_row(label, h, a, "", lower, "attack")
+        )
+
+    # ---- بقية المقاييس المتقدمة ----
+
+    for label, group, field, suffix, lower, cat in ADV_ROWS:
+
+        # تم استخراج هذين المقياسين من big_chances بالأعلى
+        if label in ("Big Chances", "Big Chances Missed"):
+            continue
+
+        h = (home.get(group) or {}).get(field)
+        a = (away.get(group) or {}).get(field)
+
+        if h is None or a is None:
+            continue
+
+        try:
+            h = float(h)
+            a = float(a)
+        except (TypeError, ValueError):
+            continue
+
+        rows.append(
+            _make_row(label, h, a, suffix, lower, cat)
+        )
+
+    return rows
+
+
+def _team_adv_average(team_id):
+    """(عدد المباريات، متوسط كل مقياس) لفريق من مبارياته المخزّنة هذا الموسم"""
+    rows = (
+        MatchAdvanced.objects
+        .filter(season=SEASON, data__isnull=False)
+        .filter(Q(home_id=team_id) | Q(away_id=team_id))
+        .values("home_id", "data")
+    )
+
+    sums, counts, n = defaultdict(float), defaultdict(int), 0
+
+    for r in rows:
+        if not r["data"]:
+            continue
+
+        side = "home" if r["home_id"] == team_id else "away"
+        d = r["data"].get(side) or {}
+        n += 1
+
+        for _label, group, field, _suffix, _lower, _cat in ADV_ROWS:
+            val = (d.get(group) or {}).get(field)
+            if isinstance(val, (int, float)):
+                sums[(group, field)] += val
+                counts[(group, field)] += 1
+
+    return n, {k: sums[k] / counts[k] for k in counts if counts[k]}
+
+
+def get_pre_match_advanced(home_id, away_id):
+    """متوسطات الموسم للفريقين، تعرض قبل المباراة. None إن لم تتوفر بيانات كافية"""
+    cache_key = f"pre_adv_v1_{SEASON}_{home_id}_{away_id}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached or None
+
+    result = None
+
+    try:
+        hn, h = _team_adv_average(home_id)
+        an, a = _team_adv_average(away_id)
+
+        if hn >= 3 and an >= 3:
+            rows = []
+
+            for label, group, field, suffix, lower, cat in ADV_ROWS:
+                hv, av = h.get((group, field)), a.get((group, field))
+                if hv is None or av is None:
+                    continue
+                rows.append(_make_row(label, hv, av, suffix, lower, cat))
+
+            hx, ax = get_team_xg(home_id), get_team_xg(away_id)
+
+            if hx["xg_matches"] >= 3 and ax["xg_matches"] >= 3:
+                rows.insert(0, _make_row(
+                    "xG per Match",
+                    hx["xg_for"] / hx["xg_matches"],
+                    ax["xg_for"] / ax["xg_matches"],
+                    "", False, "attack",
+                ))
+                rows.append(_make_row(
+                    "xG Conceded per Match",
+                    hx["xg_against"] / hx["xg_matches"],
+                    ax["xg_against"] / ax["xg_matches"],
+                    "", True, "defense",
+                ))
+
+            if rows:
+                result = {"rows": rows, "home_n": hn, "away_n": an}
+
+    except Exception as e:
+        print("pre match advanced error:", repr(e))
+        return None
+
+    cache.set(cache_key, result or {}, 60 * 60 * 6)
+    return result
+
+
 def match_detail(request, id):
 
     # ================= CACHE TTLs =================
@@ -1446,7 +1693,7 @@ def match_detail(request, id):
     live_cache_key = f"match_live_v3_{id}"
     lineups_cache_key = f"match_lineups_v4_{id}"
     events_cache_key = f"match_events_v3_{id}"
-    stats_cache_key = f"match_stats_v5_{id}"
+    stats_cache_key = f"match_stats_v8_{id}"
 
     # ================= CORE (Overview + Comparison + H2H) =================
 
@@ -1505,8 +1752,6 @@ def match_detail(request, id):
             "venue_city": (f["fixture"].get("venue") or {}).get("city"),
             "referee": f["fixture"].get("referee")
         }
-
-        
 
         cache.set(
             live_cache_key,
@@ -1721,7 +1966,7 @@ def match_detail(request, id):
     match_status = game.get("status", "NS")
 
     prediction = {}
-    
+
     if match_status in ("NS", "TBD"):
         prediction = get_match_prediction(id)
 
@@ -2303,9 +2548,7 @@ def match_detail(request, id):
             if len(stats_data) < 2:
                 return None
 
-            display_names = {
-                "expected_goals": "xG",
-            }
+            display_names = STAT_DISPLAY
 
             by_id = {
                 team_stats["team"]["id"]: team_stats
@@ -2351,6 +2594,10 @@ def match_detail(request, id):
 
                 "Shots off Goal",
 
+                "Shots insidebox",
+
+                "Shots outsidebox",
+
                 "Blocked Shots",
 
                 "Corner Kicks",
@@ -2359,9 +2606,13 @@ def match_detail(request, id):
 
                 "Passes %",
 
+                "Total passes",
+
                 "Offsides",
 
                 "Fouls",
+
+                "Free Kicks",
 
                 "Yellow Cards",
 
@@ -2369,7 +2620,7 @@ def match_detail(request, id):
 
                 "Goalkeeper Saves",
 
-                "Total passes",
+                "goals_prevented",
             ]
 
             available_types = (
@@ -2464,6 +2715,10 @@ def match_detail(request, id):
                     "away_pct": away_pct,
                 })
 
+            # تصنيف كل صف: هجوم / دفاع / عام (لأزرار All - Attacking - Defending)
+            for r in comparison_stats:
+                r["cat"] = STAT_CATEGORY.get(r["type"], "general")
+
             return {
 
                 "home": {
@@ -2522,6 +2777,62 @@ def match_detail(request, id):
 
     statistics = stats_cached["statistics"]
 
+            # ---- مباراة منتهية: دمج المقاييس المتقدمة ----
+
+    if statistics and match_status in ("FT", "AET", "PEN"):
+
+        adv_rows = get_advanced_rows(id)
+
+        if adv_rows:
+
+            chance_labels = {
+                "Big Chances",
+                "Big Chances Missed",
+            }
+
+            chance_rows = [
+                r for r in adv_rows
+                if r.get("type") in chance_labels
+            ]
+
+            other_adv_rows = [
+                r for r in adv_rows
+                if r.get("type") not in chance_labels
+            ]
+
+            comparison_rows = list(statistics["comparison"])
+
+            shots_index = next(
+                (
+                    i for i, r in enumerate(comparison_rows)
+                    if r.get("type") == "Shots on Goal"
+                ),
+                -1
+            )
+
+        # وضع الإحصائيتين مباشرة بعد Shots on Goal
+            if shots_index != -1:
+
+                comparison_rows[
+                    shots_index + 1:shots_index + 1
+                ] = chance_rows
+
+            else:
+                comparison_rows.extend(chance_rows)
+
+        # بقية المقاييس المتقدمة في نهاية القائمة
+            comparison_rows.extend(other_adv_rows)
+
+            statistics = {
+                **statistics,
+                "comparison": comparison_rows,
+                "has_advanced": True,
+            }
+    # ---- مباراة قادمة: متوسطات الفريقين في الموسم ----
+    pre_adv = None
+
+    if not statistics and match_status in ("NS", "TBD"):
+        pre_adv = get_pre_match_advanced(game["home_id"], game["away_id"])
 
     # ================= PREVIEW (قبل المباراة، حين لا توجد إحصائيات) =================
     preview = None
@@ -2532,6 +2843,11 @@ def match_detail(request, id):
             preview = get_match_preview(game)
         except Exception as e:
             print("match preview error:", repr(e))
+
+    stat_rows = (
+        statistics["comparison"] if statistics
+        else (pre_adv["rows"] if pre_adv else [])
+    )
 
     # ================= CONTEXT =================
 
@@ -2563,7 +2879,11 @@ def match_detail(request, id):
 
         "preview": preview,
 
-        "prediction": prediction
+        "prediction": prediction,
+
+        "pre_adv": pre_adv,
+
+        "stat_rows": stat_rows,
     }
 
     return render(
@@ -2571,7 +2891,6 @@ def match_detail(request, id):
         "pages/match_detail.html",
         context
     )
-
 
 
 
@@ -2726,6 +3045,8 @@ def get_team_transfers(team_id, years=2, limit=40):
 
     rows.sort(key=lambda r: r["date"], reverse=True)
     rows = rows[:limit]
+
+    
 
     cache.set(cache_key, rows, 60 * 60 * 12)
 
@@ -4155,6 +4476,84 @@ def build_xg_table(code):
     # الفارغ أو الفاشل يُخزَّن دقيقة فقط، حتى تظهر البيانات فور وصولها
     cache.set(cache_key, table, 60 * 10 if (ok and table) else 60)
     return table
+
+
+PPDA_CODES = {"PL", "PD", "SA", "BL1", "FL1", "UCL", "UEL", "UECL"}
+PPDA_TABLE_LIMIT = 20
+
+
+def build_ppda_table(code):
+    if code not in PPDA_CODES:
+        return []
+
+    cache_key = f"ppda_table_v1_{code}_{SEASON}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return cached
+
+    table = []
+    ok = True
+
+    try:
+        rows = list(
+            MatchAdvanced.objects
+            .filter(league_code=code, season=SEASON, data__isnull=False)
+            .values("home_id", "away_id", "data")
+        )
+
+        agg = {}
+
+        for m in rows:
+            data = m["data"] or {}
+
+            for side, tid in (("home", m["home_id"]), ("away", m["away_id"])):
+                d = (data.get(side) or {}).get("defending") or {}
+                opp = d.get("opponent_passes")
+                act = d.get("defensive_actions")
+
+                if not isinstance(opp, (int, float)) or not isinstance(act, (int, float)):
+                    continue
+
+                a = agg.setdefault(tid, {"played": 0, "opp": 0.0, "act": 0.0})
+                a["played"] += 1
+                a["opp"] += opp
+                a["act"] += act
+
+        teams = {
+            r["team"]["id"]: r["team"]
+            for r in get_standings(code)
+            if r.get("team")
+        }
+
+        if agg and not teams:
+            ok = False          # فشل الترتيب: لا تخزّن النتيجة
+
+        for tid, a in agg.items():
+            team = teams.get(tid)
+
+            if not team or not a["act"]:
+                continue
+
+            table.append({
+                "team": team,
+                "played": a["played"],
+                "ppda": round(a["opp"] / a["act"], 2),
+            })
+
+        table.sort(key=lambda r: (r["ppda"], r["team"]["name"]))
+        table = table[:PPDA_TABLE_LIMIT]
+
+        for i, r in enumerate(table, start=1):
+            r["rank"] = i
+
+    except Exception as e:
+        print("ppda table error:", repr(e))
+        ok = False
+        table = []
+
+    cache.set(cache_key, table, 60 * 10 if (ok and table) else 60)
+    return table
 # ================= LEAGUE STATISTICS (إحصائيات البطولة - نصف ساعة) =================
 def league_statistics(request, code):
 
@@ -4272,18 +4671,15 @@ def league_statistics(request, code):
 
     }
 
+    context["xg_table"] = build_xg_table(code)
+    context["ppda_table"] = build_ppda_table(code)
+
     cache.set(cache_key, context, LEAGUE_STATS_CACHE_TTL)
 
-    context["xg_table"] = build_xg_table(code)
-
     return render(
-
         request,
-
         "pages/league_statistics.html",
-
         context
-
     )
 
 

@@ -332,6 +332,16 @@
             xG Teams
 
         </button>
+
+
+        {% if ppda_table %}
+        <button class="tab-btn"
+                data-tab="ppda-ranking">
+
+            PPDA
+
+        </button>
+        {% endif %}
         
 
     </section>
@@ -934,6 +944,86 @@
 </div>
 
 
+
+
+
+<!-- ================= PPDA ================= -->
+{% if ppda_table %}
+<div id="ppda-ranking" class="tab-content">
+
+    <table class="premium-table">
+
+        <thead>
+
+            <tr>
+
+                <th class="rank-title">#</th>
+                <th class="team-title">Team</th>
+                <th class="num-col">Matches</th>
+                <th class="num-col">PPDA</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for row in ppda_table %}
+
+            <tr>
+
+                <td class="place">
+
+                    {{ row.rank }}
+
+                </td>
+
+                <td>
+
+                    <div class="club-card">
+
+                        <img src="{{ row.team.logo }}" alt="{{ row.team.name }}">
+
+                        <a class="link-reset" href="{% url 'team_detail' row.team.id %}">{{ row.team.name }}</a>
+
+                    </div>
+
+                </td>
+
+                <td class="num-col">
+
+                    {{ row.played }}
+
+                </td>
+
+                <td class="num-col">
+
+                    <span class="badge blue">
+
+                        {{ row.ppda|floatformat:2 }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <p class="xg-note">
+        PPDA (passes allowed per defensive action) measures pressing intensity: the lower the number,
+        the more aggressively a team wins the ball back. Calculated from {{ competition.name }} matches
+        with available event data. Source: <a href="https://pitchapi.dev" target="_blank" rel="noopener nofollow">PitchAPI</a>.
+    </p>
+
+</div>
+{% endif %}
+
+
 <!-- ================= ALL COMPETITIONS ================= -->
 
 <nav class="stats-nav" aria-label="Statistics by competition">
@@ -1116,7 +1206,8 @@
 #top-red,
 #top-scoring-teams,
 #best-defense-teams,
-#xg-ranking{
+#xg-ranking
+#ppda-ranking{
 
     width:min(1550px,94%);
 

@@ -411,3 +411,19 @@ class MatchXG(models.Model):
 
     def __str__(self):
         return f"{self.fixture_id}: {self.home_xg} - {self.away_xg}"
+
+
+
+class MatchAdvanced(models.Model):
+    fixture_id = models.IntegerField(unique=True, db_index=True)   # رقم المباراة في API-Football
+    pitch_id = models.CharField(max_length=20, db_index=True)
+    league_code = models.CharField(max_length=8, db_index=True)
+    season = models.IntegerField()
+    played_at = models.DateTimeField()
+    home_id = models.IntegerField()
+    away_id = models.IntegerField()
+    data = models.JSONField(null=True, blank=True)                 # {"home": {...}, "away": {...}}
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.league_code} {self.fixture_id}"
