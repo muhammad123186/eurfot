@@ -36,4 +36,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run synchronization
-        run: python manage.py sync_advanced --auto --limit 0
+        run: python manage.py sync_advanced --limit 0
